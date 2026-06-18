@@ -2,7 +2,12 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const app = express();
-const PORT = 3000;
+
+// AJUSTE PARA A WEB: Usa a porta do Render ou a 3000 localmente
+const PORT = process.env.PORT || 3000;
+
+// Variável de controle do bloqueio (começa liberado)
+let palpitesBloqueados = false;
 
 // Middleware para decodificar JSON e servir os arquivos estáticos (index.html)
 app.use(express.json());
@@ -26,8 +31,18 @@ app.get('/api/dados', (req, res) => {
     });
 });
 
-// ROTA 2: Gravar/Salvar os novos dados no arquivo JSON
+// ROTA 2: Gravar/Salvar os novos dados no arquivo JSON (Com validação de bloqueio)
 app.post('/api/salvar', (req, res) => {
+    // Se o admin bloqueou e NÃO for uma gravação de resultados oficiais, barra o salvamento
+    // Nota: Se o seu index.html enviar algo que identifique que é o Admin salvando os resultados oficiais, 
+    // você pode ignorar o bloqueio. Caso contrário, o bloqueio simples impede qualquer gravação:
+    if (palpitesBloqueados && req.body.resultadosOficiais === undefined) {
+        return res.status(403).json({ 
+            success: false, 
+            message: "Os palpites para esta rodada já foram bloqueados pelo Administrador!" 
+        });
+    }
+
     const novosDados = req.body;
     
     fs.writeFile(DATA_FILE, JSON.stringify(novosDados, null, 2), 'utf8', (err) => {
@@ -38,20 +53,19 @@ app.post('/api/salvar', (req, res) => {
     });
 });
 
-app.listen(PORT, () => {
-    console.log(`Servidor rodando em: http://localhost:${PORT}`);
-});
-// Variável de controle (por padrão, começa liberado)
-let palpitesBloqueados = false;
-
-// Rota para o Admin alterar o status (Bloquear/Liberar)
+// ROTA 3: Admin altera o status (Bloquear/Liberar)
 app.post('/api/admin/status-palpites', (req, res) => {
     const { bloquear } = req.body;
     palpitesBloqueados = bloquear;
     res.json({ success: true, bloqueado: palpitesBloqueados });
 });
 
-// Rota pública para os usuários consultarem se está bloqueado antes de salvar
+// ROTA 4: Usuários consultam se está bloqueado antes de interagir
 app.get('/api/status-palpites', (req, res) => {
     res.json({ bloqueado: palpitesBloqueados });
+});
+
+// Inicialização do servidor
+app.listen(PORT, () => {
+    console.log(`Servidor rodando perfeitamente na porta: ${PORT}`);
 });
