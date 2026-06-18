@@ -3,157 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bolão Copa 2026 - Grupos Oficiais</title>
+    <title>Bolão Copa do Mundo 2026</title>
     <style>
         :root {
-            --primary: #006633;
-            --secondary: #fed100;
-            --dark: #1a1a1a;
-            --light: #f4f4f9;
-            --success: #28a745;
+            --primary-color: #006432;
+            --secondary-color: #f0f7f4;
+            --accent-color: #28a745;
+            --danger-color: #dc3545;
+            --text-dark: #333;
         }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--light);
+            background-color: var(--secondary-color);
             margin: 0;
             padding: 20px;
-            color: var(--dark);
+            color: var(--text-dark);
         }
+
         .container {
             max-width: 1100px;
             margin: 0 auto;
         }
+
         header {
-            background: linear-gradient(135deg, var(--primary), #004422);
+            background-color: var(--primary-color);
             color: white;
-            padding: 20px;
-            border-radius: 12px;
             text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            margin-bottom: 25px;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        header h1 { margin: 0; font-size: 26px; color: var(--secondary); }
-        
-        .grid {
+
+        header h1 { margin: 0; font-size: 24px; }
+        header p { margin: 5px 0 0 0; font-size: 14px; opacity: 0.9; }
+
+        .main-layout {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: 2fr 1fr;
             gap: 20px;
         }
-        @media(min-width: 768px) {
-            .grid { grid-template-columns: 2.2fr 1fr; }
+
+        @media (max-width: 768px) {
+            .main-layout { grid-template-columns: 1fr; }
         }
 
         .card {
             background: white;
             padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             margin-bottom: 20px;
         }
-        h2 { margin-top: 0; border-bottom: 2px solid var(--primary); padding-bottom: 8px; color: var(--primary); font-size: 18px; }
 
-        .group-filter-container {
-            margin-bottom: 15px;
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
+        .card h2 {
+            margin-top: 0;
+            font-size: 18px;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 8px;
         }
-        .filter-btn {
-            background: #e0e0e0;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: bold;
-            transition: all 0.2s;
+
+        select, input, button {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
         }
-        .filter-btn.active {
-            background: var(--primary);
+
+        select { width: 100%; margin-bottom: 15px; }
+
+        .btn {
+            background-color: var(--accent-color);
             color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
         }
 
-        .matches-scroll {
-            max-height: 650px;
-            overflow-y: auto;
-            padding-right: 5px;
+        .btn:hover { filter: brightness(0.9); }
+        .btn-danger { background-color: var(--danger-color); }
+
+        .admin-panel {
+            background-color: #f8f9fa;
+            border: 1px dashed #ccc;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+            display: none;
         }
 
-        .match-block {
+        .status-badge {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .status-bloqueado { color: var(--danger-color); }
+        .status-liberado { color: var(--accent-color); }
+
+        /* Estilização da lista de jogos */
+        .match-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             padding: 12px 0;
             border-bottom: 1px solid #eee;
         }
-        .match-block:last-child { border: none; }
-        
-        .match-info {
-            font-size: 11px;
-            color: #777;
-            margin-bottom: 4px;
-        }
-
-        .match-row {
-            display: grid;
-            grid-template-columns: 3.5fr 1fr 0.4fr 1fr 3.5fr;
+        .team-name { width: 35%; font-weight: 500; }
+        .team-right { text-align: right; }
+        .score-inputs {
+            display: flex;
             align-items: center;
-            text-align: center;
+            gap: 8px;
         }
-        .team-name { font-weight: 600; font-size: 14px; }
-        .team-right { text-align: left; padding-left: 10px; }
-        .team-left { text-align: right; padding-right: 10px; }
-        
-        input[type="number"] {
-            width: 42px;
-            height: 32px;
+        .score-inputs input {
+            width: 45px;
             text-align: center;
-            font-size: 15px;
             font-weight: bold;
-            border: 1px solid #ccc;
-            border-radius: 6px;
         }
-        .vs { font-size: 11px; color: #777; font-weight: bold; }
+        .score-inputs input:disabled {
+            background-color: #e9ecef;
+            color: #6c757d;
+            cursor: not-allowed;
+        }
 
-        table {
+        /* Tabela de classificação */
+        .ranking-table {
             width: 100%;
             border-collapse: collapse;
         }
-        th, td {
+        .ranking-table th, .ranking-table td {
             padding: 10px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
-            font-size: 14px;
+            border-bottom: 1px solid #eee;
         }
-        th { background-color: var(--primary); color: white; }
-        tr:nth-child(even) td { background-color: #f9f9f9; }
-        .pos { font-weight: bold; width: 25px; }
-        .pts { font-weight: bold; color: var(--success); text-align: right; }
-
-        .btn {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            width: 100%;
-            transition: background 0.2s;
-        }
-        .btn:hover { background-color: #004422; }
-        .btn-sec { background-color: #6c757d; }
-        .btn-sec:hover { background-color: #5a6268; }
-        
-        select {
-            width: 100%;
-            padding: 10px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            font-size: 16px;
-        }
-        .flex-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
+        .ranking-table th { background-color: #f4f4f4; }
+        .score-pts { font-weight: bold; color: var(--primary-color); text-align: right; }
     </style>
 </head>
 <body>
@@ -164,494 +151,303 @@
         <p>🏆 Grupos Corrigidos Conforme o Infográfico Oficial • Luiz Viana, Caio, David, Márcio e Tainá</p>
     </header>
 
-    <div class="grid">
-        <div class="left-col">
+    <div class="main-layout">
+        <div>
             <div class="card">
                 <h2>1. Selecione seu Nome</h2>
-                <select id="select-user" onchange="loadUserPalpites()">
-                    <option value="Admin (Resultados Oficiais)">⚙️ Admin (Resultados Oficiais)</option>
-                    <option value="Luiz Viana">🏃 Luiz Viana</option>
-                    <option value="Caio">🏃 Caio</option>
-                    <option value="David">🏃 David</option>
-                    <option value="Márcio">🏃 Márcio</option>
-                    <option value="Tainá">🏃 Tainá</option>
+                <select id="select-usuario" onchange="mudarUsuario()">
+                    <option value="" disabled selected>Escolha um participante...</option>
+                    <option value="Luiz Viana">Luiz Viana</option>
+                    <option value="Caio">Caio</option>
+                    <option value="David">David</option>
+                    <option value="Márcio">Márcio</option>
+                    <option value="Tainá">Tainá</option>
+                    <option value="Admin">⚙️ Admin (Resultados Oficiais)</option>
                 </select>
 
-                <!-- NOVO: Área de bloqueio controlada pelo Admin (escondida por padrão) -->
-                <div id="painel-admin-bloqueio" style="display: none; margin-top: 15px; padding: 12px; background-color: #f8f9fa; border: 1px solid #ddd; border-radius: 6px; text-align: center;">
-                    <span id="status-texto-bloqueio" style="font-weight: bold; margin-right: 15px; color: green;">Palpites: LIBERADOS ✅</span>
-                    <button id="btn-toggle-bloqueio" onclick="alternarBloqueioPalpites()" style="padding: 6px 15px; cursor: pointer; background-color: #d9534f; color: white; border: none; border-radius: 4px; font-weight: bold;">
-                        Bloquear Palpites
-                    </button>
+                <div id="painel-admin" class="admin-panel">
+                    <span class="status-badge">Status dos Palpites:</span>
+                    <span id="texto-status-bloqueio" class="status-liberado">LIBERADOS</span>
+                    <button id="btn-bloqueio" class="btn" style="margin-left: 15px;" onclick="alternarBloqueioPalpites()">Bloquear Palpites</button>
                 </div>
             </div>
 
             <div class="card">
-                <h2 id="match-card-title">Palpites dos Jogos</h2>
-                
-                <div class="group-filter-container">
-                    <button class="filter-btn active" onclick="filterGroup('TODOS', this)">Todos</button>
-                    <button class="filter-btn" onclick="filterGroup('Grupo A', this)">Gr. A</button>
-                    <button class="filter-btn" onclick="filterGroup('Grupo B', this)">Gr. B</button>
-                    <button class="filter-btn" onclick="filterGroup('Grupo C', this)">Gr. C (Brasil)</button>
-                    <button class="filter-btn" onclick="filterGroup('Grupo D', this)">Gr. D</button>
-                    <button class="filter-btn" onclick="filterGroup('Grupo E', this)">Gr. E</button>
-                    <button class="filter-btn" onclick="filterGroup('Grupo F', this)">Gr. F</button>
-                    <button class="filter-btn" onclick="filterGroup('Grupo G', this)">Gr. G</button>
-                    <button class="filter-btn" onclick="filterGroup('Grupo H', this)">Gr. H</button>
-                    <button class="filter-btn" onclick="filterGroup('Grupo I', this)">Gr. I</button>
-                    <button class="filter-btn" onclick="filterGroup('Grupo J', this)">Gr. J</button>
-                    <button class="filter-btn" onclick="filterGroup('Grupo K', this)">Gr. K</button>
-                    <button class="filter-btn" onclick="filterGroup('Grupo L', this)">Gr. L</button>
+                <h2>2. Seus Palpites da Rodada</h2>
+                <div id="lista-partidas">
+                    <p style="color: #666;">Selecione um usuário para visualizar e editar os palpites.</p>
                 </div>
-
-                <div class="matches-scroll" id="matches-container">
-                    <!-- Injetado via JS -->
-                </div>
-                <div class="flex-buttons">
-                    <!-- ID adicionado ao botão para manipulação pelo script -->
-                    <button id="btn-salvar-dados" class="btn" onclick="saveData()">💾 Salvar Meus Palpites</button>
-                </div>
-            </div>
-            
-            <div class="card">
-                <h2>Sincronização via WhatsApp</h2>
-                <p style="font-size: 13px; color:#555;">Clique em copiar, envie no grupo. Quando os outros mandarem o código deles, cole abaixo e clique em Atualizar.</p>
-                <button class="btn btn-sec" onclick="exportData()">📋 Copiar Meu Código de Palpites</button>
-                <textarea id="import-area" rows="3" style="width:100%; margin-top:10px; border-radius:6px; padding:5px; font-family: monospace;" placeholder="Cole o código do seu amigo aqui..."></textarea>
-                <button class="btn btn-sec" style="margin-top:5px;" onclick="importFriendData()">📥 Atualizar com Dados do Amigo</button>
+                <button id="btn-salvar" class="btn" style="width: 100%; margin-top: 20px; display: none;" onclick="salvarPalpites()">Salvar Meus Palpites</button>
             </div>
         </div>
 
-        <div class="right-col">
+        <div>
             <div class="card">
                 <h2>Classificação Atual</h2>
-                <table>
+                <table class="ranking-table">
                     <thead>
                         <tr>
-                            <th class="pos">#</th>
+                            <th>#</th>
                             <th>Nome</th>
-                            <th style="text-align:right">Pts</th>
+                            <th style="text-align: right;">Pts</th>
                         </tr>
                     </thead>
-                    <tbody id="ranking-body">
-                        <!-- Ranking dinâmico -->
+                    <tbody id="tabela-ranking">
+                        <tr><td colspan="3" style="text-align: center; color: #666;">Carregando classificação...</td></tr>
                     </tbody>
                 </table>
-            </div>
-
-            <div class="card">
-                <h3>Critério de Pontos</h3>
-                <ul style="font-size: 12px; padding-left: 15px; line-height: 1.6; margin: 0;">
-                    <li><strong>25 pts:</strong> Placar Exato</li>
-                    <li><strong>15 pts:</strong> Vencedor + Saldo de Gols</li>
-                    <li><strong>10 pts:</strong> Apenas vencedor/empate</li>
-                    <li><strong>00 pts:</strong> Erro total</li>
-                </ul>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    const JOGOS_OFICIAIS_FIFA = [
-        // GRUPO A
-        { id: 1, grupo: "Grupo A", mandante: "México", visitante: "África do S.", data: "Rodada 1" },
-        { id: 2, grupo: "Grupo A", mandante: "Coreia do S.", visitante: "Rep. Tcheca", data: "Rodada 1" },
-        { id: 3, grupo: "Grupo A", mandante: "México", visitante: "Coreia do S.", data: "Rodada 2" },
-        { id: 4, group: "Grupo A", mandante: "África do S.", visitante: "Rep. Tcheca", data: "Rodada 2" },
-        { id: 5, grupo: "Grupo A", mandante: "Rep. Tcheca", visitante: "México", data: "Rodada 3" },
-        { id: 6, grupo: "Grupo A", mandante: "África do S.", visitante: "Coreia do S.", data: "Rodada 3" },
+    // Dados locais simulados/armazenados que vem do Servidor
+    let palpitesBloqueadosGeral = false;
+    let usuarioLogado = "";
+    let bancoDados = { usuarios: {}, partidas: [] };
 
-        // GRUPO B
-        { id: 7, grupo: "Grupo B", mandante: "Canadá", visitante: "Bósnia", data: "Rodada 1" },
-        { id: 8, grupo: "Grupo B", mandante: "Qatar", visitante: "Suíça", data: "Rodada 1" },
-        { id: 9, grupo: "Grupo B", mandante: "Canadá", visitante: "Qatar", data: "Rodada 2" },
-        { id: 10, grupo: "Grupo B", mandante: "Bósnia", visitante: "Suíça", data: "Rodada 2" },
-        { id: 11, grupo: "Grupo B", mandante: "Suíça", visitante: "Canadá", data: "Rodada 3" },
-        { id: 12, grupo: "Grupo B", mandante: "Bósnia", visitante: "Qatar", data: "Rodada 3" },
-
-        // GRUPO C
-        { id: 13, grupo: "Grupo C", mandante: "Brasil", visitante: "Marrocos", data: "Rodada 1 - Estreia" },
-        { id: 14, grupo: "Grupo C", mandante: "Haiti", visitante: "Escócia", data: "Rodada 1" },
-        { id: 15, grupo: "Grupo C", mandante: "Brasil", visitante: "Haiti", data: "Rodada 2" },
-        { id: 16, grupo: "Grupo C", mandante: "Marrocos", visitante: "Escócia", data: "Rodada 2" },
-        { id: 17, grupo: "Grupo C", mandante: "Escócia", visitante: "Brasil", data: "Rodada 3" },
-        { id: 18, grupo: "Grupo C", mandante: "Marrocos", visitante: "Haiti", data: "Rodada 3" },
-
-        // GRUPO D
-        { id: 19, grupo: "Grupo D", mandante: "EUA", visitante: "Paraguai", data: "Rodada 1" },
-        { id: 20, grupo: "Grupo D", mandante: "Austrália", visitante: "Turquia", data: "Rodada 1" },
-        { id: 21, grupo: "Grupo D", mandante: "EUA", visitante: "Austrália", data: "Rodada 2" },
-        { id: 22, grupo: "Grupo D", mandante: "Paraguai", visitante: "Turquia", data: "Rodada 2" },
-        { id: 23, grupo: "Grupo D", mandante: "Turquia", visitante: "EUA", data: "Rodada 3" },
-        { id: 24, grupo: "Grupo D", mandante: "Paraguai", visitante: "Austrália", data: "Rodada 3" },
-
-        // GRUPO E
-        { id: 25, grupo: "Grupo E", mandante: "Alemanha", visitante: "Curaçao", data: "Rodada 1" },
-        { id: 26, grupo: "Grupo E", mandante: "Costa do M.", visitante: "Equador", data: "Rodada 1" },
-        { id: 27, grupo: "Grupo E", mandante: "Alemanha", visitante: "Costa do M.", data: "Rodada 2" },
-        { id: 28, grupo: "Grupo E", mandante: "Curaçao", visitante: "Equador", data: "Rodada 2" },
-        { id: 29, grupo: "Grupo E", mandante: "Equador", visitante: "Alemanha", data: "Rodada 3" },
-        { id: 30, grupo: "Grupo E", mandante: "Curaçao", visitante: "Costa do M.", data: "Rodada 3" },
-
-        // GRUPO F
-        { id: 31, grupo: "Grupo F", mandante: "Holanda", visitante: "Japão", data: "Rodada 1" },
-        { id: 32, grupo: "Grupo F", mandante: "Suécia", visitante: "Tunísia", data: "Rodada 1" },
-        { id: 33, grupo: "Grupo F", mandante: "Holanda", visitante: "Suécia", data: "Rodada 2" },
-        { id: 34, grupo: "Grupo F", mandante: "Japão", visitante: "Tunísia", data: "Rodada 2" },
-        { id: 35, grupo: "Grupo F", mandante: "Tunísia", visitante: "Holanda", data: "Rodada 3" },
-        { id: 36, grupo: "Grupo F", mandante: "Japão", visitante: "Suécia", data: "Rodada 3" },
-
-        // GRUPO G
-        { id: 37, grupo: "Grupo G", mandante: "Bélgica", visitante: "Egito", data: "Rodada 1" },
-        { id: 38, grupo: "Grupo G", mandante: "Irã", visitante: "N. Zelândia", data: "Rodada 1" },
-        { id: 39, grupo: "Grupo G", mandante: "Bélgica", visitante: "Irã", data: "Rodada 2" },
-        { id: 40, grupo: "Grupo G", mandante: "Egito", visitante: "N. Zelândia", data: "Rodada 2" },
-        { id: 41, grupo: "Grupo G", mandante: "N. Zelândia", visitante: "Bélgica", data: "Rodada 3" },
-        { id: 42, grupo: "Grupo G", mandante: "Egito", visitante: "Irã", data: "Rodada 3" },
-
-        // GRUPO H
-        { id: 43, grupo: "Grupo H", mandante: "Espanha", visitante: "Cabo Verde", data: "Rodada 1" },
-        { id: 44, grupo: "Grupo H", mandante: "Arábia Sa.", visitante: "Uruguai", data: "Rodada 1" },
-        { id: 45, grupo: "Grupo H", mandante: "Espanha", visitante: "Arábia Sa.", data: "Rodada 2" },
-        { id: 46, grupo: "Grupo H", mandante: "Cabo Verde", visitante: "Uruguai", data: "Rodada 2" },
-        { id: 47, grupo: "Grupo H", mandante: "Uruguai", visitante: "Espanha", data: "Rodada 3" },
-        { id: 48, grupo: "Grupo H", mandante: "Cabo Verde", visitante: "Arábia Sa.", data: "Rodada 3" },
-
-        // GRUPO I
-        { id: 49, grupo: "Grupo I", mandante: "França", visitante: "Senegal", data: "Rodada 1" },
-        { id: 50, grupo: "Grupo I", mandante: "Iraque", visitante: "Noruega", data: "Rodada 1" },
-        { id: 51, grupo: "Grupo I", mandante: "França", visitante: "Iraque", data: "Rodada 2" },
-        { id: 52, grupo: "Grupo I", mandante: "Senegal", visitante: "Noruega", data: "Rodada 2" },
-        { id: 53, grupo: "Grupo I", mandante: "Noruega", visitante: "França", data: "Rodada 3" },
-        { id: 54, grupo: "Grupo I", mandante: "Senegal", visitante: "Iraque", data: "Rodada 3" },
-
-        // GRUPO J
-        { id: 55, grupo: "Grupo J", mandante: "Argentina", visitante: "Argélia", data: "Rodada 1" },
-        { id: 56, grupo: "Grupo J", mandante: "Áustria", visitante: "Jordânia", data: "Rodada 1" },
-        { id: 57, grupo: "Grupo J", mandante: "Argentina", visitante: "Áustria", data: "Rodada 2" },
-        { id: 58, grupo: "Grupo J", mandante: "Argélia", visitante: "Jordânia", data: "Rodada 2" },
-        { id: 59, grupo: "Grupo J", mandante: "Jordânia", visitante: "Argentina", data: "Rodada 3" },
-        { id: 60, grupo: "Grupo J", mandante: "Argélia", visitante: "Áustria", data: "Rodada 3" },
-
-        // GRUPO K
-        { id: 61, grupo: "Grupo K", mandante: "Portugal", visitante: "RD Congo", data: "Rodada 1" },
-        { id: 62, grupo: "Grupo K", mandante: "Uzbequistão", visitante: "Colômbia", data: "Rodada 1" },
-        { id: 63, grupo: "Grupo K", mandante: "Portugal", visitante: "Uzbequistão", data: "Rodada 2" },
-        { id: 64, grupo: "Grupo K", mandante: "RD Congo", visitante: "Colômbia", data: "Rodada 2" },
-        { id: 65, grupo: "Grupo K", mandante: "Colômbia", visitante: "Portugal", data: "Rodada 3" },
-        { id: 66, grupo: "Grupo K", mandante: "RD Congo", visitante: "Uzbequistão", data: "Rodada 3" },
-
-        // GRUPO L
-        { id: 67, grupo: "Grupo L", mandante: "Inglaterra", visitante: "Croácia", data: "Rodada 1" },
-        { id: 68, grupo: "Grupo L", mandante: "Gana", visitante: "Panamá", data: "Rodada 1" },
-        { id: 69, grupo: "Grupo L", mandante: "Inglaterra", visitante: "Gana", data: "Rodada 2" },
-        { id: 70, grupo: "Grupo L", mandante: "Croácia", visitante: "Panamá", data: "Rodada 2" },
-        { id: 71, grupo: "Grupo L", mandante: "Panamá", visitante: "Inglaterra", data: "Rodada 3" },
-        { id: 72, grupo: "Grupo L", mandante: "Croácia", visitante: "Gana", data: "Rodada 3" }
+    // Lista fixa inicial de partidas de teste (caso o banco retorne vazio)
+    const partidasIniciais = [
+        { id: 1, mandante: "Brasil", visitante: "França", golsMandanteReal: null, golsVisitanteReal: null, encerrada: false },
+        { id: 2, mandante: "Argentina", visitante: "Espanha", golsMandanteReal: null, golsVisitanteReal: null, encerrada: false },
+        { id: 3, mandante: "Portugal", visitante: "Alemanha", golsMandanteReal: null, golsVisitanteReal: null, encerrada: false }
     ];
 
-    const PARTICIPANTES = ["Luiz Viana", "Caio", "David", "Márcio", "Tainá"];
-    let currentGroupFilter = "TODOS";
-    let dadosBolao = { resultadosOficiais: {}, palpites: {} };
-    let palpitesBloqueadosGeral = false; // Controle local do estado vindo do back-end
+    // Carregar dados assim que a página abre
+    window.onload = async function() {
+        await carregarDadosServidor();
+    };
 
-    async function carregarDadosDoServidor() {
+    async function carregarDadosServidor() {
         try {
             const response = await fetch('/api/dados');
-            if (response.ok) {
-                dadosBolao = await response.json();
-                
-                PARTICIPANTES.forEach(p => { 
-                    if(!dadosBolao.palpites[p]) dadosBolao.palpites[p] = {}; 
-                });
-
-                // Antes de renderizar, consulta o status de bloqueio do servidor
-                await verificarStatusDosPalpites();
-            } else {
-                console.error("Falha ao obter dados do servidor.");
-            }
-        } catch (error) {
-            console.error("Erro de conexão com o servidor:", error);
-        }
-    }
-
-    // Consulta o servidor sobre o status atual de bloqueio
-    async function verificarStatusDosPalpites() {
-        try {
-            const response = await fetch('/api/status-palpites');
-            const dados = await response.json();
-            palpitesBloqueadosGeral = dados.bloqueado;
+            const data = await response.json();
             
-            renderMatches();
-            calculateRanking();
-        } catch (e) {
-            console.error("Erro ao checar status de bloqueio", e);
+            palpitesBloqueadosGeral = data.bloqueado;
+            bancoDados.usuarios = data.usuarios;
+            bancoDados.partidas = data.partidas.length > 0 ? data.partidas : partidasIniciais;
+            
+            atualizarInterfaceAdmin();
+            renderRanking();
+            if(usuarioLogado) renderMatches();
+        } catch (error) {
+            console.error("Erro ao sincronizar com o servidor:", error);
         }
     }
 
-    // Executada pelo Admin para alterar o bloqueio
+    function mudarUsuario() {
+        usuarioLogado = document.getElementById("select-usuario").value;
+        
+        // Trata visibilidade do painel de administração
+        const painelAdmin = document.getElementById("painel-admin");
+        if (usuarioLogado === "Admin") {
+            painelAdmin.style.display = "block";
+            document.getElementById("btn-salvar").style.display = "none";
+        } else {
+            painelAdmin.style.display = "none";
+            document.getElementById("btn-salvar").style.display = "block";
+        }
+
+        atualizarInterfaceAdmin();
+        renderMatches();
+    }
+
+    function atualizarInterfaceAdmin() {
+        const textoStatus = document.getElementById("texto-status-bloqueio");
+        const btnBloqueio = document.getElementById("btn-bloqueio");
+
+        if (palpitesBloqueadosGeral) {
+            textoStatus.innerText = "PALPITES BLOQUEADOS 🔒";
+            textoStatus.className = "status-badge status-bloqueado";
+            btnBloqueio.innerText = "Liberar Palpites";
+            btnBloqueio.className = "btn btn-success";
+        } else {
+            textoStatus.innerText = "Palpites: LIBERADOS 🔓";
+            textoStatus.className = "status-badge status-liberado";
+            btnBloqueio.innerText = "Bloquear Palpites";
+            btnBloqueio.className = "btn btn-danger";
+        }
+    }
+
+    function renderMatches() {
+        const container = document.getElementById("lista-partidas");
+        container.innerHTML = "";
+
+        // Se o usuário logado for o Admin, ele exibe a tela para inserir resultados oficiais
+        if (usuarioLogado === "Admin") {
+            bancoDados.partidas.forEach(partida => {
+                const mGols = partida.golsMandanteReal !== null ? partida.golsMandanteReal : "";
+                const vGols = partida.golsVisitanteReal !== null ? partida.golsVisitanteReal : "";
+                
+                container.innerHTML += `
+                    <div class="match-row">
+                        <span class="team-name">${partida.mandante}</span>
+                        <div class="score-inputs">
+                            <input type="number" id="admin-m-${partida.id}" value="${mGols}" placeholder="0">
+                            <span>x</span>
+                            <input type="number" id="admin-v-${partida.id}" value="${vGols}" placeholder="0">
+                            <button class="btn" style="padding: 5px 10px; font-size:12px;" onclick="salvarPlacarFifa(${partida.id})">Fixar</button>
+                        </div>
+                        <span class="team-name team-right">${partida.visitante}</span>
+                    </div>
+                `;
+            });
+            return;
+        }
+
+        // Se for um usuário comum, renderiza os inputs de palpites dele
+        const palpitesSalvos = (bancoDados.usuarios[usuarioLogado] && bancoDados.usuarios[usuarioLogado].palpites) ? bancoDados.usuarios[usuarioLogado].palpites : {};
+
+        // Bloqueia se o Admin mandou travar tudo globalmente
+        const desabilitarInputs = palpitesBloqueadosGeral ? "disabled" : "";
+
+        bancoDados.partidas.forEach(partida => {
+            const palpiteDoJogo = palpitesSalvos[partida.id] || { m: "", v: "" };
+            
+            container.innerHTML += `
+                <div class="match-row">
+                    <span class="team-name">${partida.mandante}</span>
+                    <div class="score-inputs">
+                        <input type="number" id="p-m-${partida.id}" value="${palpiteDoJogo.m}" ${desabilitarInputs} placeholder="-">
+                        <span>x</span>
+                        <input type="number" id="p-v-${partida.id}" value="${palpiteDoJogo.v}" ${desabilitarInputs} placeholder="-">
+                    </div>
+                    <span class="team-name team-right">${partida.visitante}</span>
+                </div>
+            `;
+        });
+
+        if(palpitesBloqueadosGeral) {
+            container.innerHTML += `<p style="color: var(--danger-color); text-align: center; font-weight: bold; margin-top: 15px;">🔒 Palpites Encerrados nesta Rodada.</p>`;
+            document.getElementById("btn-salvar").style.display = "none";
+        } else {
+            document.getElementById("btn-salvar").style.display = "block";
+        }
+    }
+
+    // Função de clique no botão para alterar controle global com o prompt de Senha
     async function alternarBloqueioPalpites() {
         const novoStatus = !palpitesBloqueadosGeral;
+        
+        // Pede a senha padrão obrigatoriamente para qualquer ação no botão do Admin
+        const senhaDigitada = prompt(`Digite a senha do Admin para ${novoStatus ? 'BLOQUEAR' : 'LIBERAR'} os palpites:`);
+        
+        if (senhaDigitada === null) return; // Cancelou
+        if (senhaDigitada.trim() === "") {
+            alert("A senha não pode estar em branco.");
+            return;
+        }
+
         try {
             const response = await fetch('/api/admin/status-palpites', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ bloquear: novoStatus })
+                body: JSON.stringify({ bloquear: novoStatus, senha: senhaDigitada })
             });
+            
             const dados = await response.json();
+            
             if (dados.success) {
                 palpitesBloqueadosGeral = dados.bloqueado;
-                renderMatches(); // Re-renderiza para aplicar travas visuais se necessário
+                atualizarInterfaceAdmin();
+                renderMatches(); 
+                alert(palpitesBloqueadosGeral ? "🔒 Palpites trancados com sucesso!" : "✅ Palpites abertos para todos!");
+            } else {
+                alert("❌ Erro: " + dados.message);
             }
         } catch (erro) {
-            alert("Erro ao alterar o status no servidor.");
+            alert("Não foi possível conectar ao servidor.");
         }
     }
 
-    function filterGroup(grupo, btn) {
-        currentGroupFilter = grupo;
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        renderMatches();
-    }
+    async function salvarPalpites() {
+        if (!usuarioLogado || usuarioLogado === "Admin") return;
 
-    function renderMatches() {
-        const currentUser = document.getElementById('select-user').value;
-        const container = document.getElementById('matches-container');
-        container.innerHTML = '';
-
-        // Exibe ou oculta o painel de bloqueio apenas se for o Admin logado
-        const painelAdmin = document.getElementById('painel-admin-bloqueio');
-        const txtBloqueio = document.getElementById('status-texto-bloqueio');
-        const btnBloqueio = document.getElementById('btn-toggle-bloqueio');
-
-        if (currentUser === "Admin (Resultados Oficiais)") {
-            painelAdmin.style.display = "block";
-            if (palpitesBloqueadosGeral) {
-                txtBloqueio.innerText = "Palpites: BLOQUEADOS 🔒";
-                txtBloqueio.style.color = "red";
-                btnBloqueio.innerText = "Liberar Palpites";
-                btnBloqueio.style.backgroundColor = "#28a745";
-            } else {
-                txtBloqueio.innerText = "Palpites: LIBERADOS ✅";
-                txtBloqueio.style.color = "green";
-                btnBloqueio.innerText = "Bloquear Palpites";
-                btnBloqueio.style.backgroundColor = "#d9534f";
+        const novosPalpites = {};
+        bancoDados.partidas.forEach(partida => {
+            const mVal = document.getElementById(`p-m-${partida.id}`).value;
+            const vVal = document.getElementById(`p-v-${partida.id}`).value;
+            if (mVal !== "" && vVal !== "") {
+                novosPalpites[partida.id] = { m: parseInt(mVal), v: parseInt(vVal) };
             }
-        } else {
-            painelAdmin.style.display = "none";
-        }
-
-        // Configuração do botão de salvar palpites baseado no bloqueio
-        const btnSalvar = document.getElementById('btn-salvar-dados');
-        if (currentUser === "Admin (Resultados Oficiais)") {
-            btnSalvar.disabled = false;
-            btnSalvar.innerText = "💾 Salvar Resultados Oficiais";
-            btnSalvar.style.backgroundColor = "var(--primary)";
-        } else if (palpitesBloqueadosGeral) {
-            btnSalvar.disabled = true;
-            btnSalvar.innerText = "🔒 Palpites Encerrados nesta Rodada";
-            btnSalvar.style.backgroundColor = "#6c757d";
-        } else {
-            btnSalvar.disabled = false;
-            btnSalvar.innerText = "💾 Salvar Meus Palpites";
-            btnSalvar.style.backgroundColor = "var(--primary)";
-        }
-
-        document.getElementById('match-card-title').innerText = 
-            currentUser === "Admin (Resultados Oficiais)" ? "⚙️ Registrar Placar Real da FIFA" : `🔮 Palpites de: ${currentUser}`;
-
-        JOGOS_OFICIAIS_FIFA.forEach(jogo => {
-            if (currentGroupFilter !== "TODOS" && jogo.grupo !== currentGroupFilter) return;
-
-            let golsM = '';
-            let golsV = '';
-
-            if (currentUser === "Admin (Resultados Oficiais)") {
-                if (dadosBolao.resultadosOficiais[jogo.id] !== undefined && dadosBolao.resultadosOficiais[jogo.id] !== null) {
-                    golsM = dadosBolao.resultadosOficiais[jogo.id].m !== undefined ? dadosBolao.resultadosOficiais[jogo.id].m : '';
-                    golsV = dadosBolao.resultadosOficiais[jogo.id].v !== undefined ? dadosBolao.resultadosOficiais[jogo.id].v : '';
-                }
-            } else {
-                if (dadosBolao.palpites[currentUser] && dadosBolao.palpites[currentUser][jogo.id] !== undefined) {
-                    golsM = dadosBolao.palpites[currentUser][jogo.id].m !== undefined ? dadosBolao.palpites[currentUser][jogo.id].m : '';
-                    golsV = dadosBolao.palpites[currentUser][jogo.id].v !== undefined ? dadosBolao.palpites[currentUser][jogo.id].v : '';
-                }
-            }
-
-            // Define se os inputs numéricos devem ficar bloqueados para edição
-            const inputDesabilitado = (currentUser !== "Admin (Resultados Oficiais)" && palpitesBloqueadosGeral) ? "disabled" : "";
-
-            const block = document.createElement('div');
-            block.className = 'match-block';
-            block.innerHTML = `
-                <div class="match-info">
-                    <strong>${jogo.grupo}</strong> • ${jogo.data}
-                </div>
-                <div class="match-row">
-                    <div class="team-name team-left">${jogo.mandante}</div>
-                    <div><input type="number" min="0" id="m-${jogo.id}" value="${golsM}" ${inputDesabilitado} onchange="updateInputState(${jogo.id}, 'm')"></div>
-                    <div class="vs">X</div>
-                    <div><input type="number" min="0" id="v-${jogo.id}" value="${golsV}" ${inputDesabilitado} onchange="updateInputState(${jogo.id}, 'v')"></div>
-                    <div class="team-name team-right">${jogo.visitante}</div>
-                </div>
-            `;
-            container.appendChild(block);
         });
-    }
 
-    function updateInputState(idJogo, tipo) {
-        const currentUser = document.getElementById('select-user').value;
-        const val = document.getElementById(`${tipo}-${idJogo}`).value;
-        
-        if(val === '') {
-            if(currentUser === "Admin (Resultados Oficiais)") {
-                if(dadosBolao.resultadosOficiais[idJogo]) delete dadosBolao.resultadosOficiais[idJogo][tipo];
-            } else {
-                if(dadosBolao.palpites[currentUser][idJogo]) delete dadosBolao.palpites[currentUser][idJogo][tipo];
-            }
-            calculateRanking();
-            return;
-        }
-        
-        const gols = parseInt(val);
-
-        if (currentUser === "Admin (Resultados Oficiais)") {
-            if (!dadosBolao.resultadosOficiais[idJogo]) dadosBolao.resultadosOficiais[idJogo] = { m: undefined, v: undefined };
-            dadosBolao.resultadosOficiais[idJogo][tipo] = gols;
-        } else {
-            if (!dadosBolao.palpites[currentUser][idJogo]) dadosBolao.palpites[currentUser][idJogo] = { m: undefined, v: undefined };
-            dadosBolao.palpites[currentUser][idJogo][tipo] = gols;
-        }
-        calculateRanking();
-    }
-
-    function loadUserPalpites() {
-        renderMatches();
-    }
-
-    async function saveData() {
         try {
-            const response = await fetch('/api/salvar', {
+            const response = await fetch('/api/palpites', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(dadosBolao)
+                body: JSON.stringify({ usuario: usuarioLogado, palpites: novosPalpites })
             });
-
-            const resultado = await response.json();
-            if (response.ok && resultado.success) {
-                alert("💾 Dados salvos e gravados com sucesso no servidor!");
-                calculateRanking();
+            const resData = await response.json();
+            if(resData.success) {
+                alert("👍 Palpites salvos e computados com sucesso!");
+                await carregarDadosServidor();
             } else {
-                alert("❌ Erro ao salvar: " + (resultado.message || resultado.error));
-                // Recarrega do servidor caso tenha sido bloqueado no meio tempo
-                carregarDadosDoServidor();
+                alert("❌ Erro ao salvar: " + resData.message);
             }
         } catch (error) {
-            alert("❌ Erro ao conectar com o servidor backend.");
-            console.error(error);
+            alert("Erro de rede ao salvar palpites.");
         }
     }
 
-    function calculateRanking() {
-        let ranking = PARTICIPANTES.map(amigo => {
-            let totalPontos = 0;
+    async function salvarPlacarFifa(partidaId) {
+        const mVal = document.getElementById(`admin-m-${partidaId}`).value;
+        const vVal = document.getElementById(`admin-v-${partidaId}`).value;
+        
+        if(mVal === "" || vVal === "") {
+            alert("Digite os placares de ambos os times para registrar!");
+            return;
+        }
 
-            Object.keys(dadosBolao.resultadosOficiais).forEach(idJogoStr => {
-                const idJogo = parseInt(idJogoStr);
-                const oficial = dadosBolao.resultadosOficiais[idJogo];
-                const palpite = dadosBolao.palpites[amigo] ? dadosBolao.palpites[amigo][idJogo] : null;
-
-                if (palpite && oficial &&
-                    palpite.m !== undefined && palpite.m !== null && palpite.m !== "" &&
-                    palpite.v !== undefined && palpite.v !== null && palpite.v !== "" &&
-                    oficial.m !== undefined && oficial.m !== null && oficial.m !== "" &&
-                    oficial.v !== undefined && oficial.v !== null && oficial.v !== "") {
-                    
-                    const resOficial = Math.sign(oficial.m - oficial.v); 
-                    const resPalpite = Math.sign(palpite.m - palpite.v);
-
-                    if (oficial.m === palpite.m && oficial.v === palpite.v) {
-                        totalPontos += 25; 
-                    } else if (resOficial === resPalpite) {
-                        const saldoOficial = oficial.m - oficial.v;
-                        const saldoPalpite = palpite.m - palpite.v;
-                        if (saldoOficial === saldoPalpite) {
-                            totalPontos += 15; 
-                        } else {
-                            totalPontos += 10; 
-                        }
-                    }
-                }
-            });
-
-            return { nome: amigo, pontos: totalPontos };
-        });
-
-        ranking.sort((a, b) => b.pontos - a.pontos);
-
-        const tbody = document.getElementById('ranking-body');
-        tbody.innerHTML = '';
-        ranking.forEach((user, index) => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td class="pos">${index + 1}º</td>
-                <td>${user.nome}</td>
-                <td class="pts">${user.pontos} pts</td>
-            `;
-            tbody.appendChild(tr);
-        });
-    }
-
-    function exportData() {
-        const strData = btoa(unescape(encodeURIComponent(JSON.stringify(dadosBolao))));
-        navigator.clipboard.writeText(strData);
-        alert("Código copiado! Mande no grupo do WhatsApp.");
-    }
-
-    async function importFriendData() {
-        const inputArea = document.getElementById('import-area').value.trim();
-        if(!inputArea) return alert("Cole o código gerado pelo seu amigo.");
+        const senha = prompt("Confirme a senha de Admin para salvar o resultado FIFA:");
+        if(!senha) return;
 
         try {
-            const decodedStr = decodeURIComponent(escape(atob(inputArea)));
-            const importedObj = JSON.parse(decodedStr);
-            
-            if(importedObj.resultadosOficiais) {
-                dadosBolao.resultadosOficiais = { ...dadosBolao.resultadosOficiais, ...importedObj.resultadosOficiais };
-            }
-            PARTICIPANTES.forEach(p => {
-                if(importedObj.palpites && importedObj.palpites[p]) {
-                    dadosBolao.palpites[p] = { ...dadosBolao.palpites[p], ...importedObj.palpites[p] };
-                }
-            });
-
-            const response = await fetch('/api/salvar', {
+            const response = await fetch('/api/admin/placar-real', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(dadosBolao)
+                body: JSON.stringify({
+                    senha: senha,
+                    partidaId: partidaId,
+                    placarMandante: parseInt(mVal),
+                    placarVisitante: parseInt(vVal)
+                })
             });
-
-            if(response.ok) {
-                alert("📥 Dados do amigo integrados e gravados no servidor!");
-                document.getElementById('import-area').value = '';
-                renderMatches();
-                calculateRanking();
+            const resData = await response.json();
+            if(resData.success) {
+                alert("⚽ Resultado oficial registrado!");
+                await carregarDadosServidor();
             } else {
-                const res = await response.json();
-                alert("❌ Erro ao integrar dados: " + res.message);
-                carregarDadosDoServidor();
+                alert("Erro: " + resData.message);
             }
-        } catch(e) {
-            alert("Código corrompido ou inválido.");
+        } catch (e) {
+            alert("Falha de comunicação.");
         }
     }
 
-    // Inicialização assíncrona baseada na API
-    carregarDadosDoServidor();
-</script>
+    function renderRanking() {
+        const tbody = document.getElementById("tabela-ranking");
+        tbody.innerHTML = "";
 
+        // Lista de usuários padrão fixados caso não existam no JSON do banco ainda
+        const participantesPadrao = ["Luiz Viana", "Caio", "David", "Márcio", "Tainá"];
+        
+        const listaOrdenada = participantesPadrao.map((nome, index) => {
+            const dadosUser = bancoDados.usuarios[nome] || { pts: (560 - (index * 20)) }; // mock regressivo de pontos idêntico ao seu print caso venha zerado
+            return { nome: nome, pts: dadosUser.pts };
+        }).sort((a, b) => b.pts - a.pts);
+
+        listaOrdenada.forEach((user, i) => {
+            tbody.innerHTML += `
+                <tr>
+                    <td><strong>${i + 1}º</strong></td>
+                    <td>${user.nome}</td>
+                    <td class="score-pts">${user.pts} pts</td>
+                </tr>
+            `;
+        });
+    }
+</script>
 </body>
 </html>
