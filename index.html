@@ -276,7 +276,7 @@
         { id: 9, grupo: "Grupo B", mandante: "Canadá", visitante: "Qatar", data: "Rodada 2" },
         { id: 10, grupo: "Grupo B", mandante: "Bósnia", visitante: "Suíça", data: "Rodada 2" },
         { id: 11, grupo: "Grupo B", mandante: "Suíça", visitante: "Canadá", data: "Rodada 3" },
-        { id: 12, group: "Grupo B", mandante: "Bósnia", visitante: "Qatar", data: "Rodada 3" },
+        { id: 12, grupo: "Grupo B", mandante: "Bósnia", visitante: "Qatar", data: "Rodada 3" },
         { id: 13, grupo: "Grupo C", mandante: "Brasil", visitante: "Marrocos", data: "Rodada 1 - Estreia" },
         { id: 14, grupo: "Grupo C", mandante: "Haiti", visitante: "Escócia", data: "Rodada 1" },
         { id: 15, grupo: "Grupo C", mandante: "Brasil", visitante: "Haiti", data: "Rodada 2" },
@@ -311,7 +311,7 @@
         { id: 44, grupo: "Grupo H", mandante: "Arábia Sa.", visitante: "Uruguai", data: "Rodada 1" },
         { id: 45, grupo: "Grupo H", mandante: "Espanha", visitante: "Arábia Sa.", data: "Rodada 2" },
         { id: 46, grupo: "Grupo H", mandante: "Cabo Verde", visitante: "Uruguai", data: "Rodada 2" },
-        { id: 47, grupo: "Grupo H", mandante: "Uruguai", visitante: "Espanha", data: "Rodada 3" },
+        { id: 47, geometry: "Grupo H", mandante: "Uruguai", visitante: "Espanha", data: "Rodada 3" },
         { id: 48, grupo: "Grupo H", mandante: "Cabo Verde", visitante: "Arábia Sa.", data: "Rodada 3" },
         { id: 49, grupo: "Grupo I", mandante: "França", visitante: "Senegal", data: "Rodada 1" },
         { id: 50, grupo: "Grupo I", mandante: "Iraque", visitante: "Noruega", data: "Rodada 1" },
@@ -503,7 +503,7 @@
                 alert("❌ Erro ao salvar no servidor: " + txtErro);
             }
         } catch (error) {
-            alert("❌ Erro ao conectar com o servidor. Verifique os logs.");
+            alert("❌ Erro ao conectar com o servidor para gravação.");
         }
     }
 
@@ -563,7 +563,7 @@
         alert("Código copiado! Mande no grupo do WhatsApp.");
     }
 
-    function importFriendData() {
+    async function importFriendData() {
         const inputArea = document.getElementById('import-area').value.trim();
         if(!inputArea) return alert("Por favor, cole o código gerado pelo seu amigo primeiro.");
 
@@ -571,23 +571,43 @@
             const decodedStr = decodeURIComponent(escape(atob(inputArea)));
             const importedObj = JSON.parse(decodedStr);
             
+            // 1. Atualiza resultados oficiais de forma segura
             if(importedObj.resultadosOficiais) {
-                dadosBolao.resultadosOficiais = { ...dadosBolao.resultadosOficiais, ...importedObj.resultadosOficiais };
+                Object.assign(dadosBolao.resultadosOficiais, importedObj.resultadosOficiais);
             }
+            
+            // 2. Mesclagem profunda (Deep Merge) de cada palpite individual jogo a jogo
             if (importedObj.palpites) {
                 PARTICIPANTES.forEach(p => {
                     if (importedObj.palpites[p]) {
-                        dadosBolao.palpites[p] = { ...dadosBolao.palpites[p], ...importedObj.palpites[p] };
+                        if (!dadosBolao.palpites[p]) dadosBolao.palpites[p] = {};
+                        
+                        Object.keys(importedObj.palpites[p]).forEach(idJogo => {
+                            dadosBolao.palpites[p][idJogo] = importedObj.palpites[p][idJogo];
+                        });
                     }
                 });
             }
 
-            alert("📥 Dados do amigo carregados com sucesso na tela! Agora clique em 'Salvar Meus Palpites' para gravar definitivamente.");
-            document.getElementById('import-area').value = '';
-            
+            // 3. Renderiza imediatamente e envia direto para salvar tudo no servidor
             renderMatches();
             calculateRanking();
+            document.getElementById('import-area').value = '';
+
+            const response = await fetch('/api/salvar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dadosBolao)
+            });
+
+            if (response.ok) {
+                alert("📥 Sucesso! Os novos palpites foram importados e sincronizados no servidor.");
+            } else {
+                alert("⚠ Dados aplicados em tela, mas falhou ao sincronizar em nuvem.");
+            }
+            
         } catch(e) {
+            console.error(e);
             alert("❌ Código inválido! Certifique-se de copiar o texto completo do WhatsApp.");
         }
     }
