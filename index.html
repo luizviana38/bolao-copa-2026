@@ -110,8 +110,22 @@
             padding: 12px 0;
             border-bottom: 1px solid #eee;
         }
-        .team-name { width: 35%; font-weight: 500; }
-        .team-right { text-align: right; }
+        .group-tag {
+            font-size: 12px;
+            background-color: #e2e8f0;
+            color: #4a5568;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        .team-container {
+            display: flex;
+            align-items: center;
+            width: 35%;
+        }
+        .team-name { font-weight: 500; }
+        .team-right { justify-content: flex-end; text-align: right; }
         .score-inputs {
             display: flex;
             align-items: center;
@@ -200,7 +214,6 @@
 </div>
 
 <script>
-    // Inicia travado por padrão para todos
     let palpitesBloqueadosGeral = true;
     let usuarioLogado = "";
     let bancoDados = { usuarios: {}, partidas: [] };
@@ -230,7 +243,6 @@
             if(usuarioLogado) renderMatches();
         } catch (error) {
             console.error("Erro ao sincronizar com o servidor:", error);
-            // Fallback de segurança local para preenchimento da tela em caso de falha de rede
             bancoDados.partidas = partidasIniciais;
             renderRanking();
         }
@@ -282,14 +294,19 @@
                 
                 container.innerHTML += `
                     <div class="match-row">
-                        <span class="team-name">${partida.mandante}</span>
+                        <div class="team-container">
+                            <span class="group-tag">Grp ${partida.grupo}</span>
+                            <span class="team-name">${partida.mandante}</span>
+                        </div>
                         <div class="score-inputs">
                             <input type="number" id="admin-m-${partida.id}" value="${mGols}" placeholder="0">
                             <span>x</span>
                             <input type="number" id="admin-v-${partida.id}" value="${vGols}" placeholder="0">
                             <button class="btn btn-success" style="padding: 5px 10px; font-size:12px;" onclick="salvarPlacarFifa(${partida.id})">Fixar</button>
                         </div>
-                        <span class="team-name team-right">${partida.visitante}</span>
+                        <div class="team-container team-right">
+                            <span class="team-name">${partida.visitante}</span>
+                        </div>
                     </div>
                 `;
             });
@@ -304,13 +321,18 @@
             
             container.innerHTML += `
                 <div class="match-row">
-                    <span class="team-name">${partida.mandante}</span>
+                    <div class="team-container">
+                        <span class="group-tag">Grp ${partida.grupo}</span>
+                        <span class="team-name">${partida.mandante}</span>
+                    </div>
                     <div class="score-inputs">
                         <input type="number" id="p-m-${partida.id}" value="${palpiteDoJogo.m}" ${desabilitarInputs} placeholder="-">
                         <span>x</span>
                         <input type="number" id="p-v-${partida.id}" value="${palpiteDoJogo.v}" ${desabilitarInputs} placeholder="-">
                     </div>
-                    <span class="team-name team-right">${partida.visitante}</span>
+                    <div class="team-container team-right">
+                        <span class="team-name">${partida.visitante}</span>
+                    </div>
                 </div>
             `;
         });
@@ -325,20 +347,13 @@
 
     async function alternarBloqueioPalpites() {
         const novoStatus = !palpitesBloqueadosGeral;
-        const actionText = novoStatus ? 'BLOQUEAR' : 'LIBERAR';
-        
-        const senhaDigitada = prompt(`Digite a senha do Admin para ${actionText} os palpites:`);
-        if (senhaDigitada === null) return;
-        if (senhaDigitada.trim() === "") {
-            alert("A senha é obrigatória.");
-            return;
-        }
 
         try {
+            // Admin envia a alteração de status livremente sem prompts de senha intermediários
             const response = await fetch('/api/admin/status-palpites', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ bloquear: novoStatus, senha: senhaDigitada })
+                body: JSON.stringify({ bloquear: novoStatus })
             });
             
             const dados = await response.json();
@@ -347,9 +362,8 @@
                 palpitesBloqueadosGeral = dados.bloqueado;
                 atualizarInterfaceAdmin();
                 renderMatches(); 
-                alert(palpitesBloqueadosGeral ? "🔒 Palpites trancados com sucesso!" : "✅ Palpites abertos para todos!");
             } else {
-                alert("❌ Erro: " + dados.message);
+                alert("❌ Erro ao modificar status.");
             }
         } catch (erro) {
             alert("Não foi possível conectar ao servidor.");
@@ -391,19 +405,16 @@
         const vVal = document.getElementById(`admin-v-${partidaId}`).value;
         
         if(mVal === "" || vVal === "") {
-            alert("Insira os placares completos.");
+            alert("Insira os placares completos antes de fixar.");
             return;
         }
 
-        const senha = prompt("Confirme a senha de Admin para salvar o resultado FIFA:");
-        if(!senha) return;
-
         try {
+            // Admin envia direto os placares oficiais da rodada sem senha intermediária
             const response = await fetch('/api/admin/placar-real', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    senha: senha,
                     partidaId: partidaId,
                     placarMandante: parseInt(mVal),
                     placarVisitante: parseInt(vVal)
@@ -411,10 +422,9 @@
             });
             const resData = await response.json();
             if(resData.success) {
-                alert("⚽ Resultado oficial registrado!");
                 await carregarDadosServidor();
             } else {
-                alert("Erro: " + resData.message);
+                alert("Erro ao salvar resultado.");
             }
         } catch (e) {
             alert("Falha de comunicação.");
