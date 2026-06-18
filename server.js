@@ -14,15 +14,31 @@ app.use(express.static(path.join(__dirname)));
 // Caminho do arquivo JSON que armazena os dados do bolão
 const dadosPath = path.join(__dirname, 'dados_bolao.json');
 
-// Estado global do bloqueio de palpites
-let palpitesBloqueadosGeral = false;
+// Estado global do bloqueio de palpites: Inicia BLOQUEADO por padrão
+let palpitesBloqueadosGeral = true;
 
 // Função auxiliar para ler os dados do arquivo JSON
 const lerDados = () => {
     try {
         if (!fs.existsSync(dadosPath)) {
-            // Se o arquivo não existir, inicia uma estrutura básica vazia
-            fs.writeFileSync(dadosPath, JSON.stringify({ usuarios: {}, partidas: [] }, null, 2));
+            // Se o arquivo não existir, inicia uma estrutura básica com as pontuações históricas
+            const estruturaInicial = {
+                usuarios: {
+                    "Luiz Viana": { "pts": 560, "palpites": {} },
+                    "Caio": { "pts": 540, "palpites": {} },
+                    "David": { "pts": 520, "palpites": {} },
+                    "Márcio": { "pts": 510, "palpites": {} },
+                    "Tainá": { "pts": 0, "palpites": {} }
+                },
+                partidas: [
+                    { "id": 1, "grupo": "A", "mandante": "México", "visitante": "Estações / Playoff", "golsMandanteReal": null, "golsVisitanteReal": null, "encerrada": false },
+                    { "id": 2, "grupo": "A", "mandante": "Estados Unidos", "visitante": "Playoff", "golsMandanteReal": null, "golsVisitanteReal": null, "encerrada": false },
+                    { "id": 3, "grupo": "C", "mandante": "Canadá", "visitante": "Playoff", "golsMandanteReal": null, "golsVisitanteReal": null, "encerrada": false },
+                    { "id": 4, "grupo": "C", "mandante": "Brasil", "visitante": "Playoff", "golsMandanteReal": null, "golsVisitanteReal": null, "encerrada": false }
+                ]
+            };
+            fs.writeFileSync(dadosPath, JSON.stringify(estruturaInicial, null, 2), 'utf-8');
+            return estruturaInicial;
         }
         const data = fs.readFileSync(dadosPath, 'utf-8');
         return JSON.parse(data);
@@ -68,12 +84,10 @@ app.post('/api/palpites', (req, res) => {
 
     const dados = lerDados();
     
-    // Inicializa o usuário se não existir
     if (!dados.usuarios[usuario]) {
         dados.usuarios[usuario] = { pts: 0, palpites: {} };
     }
 
-    // Atualiza os palpites enviados
     dados.usuarios[usuario].palpites = {
         ...dados.usuarios[usuario].palpites,
         ...palpites
@@ -87,7 +101,6 @@ app.post('/api/palpites', (req, res) => {
 app.post('/api/admin/status-palpites', (req, res) => {
     const { bloquear, senha } = req.body;
 
-    // Validação estrita da senha de administrador
     if (senha !== 'luiz2206') {
         return res.status(403).json({ success: false, message: 'Senha de administrador inválida!' });
     }
@@ -105,22 +118,18 @@ app.post('/api/admin/placar-real', (req, res) => {
     }
 
     const dados = lerDados();
-    
-    // Localiza a partida e atualiza o placar oficial
     const partida = dados.partidas.find(p => p.id === partidaId);
     if (partida) {
         partida.golsMandanteReal = placarMandante;
         partida.golsVisitanteReal = placarVisitante;
         partida.encerrada = true;
     }
-
-    // Aqui você pode opcionalmente recalcular os pontos (pts) de cada usuário
     
     salvarDados(dados);
     res.json({ success: true, message: 'Placar oficial registrado com sucesso!' });
 });
 
-// Alternativa universal que funciona em qualquer versão do Express
+// Solução definitiva para evitar o PathError no Express moderno (Substitui o app.get('*'))
 app.use((req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
