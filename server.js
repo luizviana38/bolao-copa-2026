@@ -41,3 +41,17 @@ app.post('/api/salvar', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Servidor rodando em: http://localhost:${PORT}`);
 });
+// Variável de controle (por padrão, começa liberado)
+let palpitesBloqueados = false;
+
+// Rota para o Admin alterar o status (Bloquear/Liberar)
+app.post('/api/admin/status-palpites', (req, res) => {
+    const { bloquear } = req.body;
+    palpitesBloqueados = bloquear;
+    res.json({ success: true, bloqueado: palpitesBloqueados });
+});
+
+// Rota pública para os usuários consultarem se está bloqueado antes de salvar
+app.get('/api/status-palpites', (req, res) => {
+    res.json({ bloqueado: palpitesBloqueados });
+});
