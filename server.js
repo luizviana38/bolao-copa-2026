@@ -120,8 +120,8 @@ app.post('/api/admin/placar-real', (req, res) => {
     res.json({ success: true, message: 'Placar oficial registrado com sucesso!' });
 });
 
-// Rota coringa para servir o index.html em qualquer navegação direta
-app.get('*', (req, res) => {
+// Alternativa universal que funciona em qualquer versão do Express
+app.use((req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
