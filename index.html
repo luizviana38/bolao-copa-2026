@@ -176,6 +176,14 @@
                     <option value="Márcio">🏃 Márcio</option>
                     <option value="Tainá">🏃 Tainá</option>
                 </select>
+
+                <!-- NOVO: Área de bloqueio controlada pelo Admin (escondida por padrão) -->
+                <div id="painel-admin-bloqueio" style="display: none; margin-top: 15px; padding: 12px; background-color: #f8f9fa; border: 1px solid #ddd; border-radius: 6px; text-align: center;">
+                    <span id="status-texto-bloqueio" style="font-weight: bold; margin-right: 15px; color: green;">Palpites: LIBERADOS ✅</span>
+                    <button id="btn-toggle-bloqueio" onclick="alternarBloqueioPalpites()" style="padding: 6px 15px; cursor: pointer; background-color: #d9534f; color: white; border: none; border-radius: 4px; font-weight: bold;">
+                        Bloquear Palpites
+                    </button>
+                </div>
             </div>
 
             <div class="card">
@@ -201,7 +209,8 @@
                     <!-- Injetado via JS -->
                 </div>
                 <div class="flex-buttons">
-                    <button class="btn" onclick="saveData()">💾 Salvar Meus Palpites</button>
+                    <!-- ID adicionado ao botão para manipulação pelo script -->
+                    <button id="btn-salvar-dados" class="btn" onclick="saveData()">💾 Salvar Meus Palpites</button>
                 </div>
             </div>
             
@@ -250,7 +259,7 @@
         { id: 1, grupo: "Grupo A", mandante: "México", visitante: "África do S.", data: "Rodada 1" },
         { id: 2, grupo: "Grupo A", mandante: "Coreia do S.", visitante: "Rep. Tcheca", data: "Rodada 1" },
         { id: 3, grupo: "Grupo A", mandante: "México", visitante: "Coreia do S.", data: "Rodada 2" },
-        { id: 4, grupo: "Grupo A", mandante: "África do S.", visitante: "Rep. Tcheca", data: "Rodada 2" },
+        { id: 4, group: "Grupo A", mandante: "África do S.", visitante: "Rep. Tcheca", data: "Rodada 2" },
         { id: 5, grupo: "Grupo A", mandante: "Rep. Tcheca", visitante: "México", data: "Rodada 3" },
         { id: 6, grupo: "Grupo A", mandante: "África do S.", visitante: "Coreia do S.", data: "Rodada 3" },
 
@@ -346,6 +355,7 @@
     const PARTICIPANTES = ["Luiz Viana", "Caio", "David", "Márcio", "Tainá"];
     let currentGroupFilter = "TODOS";
     let dadosBolao = { resultadosOficiais: {}, palpites: {} };
+    let palpitesBloqueadosGeral = false; // Controle local do estado vindo do back-end
 
     async function carregarDadosDoServidor() {
         try {
@@ -357,13 +367,46 @@
                     if(!dadosBolao.palpites[p]) dadosBolao.palpites[p] = {}; 
                 });
 
-                renderMatches();
-                calculateRanking();
+                // Antes de renderizar, consulta o status de bloqueio do servidor
+                await verificarStatusDosPalpites();
             } else {
                 console.error("Falha ao obter dados do servidor.");
             }
         } catch (error) {
             console.error("Erro de conexão com o servidor:", error);
+        }
+    }
+
+    // Consulta o servidor sobre o status atual de bloqueio
+    async function verificarStatusDosPalpites() {
+        try {
+            const response = await fetch('/api/status-palpites');
+            const dados = await response.json();
+            palpitesBloqueadosGeral = dados.bloqueado;
+            
+            renderMatches();
+            calculateRanking();
+        } catch (e) {
+            console.error("Erro ao checar status de bloqueio", e);
+        }
+    }
+
+    // Executada pelo Admin para alterar o bloqueio
+    async function alternarBloqueioPalpites() {
+        const novoStatus = !palpitesBloqueadosGeral;
+        try {
+            const response = await fetch('/api/admin/status-palpites', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ bloquear: novoStatus })
+            });
+            const dados = await response.json();
+            if (dados.success) {
+                palpitesBloqueadosGeral = dados.bloqueado;
+                renderMatches(); // Re-renderiza para aplicar travas visuais se necessário
+            }
+        } catch (erro) {
+            alert("Erro ao alterar o status no servidor.");
         }
     }
 
@@ -378,6 +421,44 @@
         const currentUser = document.getElementById('select-user').value;
         const container = document.getElementById('matches-container');
         container.innerHTML = '';
+
+        // Exibe ou oculta o painel de bloqueio apenas se for o Admin logado
+        const painelAdmin = document.getElementById('painel-admin-bloqueio');
+        const txtBloqueio = document.getElementById('status-texto-bloqueio');
+        const btnBloqueio = document.getElementById('btn-toggle-bloqueio');
+
+        if (currentUser === "Admin (Resultados Oficiais)") {
+            painelAdmin.style.display = "block";
+            if (palpitesBloqueadosGeral) {
+                txtBloqueio.innerText = "Palpites: BLOQUEADOS 🔒";
+                txtBloqueio.style.color = "red";
+                btnBloqueio.innerText = "Liberar Palpites";
+                btnBloqueio.style.backgroundColor = "#28a745";
+            } else {
+                txtBloqueio.innerText = "Palpites: LIBERADOS ✅";
+                txtBloqueio.style.color = "green";
+                btnBloqueio.innerText = "Bloquear Palpites";
+                btnBloqueio.style.backgroundColor = "#d9534f";
+            }
+        } else {
+            painelAdmin.style.display = "none";
+        }
+
+        // Configuração do botão de salvar palpites baseado no bloqueio
+        const btnSalvar = document.getElementById('btn-salvar-dados');
+        if (currentUser === "Admin (Resultados Oficiais)") {
+            btnSalvar.disabled = false;
+            btnSalvar.innerText = "💾 Salvar Resultados Oficiais";
+            btnSalvar.style.backgroundColor = "var(--primary)";
+        } else if (palpitesBloqueadosGeral) {
+            btnSalvar.disabled = true;
+            btnSalvar.innerText = "🔒 Palpites Encerrados nesta Rodada";
+            btnSalvar.style.backgroundColor = "#6c757d";
+        } else {
+            btnSalvar.disabled = false;
+            btnSalvar.innerText = "💾 Salvar Meus Palpites";
+            btnSalvar.style.backgroundColor = "var(--primary)";
+        }
 
         document.getElementById('match-card-title').innerText = 
             currentUser === "Admin (Resultados Oficiais)" ? "⚙️ Registrar Placar Real da FIFA" : `🔮 Palpites de: ${currentUser}`;
@@ -400,6 +481,9 @@
                 }
             }
 
+            // Define se os inputs numéricos devem ficar bloqueados para edição
+            const inputDesabilitado = (currentUser !== "Admin (Resultados Oficiais)" && palpitesBloqueadosGeral) ? "disabled" : "";
+
             const block = document.createElement('div');
             block.className = 'match-block';
             block.innerHTML = `
@@ -408,9 +492,9 @@
                 </div>
                 <div class="match-row">
                     <div class="team-name team-left">${jogo.mandante}</div>
-                    <div><input type="number" min="0" id="m-${jogo.id}" value="${golsM}" onchange="updateInputState(${jogo.id}, 'm')"></div>
+                    <div><input type="number" min="0" id="m-${jogo.id}" value="${golsM}" ${inputDesabilitado} onchange="updateInputState(${jogo.id}, 'm')"></div>
                     <div class="vs">X</div>
-                    <div><input type="number" min="0" id="v-${jogo.id}" value="${golsV}" onchange="updateInputState(${jogo.id}, 'v')"></div>
+                    <div><input type="number" min="0" id="v-${jogo.id}" value="${golsV}" ${inputDesabilitado} onchange="updateInputState(${jogo.id}, 'v')"></div>
                     <div class="team-name team-right">${jogo.visitante}</div>
                 </div>
             `;
@@ -457,11 +541,13 @@
             });
 
             const resultado = await response.json();
-            if (resultado.success) {
-                alert("💾 Palpites salvos e gravados com sucesso no servidor!");
+            if (response.ok && resultado.success) {
+                alert("💾 Dados salvos e gravados com sucesso no servidor!");
                 calculateRanking();
             } else {
-                alert("❌ Erro ao salvar: " + resultado.error);
+                alert("❌ Erro ao salvar: " + (resultado.message || resultado.error));
+                // Recarrega do servidor caso tenha sido bloqueado no meio tempo
+                carregarDadosDoServidor();
             }
         } catch (error) {
             alert("❌ Erro ao conectar com o servidor backend.");
@@ -553,6 +639,10 @@
                 document.getElementById('import-area').value = '';
                 renderMatches();
                 calculateRanking();
+            } else {
+                const res = await response.json();
+                alert("❌ Erro ao integrar dados: " + res.message);
+                carregarDadosDoServidor();
             }
         } catch(e) {
             alert("Código corrompido ou inválido.");
