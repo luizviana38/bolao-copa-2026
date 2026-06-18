@@ -156,7 +156,7 @@
             font-size: 13px;
             margin-top: -5px;
             margin-bottom: 10px;
-            display: none; /* Ativado via JS */
+            display: none;
         }
         .btn-lock.unlocked {
             background-color: var(--success);
@@ -220,8 +220,7 @@
                     <button class="filter-btn" onclick="filterGroup('Grupo L', this)">Gr. L</button>
                 </div>
 
-                <div class="matches-scroll" id="matches-container">
-                    </div>
+                <div class="matches-scroll" id="matches-container"></div>
                 <div class="flex-buttons">
                     <button class="btn" onclick="saveData()">💾 Salvar Meus Palpites</button>
                 </div>
@@ -247,8 +246,7 @@
                             <th style="text-align:right">Pts</th>
                         </tr>
                     </thead>
-                    <tbody id="ranking-body">
-                        </tbody>
+                    <tbody id="ranking-body"></tbody>
                 </table>
             </div>
 
@@ -267,95 +265,72 @@
 
 <script>
     const JOGOS_OFICIAIS_FIFA = [
-        // GRUPO A
         { id: 1, grupo: "Grupo A", mandante: "México", visitante: "África do S.", data: "Rodada 1" },
         { id: 2, grupo: "Grupo A", mandante: "Coreia do S.", visitante: "Rep. Tcheca", data: "Rodada 1" },
         { id: 3, grupo: "Grupo A", mandante: "México", visitante: "Coreia do S.", data: "Rodada 2" },
         { id: 4, grupo: "Grupo A", mandante: "África do S.", visitante: "Rep. Tcheca", data: "Rodada 2" },
         { id: 5, grupo: "Grupo A", mandante: "Rep. Tcheca", visitante: "México", data: "Rodada 3" },
         { id: 6, grupo: "Grupo A", mandante: "África do S.", visitante: "Coreia do S.", data: "Rodada 3" },
-
-        // GRUPO B
         { id: 7, grupo: "Grupo B", mandante: "Canadá", visitante: "Bósnia", data: "Rodada 1" },
         { id: 8, grupo: "Grupo B", mandante: "Qatar", visitante: "Suíça", data: "Rodada 1" },
         { id: 9, grupo: "Grupo B", mandante: "Canadá", visitante: "Qatar", data: "Rodada 2" },
         { id: 10, grupo: "Grupo B", mandante: "Bósnia", visitante: "Suíça", data: "Rodada 2" },
         { id: 11, grupo: "Grupo B", mandante: "Suíça", visitante: "Canadá", data: "Rodada 3" },
-        { id: 12, grupo: "Grupo B", mandante: "Bósnia", visitante: "Qatar", data: "Rodada 3" },
-
-        // GRUPO C
+        { id: 12, group: "Grupo B", mandante: "Bósnia", visitante: "Qatar", data: "Rodada 3" },
         { id: 13, grupo: "Grupo C", mandante: "Brasil", visitante: "Marrocos", data: "Rodada 1 - Estreia" },
         { id: 14, grupo: "Grupo C", mandante: "Haiti", visitante: "Escócia", data: "Rodada 1" },
         { id: 15, grupo: "Grupo C", mandante: "Brasil", visitante: "Haiti", data: "Rodada 2" },
         { id: 16, grupo: "Grupo C", mandante: "Marrocos", visitante: "Escócia", data: "Rodada 2" },
         { id: 17, grupo: "Grupo C", mandante: "Escócia", visitante: "Brasil", data: "Rodada 3" },
         { id: 18, grupo: "Grupo C", mandante: "Marrocos", visitante: "Haiti", data: "Rodada 3" },
-
-        // GRUPO D
         { id: 19, grupo: "Grupo D", mandante: "EUA", visitante: "Paraguai", data: "Rodada 1" },
         { id: 20, grupo: "Grupo D", mandante: "Austrália", visitante: "Turquia", data: "Rodada 1" },
         { id: 21, grupo: "Grupo D", mandante: "EUA", visitante: "Austrália", data: "Rodada 2" },
         { id: 22, grupo: "Grupo D", mandante: "Paraguai", visitante: "Turquia", data: "Rodada 2" },
         { id: 23, grupo: "Grupo D", mandante: "Turquia", visitante: "EUA", data: "Rodada 3" },
-        { id: 24, group: "Grupo D", mandante: "Paraguai", visitante: "Austrália", data: "Rodada 3" },
-
-        // GRUPO E
+        { id: 24, grupo: "Grupo D", mandante: "Paraguai", visitante: "Austrália", data: "Rodada 3" },
         { id: 25, grupo: "Grupo E", mandante: "Alemanha", visitante: "Curaçao", data: "Rodada 1" },
         { id: 26, grupo: "Grupo E", mandante: "Costa do M.", visitante: "Equador", data: "Rodada 1" },
         { id: 27, grupo: "Grupo E", mandante: "Alemanha", visitante: "Costa do M.", data: "Rodada 2" },
         { id: 28, grupo: "Grupo E", mandante: "Curaçao", visitante: "Equador", data: "Rodada 2" },
         { id: 29, grupo: "Grupo E", mandante: "Equador", visitante: "Alemanha", data: "Rodada 3" },
         { id: 30, grupo: "Grupo E", mandante: "Curaçao", visitante: "Costa do M.", data: "Rodada 3" },
-
-        // GRUPO F
         { id: 31, grupo: "Grupo F", mandante: "Holanda", visitante: "Japão", data: "Rodada 1" },
         { id: 32, grupo: "Grupo F", mandante: "Suécia", visitante: "Tunísia", data: "Rodada 1" },
         { id: 33, grupo: "Grupo F", mandante: "Holanda", visitante: "Suécia", data: "Rodada 2" },
         { id: 34, grupo: "Grupo F", mandante: "Japão", visitante: "Tunísia", data: "Rodada 2" },
         { id: 35, grupo: "Grupo F", mandante: "Tunísia", visitante: "Holanda", data: "Rodada 3" },
         { id: 36, grupo: "Grupo F", mandante: "Japão", visitante: "Suécia", data: "Rodada 3" },
-
-        // GRUPO G
         { id: 37, grupo: "Grupo G", mandante: "Bélgica", visitante: "Egito", data: "Rodada 1" },
         { id: 38, grupo: "Grupo G", mandante: "Irã", visitante: "N. Zelândia", data: "Rodada 1" },
         { id: 39, grupo: "Grupo G", mandante: "Bélgica", visitante: "Irã", data: "Rodada 2" },
         { id: 40, grupo: "Grupo G", mandante: "Egito", visitante: "N. Zelândia", data: "Rodada 2" },
         { id: 41, grupo: "Grupo G", mandante: "N. Zelândia", visitante: "Bélgica", data: "Rodada 3" },
         { id: 42, grupo: "Grupo G", mandante: "Egito", visitante: "Irã", data: "Rodada 3" },
-
-        // GRUPO H
         { id: 43, grupo: "Grupo H", mandante: "Espanha", visitante: "Cabo Verde", data: "Rodada 1" },
         { id: 44, grupo: "Grupo H", mandante: "Arábia Sa.", visitante: "Uruguai", data: "Rodada 1" },
         { id: 45, grupo: "Grupo H", mandante: "Espanha", visitante: "Arábia Sa.", data: "Rodada 2" },
         { id: 46, grupo: "Grupo H", mandante: "Cabo Verde", visitante: "Uruguai", data: "Rodada 2" },
         { id: 47, grupo: "Grupo H", mandante: "Uruguai", visitante: "Espanha", data: "Rodada 3" },
         { id: 48, grupo: "Grupo H", mandante: "Cabo Verde", visitante: "Arábia Sa.", data: "Rodada 3" },
-
-        // GRUPO I
         { id: 49, grupo: "Grupo I", mandante: "França", visitante: "Senegal", data: "Rodada 1" },
         { id: 50, grupo: "Grupo I", mandante: "Iraque", visitante: "Noruega", data: "Rodada 1" },
         { id: 51, grupo: "Grupo I", mandante: "França", visitante: "Iraque", data: "Rodada 2" },
         { id: 52, grupo: "Grupo I", mandante: "Senegal", visitante: "Noruega", data: "Rodada 2" },
         { id: 53, grupo: "Grupo I", mandante: "Noruega", visitante: "França", data: "Rodada 3" },
         { id: 54, grupo: "Grupo I", mandante: "Senegal", visitante: "Iraque", data: "Rodada 3" },
-
-        // GRUPO J
         { id: 55, grupo: "Grupo J", mandante: "Argentina", visitante: "Argélia", data: "Rodada 1" },
         { id: 56, grupo: "Grupo J", mandante: "Áustria", visitante: "Jordânia", data: "Rodada 1" },
         { id: 57, grupo: "Grupo J", mandante: "Argentina", visitante: "Áustria", data: "Rodada 2" },
         { id: 58, grupo: "Grupo J", mandante: "Argélia", visitante: "Jordânia", data: "Rodada 2" },
         { id: 59, grupo: "Grupo J", mandante: "Jordânia", visitante: "Argentina", data: "Rodada 3" },
         { id: 60, grupo: "Grupo J", mandante: "Argélia", visitante: "Áustria", data: "Rodada 3" },
-
-        // GRUPO K
         { id: 61, grupo: "Grupo K", mandante: "Portugal", visitante: "RD Congo", data: "Rodada 1" },
         { id: 62, grupo: "Grupo K", mandante: "Uzbequistão", visitante: "Colômbia", data: "Rodada 1" },
         { id: 63, grupo: "Grupo K", mandante: "Portugal", visitante: "Uzbequistão", data: "Rodada 2" },
         { id: 64, grupo: "Grupo K", mandante: "RD Congo", visitante: "Colômbia", data: "Rodada 2" },
         { id: 65, grupo: "Grupo K", mandante: "Colômbia", visitante: "Portugal", data: "Rodada 3" },
         { id: 66, grupo: "Grupo K", mandante: "RD Congo", visitante: "Uzbequistão", data: "Rodada 3" },
-
-        // GRUPO L
         { id: 67, grupo: "Grupo L", mandante: "Inglaterra", visitante: "Croácia", data: "Rodada 1" },
         { id: 68, grupo: "Grupo L", mandante: "Gana", visitante: "Panamá", data: "Rodada 1" },
         { id: 69, grupo: "Grupo L", mandante: "Inglaterra", visitante: "Gana", data: "Rodada 2" },
@@ -410,10 +385,8 @@
         document.getElementById('match-card-title').innerText = 
             currentUser === "Admin (Resultados Oficiais)" ? "⚙️ Registrar Placar Real da FIFA" : `🔮 Palpites de: ${currentUser}`;
 
-        // Regra de exibição do cadeado
         if (currentUser === "Admin (Resultados Oficiais)") {
             lockBtn.style.display = "none";
-            // Admin é sempre livre
             var isDisabled = ""; 
         } else {
             lockBtn.style.display = "block";
@@ -466,7 +439,6 @@
 
     function solicitarSenhaBloqueio() {
         if (listagemDesbloqueadaParaAmigo) {
-            // Se já estava liberado e clicar de novo, bloqueia por segurança
             listagemDesbloqueadaParaAmigo = false;
             renderMatches();
             return;
@@ -509,7 +481,6 @@
     }
 
     function loadUserPalpites() {
-        // Toda vez que muda de amigo, volta a trancar por segurança
         listagemDesbloqueadaParaAmigo = false;
         renderMatches();
     }
@@ -522,17 +493,17 @@
                 body: JSON.stringify(dadosBolao)
             });
 
-            const resultado = await response.json();
-            if (resultado.success) {
+            if (response.ok) {
                 alert("💾 Palpites salvos com sucesso no servidor!");
                 listagemDesbloqueadaParaAmigo = false; 
                 renderMatches();
                 calculateRanking();
             } else {
-                alert("❌ Erro ao salvar: " + resultado.error);
+                const txtErro = await response.text();
+                alert("❌ Erro ao salvar no servidor: " + txtErro);
             }
         } catch (error) {
-            alert("❌ Erro ao conectar com o servidor para gravação.");
+            alert("❌ Erro ao conectar com o servidor. Verifique os logs.");
         }
     }
 
@@ -592,9 +563,9 @@
         alert("Código copiado! Mande no grupo do WhatsApp.");
     }
 
-    async function importFriendData() {
+    function importFriendData() {
         const inputArea = document.getElementById('import-area').value.trim();
-        if(!inputArea) return alert("Cole o código gerado pelo seu amigo.");
+        if(!inputArea) return alert("Por favor, cole o código gerado pelo seu amigo primeiro.");
 
         try {
             const decodedStr = decodeURIComponent(escape(atob(inputArea)));
@@ -603,31 +574,25 @@
             if(importedObj.resultadosOficiais) {
                 dadosBolao.resultadosOficiais = { ...dadosBolao.resultadosOficiais, ...importedObj.resultadosOficiais };
             }
-            PARTICIPANTES.forEach(p => {
-                if(importedObj.palpites && importedObj.palpites[p]) {
-                    dadosBolao.palpites[p] = { ...dadosBolao.palpites[p], ...importedObj.palpites[p] };
-                }
-            });
-
-            const response = await fetch('/api/salvar', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(dadosBolao)
-            });
-
-            if(response.ok) {
-                alert("📥 Dados integrados e gravados!");
-                document.getElementById('import-area').value = '';
-                renderMatches();
-                calculateRanking();
+            if (importedObj.palpites) {
+                PARTICIPANTES.forEach(p => {
+                    if (importedObj.palpites[p]) {
+                        dadosBolao.palpites[p] = { ...dadosBolao.palpites[p], ...importedObj.palpites[p] };
+                    }
+                });
             }
+
+            alert("📥 Dados do amigo carregados com sucesso na tela! Agora clique em 'Salvar Meus Palpites' para gravar definitivamente.");
+            document.getElementById('import-area').value = '';
+            
+            renderMatches();
+            calculateRanking();
         } catch(e) {
-            alert("Código inválido.");
+            alert("❌ Código inválido! Certifique-se de copiar o texto completo do WhatsApp.");
         }
     }
 
     carregarDadosDoServidor();
 </script>
-
 </body>
 </html>
