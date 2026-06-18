@@ -1,71 +1,131 @@
 const express = require('express');
-const fs = require('fs');
+const cors = require('cors');
 const path = require('path');
-const app = express();
+const fs = require('fs');
 
-// AJUSTE PARA A WEB: Usa a porta do Render ou a 3000 localmente
+const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Variável de controle do bloqueio (começa liberado)
-let palpitesBloqueados = false;
-
-// Middleware para decodificar JSON e servir os arquivos estáticos (index.html)
+// Middleware
+app.use(cors());
 app.use(express.json());
-app.use(express.static(__dirname));
+app.use(express.static(path.join(__dirname)));
 
-const DATA_FILE = path.join(__dirname, 'dados_bolao.json');
+// Caminho do arquivo JSON que armazena os dados do bolão
+const dadosPath = path.join(__dirname, 'dados_bolao.json');
 
-// Inicializa o arquivo JSON com uma estrutura vazia se ele não existir
-if (!fs.existsSync(DATA_FILE)) {
-    const estruturaInicial = { resultadosOficiais: {}, palpites: {} };
-    fs.writeFileSync(DATA_FILE, JSON.stringify(estruturaInicial, null, 2));
-}
+// Estado global do bloqueio de palpites
+let palpitesBloqueadosGeral = false;
 
-// ROTA 1: Obter os dados atuais do arquivo JSON
-app.get('/api/dados', (req, res) => {
-    fs.readFile(DATA_FILE, 'utf8', (err, data) => {
-        if (err) {
-            return res.status(500).json({ error: 'Erro ao ler os dados.' });
+// Função auxiliar para ler os dados do arquivo JSON
+const lerDados = () => {
+    try {
+        if (!fs.existsSync(dadosPath)) {
+            // Se o arquivo não existir, inicia uma estrutura básica vazia
+            fs.writeFileSync(dadosPath, JSON.stringify({ usuarios: {}, partidas: [] }, null, 2));
         }
-        res.json(JSON.parse(data));
+        const data = fs.readFileSync(dadosPath, 'utf-8');
+        return JSON.parse(data);
+    } catch (error) {
+        console.error("Erro ao ler dados:", error);
+        return { usuarios: {}, partidas: [] };
+    }
+};
+
+// Função auxiliar para salvar os dados no arquivo JSON
+const salvarDados = (dados) => {
+    try {
+        fs.writeFileSync(dadosPath, JSON.stringify(dados, null, 2), 'utf-8');
+    } catch (error) {
+        console.error("Erro ao salvar dados:", error);
+    }
+};
+
+// --- ROTAS DA API ---
+
+// 1. Buscar o status atual do bloqueio e os dados dos palpites
+app.get('/api/dados', (req, res) => {
+    const dados = lerDados();
+    res.json({
+        bloqueado: palpitesBloqueadosGeral,
+        usuarios: dados.usuarios,
+        partidas: dados.partidas
     });
 });
 
-// ROTA 2: Gravar/Salvar os novos dados no arquivo JSON (Com validação de bloqueio)
-app.post('/api/salvar', (req, res) => {
-    // Se o admin bloqueou e NÃO for uma gravação de resultados oficiais, barra o salvamento
-    // Nota: Se o seu index.html enviar algo que identifique que é o Admin salvando os resultados oficiais, 
-    // você pode ignorar o bloqueio. Caso contrário, o bloqueio simples impede qualquer gravação:
-    if (palpitesBloqueados && req.body.resultadosOficiais === undefined) {
-        return res.status(403).json({ 
-            success: false, 
-            message: "Os palpites para esta rodada já foram bloqueados pelo Administrador!" 
-        });
+// 2. Salvar ou atualizar os palpites de um usuário comum
+app.post('/api/palpites', (req, res) => {
+    const { usuario, palpites } = req.body;
+
+    // Se o bloqueio geral estiver ativado, impede qualquer alteração de usuários comuns
+    if (palpitesBloqueadosGeral) {
+        return res.status(403).json({ success: false, message: 'Os palpites desta rodada estão trancados!' });
     }
 
-    const novosDados = req.body;
+    if (!usuario || !palpites) {
+        return res.status(400).json({ success: false, message: 'Dados incompletos.' });
+    }
+
+    const dados = lerDados();
     
-    fs.writeFile(DATA_FILE, JSON.stringify(novosDados, null, 2), 'utf8', (err) => {
-        if (err) {
-            return res.status(500).json({ error: 'Erro ao salvar os dados.' });
-        }
-        res.json({ success: true, message: 'Dados gravados com sucesso no servidor!' });
-    });
+    // Inicializa o usuário se não existir
+    if (!dados.usuarios[usuario]) {
+        dados.usuarios[usuario] = { pts: 0, palpites: {} };
+    }
+
+    // Atualiza os palpites enviados
+    dados.usuarios[usuario].palpites = {
+        ...dados.usuarios[usuario].palpites,
+        ...palpites
+    };
+
+    salvarDados(dados);
+    res.json({ success: true, message: 'Palpites salvos com sucesso!' });
 });
 
-// ROTA 3: Admin altera o status (Bloquear/Liberar)
+// 3. Rota de Administração: Bloquear / Liberar Palpites com Senha
 app.post('/api/admin/status-palpites', (req, res) => {
-    const { bloquear } = req.body;
-    palpitesBloqueados = bloquear;
-    res.json({ success: true, bloqueado: palpitesBloqueados });
+    const { bloquear, senha } = req.body;
+
+    // Validação estrita da senha de administrador
+    if (senha !== 'luiz2206') {
+        return res.status(403).json({ success: false, message: 'Senha de administrador inválida!' });
+    }
+
+    palpitesBloqueadosGeral = bloquear;
+    res.json({ success: true, bloqueado: palpitesBloqueadosGeral });
 });
 
-// ROTA 4: Usuários consultam se está bloqueado antes de interagir
-app.get('/api/status-palpites', (req, res) => {
-    res.json({ bloqueado: palpitesBloqueados });
+// 4. Rota de Administração: Registrar Placar Oficial da FIFA
+app.post('/api/admin/placar-real', (req, res) => {
+    const { senha, partidaId, placarMandante, placarVisitante } = req.body;
+
+    if (senha !== 'luiz2206') {
+        return res.status(403).json({ success: false, message: 'Senha de administrador inválida!' });
+    }
+
+    const dados = lerDados();
+    
+    // Localiza a partida e atualiza o placar oficial
+    const partida = dados.partidas.find(p => p.id === partidaId);
+    if (partida) {
+        partida.golsMandanteReal = placarMandante;
+        partida.golsVisitanteReal = placarVisitante;
+        partida.encerrada = true;
+    }
+
+    // Aqui você pode opcionalmente recalcular os pontos (pts) de cada usuário
+    
+    salvarDados(dados);
+    res.json({ success: true, message: 'Placar oficial registrado com sucesso!' });
 });
 
-// Inicialização do servidor
+// Rota coringa para servir o index.html em qualquer navegação direta
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Inicialização do Servidor
 app.listen(PORT, () => {
-    console.log(`Servidor rodando perfeitamente na porta: ${PORT}`);
+    console.log(`Servidor rodando com sucesso na porta ${PORT}`);
 });
