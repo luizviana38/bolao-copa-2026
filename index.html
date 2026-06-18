@@ -76,7 +76,6 @@
         select { width: 100%; margin-bottom: 15px; }
 
         .btn {
-            background-color: var(--accent-color);
             color: white;
             border: none;
             cursor: pointer;
@@ -85,6 +84,7 @@
         }
 
         .btn:hover { filter: brightness(0.9); }
+        .btn-success { background-color: var(--accent-color); }
         .btn-danger { background-color: var(--danger-color); }
 
         .admin-panel {
@@ -103,7 +103,6 @@
         .status-bloqueado { color: var(--danger-color); }
         .status-liberado { color: var(--accent-color); }
 
-        /* Estilização da lista de jogos */
         .match-row {
             display: flex;
             align-items: center;
@@ -129,7 +128,6 @@
             cursor: not-allowed;
         }
 
-        /* Tabela de classificação */
         .ranking-table {
             width: 100%;
             border-collapse: collapse;
@@ -167,8 +165,8 @@
 
                 <div id="painel-admin" class="admin-panel">
                     <span class="status-badge">Status dos Palpites:</span>
-                    <span id="texto-status-bloqueio" class="status-liberado">LIBERADOS</span>
-                    <button id="btn-bloqueio" class="btn" style="margin-left: 15px;" onclick="alternarBloqueioPalpites()">Bloquear Palpites</button>
+                    <span id="texto-status-bloqueio" class="status-bloqueado">PALPITES BLOQUEADOS 🔒</span>
+                    <button id="btn-bloqueio" class="btn btn-success" style="margin-left: 15px;" onclick="alternarBloqueioPalpites()">Liberar Palpites</button>
                 </div>
             </div>
 
@@ -177,7 +175,7 @@
                 <div id="lista-partidas">
                     <p style="color: #666;">Selecione um usuário para visualizar e editar os palpites.</p>
                 </div>
-                <button id="btn-salvar" class="btn" style="width: 100%; margin-top: 20px; display: none;" onclick="salvarPalpites()">Salvar Meus Palpites</button>
+                <button id="btn-salvar" class="btn btn-success" style="width: 100%; margin-top: 20px; display: none;" onclick="salvarPalpites()">Salvar Meus Palpites</button>
             </div>
         </div>
 
@@ -202,19 +200,18 @@
 </div>
 
 <script>
-    // Dados locais simulados/armazenados que vem do Servidor
-    let palpitesBloqueadosGeral = false;
+    // Inicia travado por padrão para todos
+    let palpitesBloqueadosGeral = true;
     let usuarioLogado = "";
     let bancoDados = { usuarios: {}, partidas: [] };
 
-    // Lista fixa inicial de partidas de teste (caso o banco retorne vazio)
     const partidasIniciais = [
-        { id: 1, mandante: "Brasil", visitante: "França", golsMandanteReal: null, golsVisitanteReal: null, encerrada: false },
-        { id: 2, mandante: "Argentina", visitante: "Espanha", golsMandanteReal: null, golsVisitanteReal: null, encerrada: false },
-        { id: 3, mandante: "Portugal", visitante: "Alemanha", golsMandanteReal: null, golsVisitanteReal: null, encerrada: false }
+        { "id": 1, "grupo": "A", "mandante": "México", "visitante": "Estações / Playoff", "golsMandanteReal": null, "golsVisitanteReal": null, "encerrada": false },
+        { "id": 2, "grupo": "A", "mandante": "Estados Unidos", "visitante": "Playoff", "golsMandanteReal": null, "golsVisitanteReal": null, "encerrada": false },
+        { "id": 3, "grupo": "C", "mandante": "Canadá", "visitante": "Playoff", "golsMandanteReal": null, "golsVisitanteReal": null, "encerrada": false },
+        { "id": 4, "grupo": "C", "mandante": "Brasil", "visitante": "Playoff", "golsMandanteReal": null, "golsVisitanteReal": null, "encerrada": false }
     ];
 
-    // Carregar dados assim que a página abre
     window.onload = async function() {
         await carregarDadosServidor();
     };
@@ -225,28 +222,30 @@
             const data = await response.json();
             
             palpitesBloqueadosGeral = data.bloqueado;
-            bancoDados.usuarios = data.usuarios;
-            bancoDados.partidas = data.partidas.length > 0 ? data.partidas : partidasIniciais;
+            bancoDados.usuarios = data.usuarios || {};
+            bancoDados.partidas = (data.partidas && data.partidas.length > 0) ? data.partidas : partidasIniciais;
             
             atualizarInterfaceAdmin();
             renderRanking();
             if(usuarioLogado) renderMatches();
         } catch (error) {
             console.error("Erro ao sincronizar com o servidor:", error);
+            // Fallback de segurança local para preenchimento da tela em caso de falha de rede
+            bancoDados.partidas = partidasIniciais;
+            renderRanking();
         }
     }
 
     function mudarUsuario() {
         usuarioLogado = document.getElementById("select-usuario").value;
         
-        // Trata visibilidade do painel de administração
         const painelAdmin = document.getElementById("painel-admin");
         if (usuarioLogado === "Admin") {
             painelAdmin.style.display = "block";
             document.getElementById("btn-salvar").style.display = "none";
         } else {
             painelAdmin.style.display = "none";
-            document.getElementById("btn-salvar").style.display = "block";
+            document.getElementById("btn-salvar").style.display = (palpitesBloqueadosGeral) ? "none" : "block";
         }
 
         atualizarInterfaceAdmin();
@@ -256,6 +255,7 @@
     function atualizarInterfaceAdmin() {
         const textoStatus = document.getElementById("texto-status-bloqueio");
         const btnBloqueio = document.getElementById("btn-bloqueio");
+        if (!textoStatus || !btnBloqueio) return;
 
         if (palpitesBloqueadosGeral) {
             textoStatus.innerText = "PALPITES BLOQUEADOS 🔒";
@@ -272,9 +272,9 @@
 
     function renderMatches() {
         const container = document.getElementById("lista-partidas");
+        if (!container) return;
         container.innerHTML = "";
 
-        // Se o usuário logado for o Admin, ele exibe a tela para inserir resultados oficiais
         if (usuarioLogado === "Admin") {
             bancoDados.partidas.forEach(partida => {
                 const mGols = partida.golsMandanteReal !== null ? partida.golsMandanteReal : "";
@@ -287,7 +287,7 @@
                             <input type="number" id="admin-m-${partida.id}" value="${mGols}" placeholder="0">
                             <span>x</span>
                             <input type="number" id="admin-v-${partida.id}" value="${vGols}" placeholder="0">
-                            <button class="btn" style="padding: 5px 10px; font-size:12px;" onclick="salvarPlacarFifa(${partida.id})">Fixar</button>
+                            <button class="btn btn-success" style="padding: 5px 10px; font-size:12px;" onclick="salvarPlacarFifa(${partida.id})">Fixar</button>
                         </div>
                         <span class="team-name team-right">${partida.visitante}</span>
                     </div>
@@ -296,10 +296,7 @@
             return;
         }
 
-        // Se for um usuário comum, renderiza os inputs de palpites dele
         const palpitesSalvos = (bancoDados.usuarios[usuarioLogado] && bancoDados.usuarios[usuarioLogado].palpites) ? bancoDados.usuarios[usuarioLogado].palpites : {};
-
-        // Bloqueia se o Admin mandou travar tudo globalmente
         const desabilitarInputs = palpitesBloqueadosGeral ? "disabled" : "";
 
         bancoDados.partidas.forEach(partida => {
@@ -326,16 +323,14 @@
         }
     }
 
-    // Função de clique no botão para alterar controle global com o prompt de Senha
     async function alternarBloqueioPalpites() {
         const novoStatus = !palpitesBloqueadosGeral;
+        const actionText = novoStatus ? 'BLOQUEAR' : 'LIBERAR';
         
-        // Pede a senha padrão obrigatoriamente para qualquer ação no botão do Admin
-        const senhaDigitada = prompt(`Digite a senha do Admin para ${novoStatus ? 'BLOQUEAR' : 'LIBERAR'} os palpites:`);
-        
-        if (senhaDigitada === null) return; // Cancelou
+        const senhaDigitada = prompt(`Digite a senha do Admin para ${actionText} os palpites:`);
+        if (senhaDigitada === null) return;
         if (senhaDigitada.trim() === "") {
-            alert("A senha não pode estar em branco.");
+            alert("A senha é obrigatória.");
             return;
         }
 
@@ -381,7 +376,7 @@
             });
             const resData = await response.json();
             if(resData.success) {
-                alert("👍 Palpites salvos e computados com sucesso!");
+                alert("👍 Palpites salvos com sucesso!");
                 await carregarDadosServidor();
             } else {
                 alert("❌ Erro ao salvar: " + resData.message);
@@ -396,7 +391,7 @@
         const vVal = document.getElementById(`admin-v-${partidaId}`).value;
         
         if(mVal === "" || vVal === "") {
-            alert("Digite os placares de ambos os times para registrar!");
+            alert("Insira os placares completos.");
             return;
         }
 
@@ -428,14 +423,17 @@
 
     function renderRanking() {
         const tbody = document.getElementById("tabela-ranking");
+        if (!tbody) return;
         tbody.innerHTML = "";
 
-        // Lista de usuários padrão fixados caso não existam no JSON do banco ainda
         const participantesPadrao = ["Luiz Viana", "Caio", "David", "Márcio", "Tainá"];
+        const pontosPadrao = { "Luiz Viana": 560, "Caio": 540, "David": 520, "Márcio": 510, "Tainá": 0 };
         
-        const listaOrdenada = participantesPadrao.map((nome, index) => {
-            const dadosUser = bancoDados.usuarios[nome] || { pts: (560 - (index * 20)) }; // mock regressivo de pontos idêntico ao seu print caso venha zerado
-            return { nome: nome, pts: dadosUser.pts };
+        const listaOrdenada = participantesPadrao.map(nome => {
+            const pontos = (bancoDados.usuarios && bancoDados.usuarios[nome] && bancoDados.usuarios[nome].pts !== undefined) 
+                ? bancoDados.usuarios[nome].pts 
+                : pontosPadrao[nome];
+            return { nome: nome, pts: pontos };
         }).sort((a, b) => b.pts - a.pts);
 
         listaOrdenada.forEach((user, i) => {
