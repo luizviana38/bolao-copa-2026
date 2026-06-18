@@ -11,6 +11,7 @@
             --dark: #1a1a1a;
             --light: #f4f4f9;
             --success: #28a745;
+            --danger: #dc3545;
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -111,9 +112,10 @@
             border-radius: 6px;
         }
         input[type="number"]:disabled {
-            background-color: #f0f0f0;
-            color: #555;
-            cursor: pointer;
+            background-color: #e9ecef;
+            color: #6c757d;
+            cursor: not-allowed;
+            border: 1px dashed #ccc;
         }
         .vs { font-size: 11px; color: #777; font-weight: bold; }
 
@@ -147,6 +149,20 @@
         .btn-sec { background-color: #6c757d; }
         .btn-sec:hover { background-color: #5a6268; }
         
+        .btn-lock {
+            background-color: #ff9900;
+            color: black;
+            padding: 8px 12px;
+            font-size: 13px;
+            margin-top: -5px;
+            margin-bottom: 10px;
+            display: none; /* Ativado via JS */
+        }
+        .btn-lock.unlocked {
+            background-color: var(--success);
+            color: white;
+        }
+
         select {
             width: 100%;
             padding: 10px;
@@ -166,7 +182,7 @@
 <div class="container">
     <header>
         <h1>Bolão da Copa do Mundo FIFA 2026</h1>
-        <p>🏆 Grupos Corrigidos Conforme o Infográfico Oficial • Luiz Viana, Caio, David, Márcio e Tainá</p>
+        <p>🏆 Grupos Oficiais Conforme Infográfico • Luiz Viana, Caio, David, Márcio e Tainá</p>
     </header>
 
     <div class="grid">
@@ -181,6 +197,8 @@
                     <option value="Márcio">🏃 Márcio</option>
                     <option value="Tainá">🏃 Tainá</option>
                 </select>
+                
+                <button id="btn-lock-status" class="btn btn-lock" onclick="solicitarSenhaBloqueio()">🔒 Palpites Bloqueados (Clique para liberar)</button>
             </div>
 
             <div class="card">
@@ -203,8 +221,7 @@
                 </div>
 
                 <div class="matches-scroll" id="matches-container">
-                    <!-- Injetado via JS -->
-                </div>
+                    </div>
                 <div class="flex-buttons">
                     <button class="btn" onclick="saveData()">💾 Salvar Meus Palpites</button>
                 </div>
@@ -231,8 +248,7 @@
                         </tr>
                     </thead>
                     <tbody id="ranking-body">
-                        <!-- Ranking dinâmico -->
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
 
@@ -281,7 +297,7 @@
         { id: 21, grupo: "Grupo D", mandante: "EUA", visitante: "Austrália", data: "Rodada 2" },
         { id: 22, grupo: "Grupo D", mandante: "Paraguai", visitante: "Turquia", data: "Rodada 2" },
         { id: 23, grupo: "Grupo D", mandante: "Turquia", visitante: "EUA", data: "Rodada 3" },
-        { id: 24, grupo: "Grupo D", mandante: "Paraguai", visitante: "Austrália", data: "Rodada 3" },
+        { id: 24, group: "Grupo D", mandante: "Paraguai", visitante: "Austrália", data: "Rodada 3" },
 
         // GRUPO E
         { id: 25, grupo: "Grupo E", mandante: "Alemanha", visitante: "Curaçao", data: "Rodada 1" },
@@ -336,7 +352,7 @@
         { id: 62, grupo: "Grupo K", mandante: "Uzbequistão", visitante: "Colômbia", data: "Rodada 1" },
         { id: 63, grupo: "Grupo K", mandante: "Portugal", visitante: "Uzbequistão", data: "Rodada 2" },
         { id: 64, grupo: "Grupo K", mandante: "RD Congo", visitante: "Colômbia", data: "Rodada 2" },
-        { id: 65, grupo: "Colombia", visitante: "Portugal", data: "Rodada 3" },
+        { id: 65, grupo: "Grupo K", mandante: "Colômbia", visitante: "Portugal", data: "Rodada 3" },
         { id: 66, grupo: "Grupo K", mandante: "RD Congo", visitante: "Uzbequistão", data: "Rodada 3" },
 
         // GRUPO L
@@ -351,7 +367,6 @@
     const PARTICIPANTES = ["Luiz Viana", "Caio", "David", "Márcio", "Tainá"];
     let currentGroupFilter = "TODOS";
     
-    // Objeto padrão para garantir renderização mesmo se o servidor falhar
     let dadosBolao = { resultadosOficiais: {}, palpites: {} };
     PARTICIPANTES.forEach(p => dadosBolao.palpites[p] = {});
 
@@ -370,13 +385,10 @@
                         });
                     }
                 }
-            } else {
-                console.warn("Servidor respondeu com erro. Usando estrutura local temporária.");
             }
         } catch (error) {
-            console.error("Erro ao conectar com o servidor. Usando dados locais:", error);
+            console.error("Erro ao conectar com o servidor.", error);
         } finally {
-            // ESSENCIAL: Roda independente de falha no fetch para nunca sumir com as seleções
             renderMatches();
             calculateRanking();
         }
@@ -392,13 +404,29 @@
     function renderMatches() {
         const currentUser = document.getElementById('select-user').value;
         const container = document.getElementById('matches-container');
+        const lockBtn = document.getElementById('btn-lock-status');
         container.innerHTML = '';
 
         document.getElementById('match-card-title').innerText = 
             currentUser === "Admin (Resultados Oficiais)" ? "⚙️ Registrar Placar Real da FIFA" : `🔮 Palpites de: ${currentUser}`;
 
-        // Admin pode editar livremente. Amigos iniciam travados por padrão
-        const isDisabled = (currentUser !== "Admin (Resultados Oficiais)" && !listagemDesbloqueadaParaAmigo) ? "disabled" : "";
+        // Regra de exibição do cadeado
+        if (currentUser === "Admin (Resultados Oficiais)") {
+            lockBtn.style.display = "none";
+            // Admin é sempre livre
+            var isDisabled = ""; 
+        } else {
+            lockBtn.style.display = "block";
+            if (listagemDesbloqueadaParaAmigo) {
+                lockBtn.innerText = "🔓 Palpites Liberados (Senha Aplicada)";
+                lockBtn.className = "btn btn-lock unlocked";
+                var isDisabled = "";
+            } else {
+                lockBtn.innerText = "🔒 Palpites Bloqueados (Clique para liberar)";
+                lockBtn.className = "btn btn-lock";
+                var isDisabled = "disabled";
+            }
+        }
 
         JOGOS_OFICIAIS_FIFA.forEach(jogo => {
             if (currentGroupFilter !== "TODOS" && jogo.grupo !== currentGroupFilter) return;
@@ -407,7 +435,7 @@
             let golsV = '';
 
             if (currentUser === "Admin (Resultados Oficiais)") {
-                if (dadosBolao.resultadosOficiais[jogo.id] !== undefined && dadosBolao.resultadosOficiais[jogo.id] !== null) {
+                if (dadosBolao.resultadosOficiais[jogo.id] !== undefined) {
                     golsM = dadosBolao.resultadosOficiais[jogo.id].m !== undefined ? dadosBolao.resultadosOficiais[jogo.id].m : '';
                     golsV = dadosBolao.resultadosOficiais[jogo.id].v !== undefined ? dadosBolao.resultadosOficiais[jogo.id].v : '';
                 }
@@ -426,9 +454,9 @@
                 </div>
                 <div class="match-row">
                     <div class="team-name team-left">${jogo.mandante}</div>
-                    <div><input type="number" min="0" id="m-${jogo.id}" value="${golsM}" ${isDisabled} onclick="verificarBloqueioAmigo()" oninput="updateInputState(${jogo.id}, 'm')"></div>
+                    <div><input type="number" min="0" id="m-${jogo.id}" value="${golsM}" ${isDisabled} oninput="updateInputState(${jogo.id}, 'm')"></div>
                     <div class="vs">X</div>
-                    <div><input type="number" min="0" id="v-${jogo.id}" value="${golsV}" ${isDisabled} onclick="verificarBloqueioAmigo()" oninput="updateInputState(${jogo.id}, 'v')"></div>
+                    <div><input type="number" min="0" id="v-${jogo.id}" value="${golsV}" ${isDisabled} oninput="updateInputState(${jogo.id}, 'v')"></div>
                     <div class="team-name team-right">${jogo.visitante}</div>
                 </div>
             `;
@@ -436,17 +464,21 @@
         });
     }
 
-    function verificarBloqueioAmigo() {
-        const currentUser = document.getElementById('select-user').value;
-        if (currentUser !== "Admin (Resultados Oficiais)" && !listagemDesbloqueadaParaAmigo) {
-            const senha = prompt("Os palpites de amigos estão trancados! Digite a senha para liberar a digitação:");
-            if (senha === "luiz2206") {
-                listagemDesbloqueadaParaAmigo = true;
-                renderMatches();
-                alert("✅ Palpites liberados para edição!");
-            } else if (senha !== null) {
-                alert("❌ Senha incorreta! Os campos continuarão desabilitados.");
-            }
+    function solicitarSenhaBloqueio() {
+        if (listagemDesbloqueadaParaAmigo) {
+            // Se já estava liberado e clicar de novo, bloqueia por segurança
+            listagemDesbloqueadaParaAmigo = false;
+            renderMatches();
+            return;
+        }
+
+        const senha = prompt("Digite a senha para habilitar a digitação dos palpites:");
+        if (senha === "luiz2206") {
+            listagemDesbloqueadaParaAmigo = true;
+            renderMatches();
+            alert("✅ Sucesso! Campos de placar liberados.");
+        } else if (senha !== null) {
+            alert("❌ Senha incorreta! Os campos continuarão desabilitados.");
         }
     }
 
@@ -477,7 +509,7 @@
     }
 
     function loadUserPalpites() {
-        // Reseta o bloqueio de segurança ao alternar usuários
+        // Toda vez que muda de amigo, volta a trancar por segurança
         listagemDesbloqueadaParaAmigo = false;
         renderMatches();
     }
@@ -501,7 +533,6 @@
             }
         } catch (error) {
             alert("❌ Erro ao conectar com o servidor para gravação.");
-            console.error(error);
         }
     }
 
@@ -595,7 +626,6 @@
         }
     }
 
-    // Inicializa a aplicação buscando dados remotos ou carregando locais
     carregarDadosDoServidor();
 </script>
 
