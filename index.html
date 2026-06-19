@@ -283,7 +283,7 @@
                     <option value="Tainá">🏃 Tainá</option>
                 </select>
                  
-                <button id="btn-lock-status" class="btn btn-lock" onclick="solicitarSenhaBloqueio(luiz2206)">🔒 Palpites Bloqueados (Clique para liberar)</button>
+                <button id="btn-lock-status" class="btn btn-lock" onclick="solicitarSenhaBloqueio()">🔒 Palpites Bloqueados (Clique para liberar)</button>
             </div>
 
             <div class="card">
@@ -356,7 +356,7 @@
         { id: 4, grupo: "Grupo A", mandante: "África do Sul", siglaM: "AFS", flagCodeM: "za", visitante: "Rep. Tcheca", siglaV: "TCH", flagCodeV: "cz", data: "17/06/2026", hora: "18:00", cidade: "Monterrey" },
         { id: 5, grupo: "Grupo A", mandante: "Rep. Tcheca", siglaM: "TCH", flagCodeM: "cz", visitante: "México", siglaV: "MEX", flagCodeV: "mx", data: "24/06/2026", hora: "21:00", cidade: "Cidade do México" },
         { id: 6, grupo: "Grupo A", mandante: "África do Sul", siglaM: "AFS", flagCodeM: "za", visitante: "Coreia do Sul", siglaV: "COR", flagCodeV: "kr", data: "24/06/2026", hora: "21:00", cidade: "Monterrey" },
-        { id: 7, grupo: "Grupo B", mandante: "Canadá", siglaM: "CAN", flagCodeM: "ca", visitante: "Bósnia", siglaV: "BOS", flagCodeV: "ba", data: "12/06/2026", hora: "19:00", cidade: "Toronto" },
+        { id: 7, group: "Grupo B", mandante: "Canadá", siglaM: "CAN", flagCodeM: "ca", visitante: "Bósnia", siglaV: "BOS", flagCodeV: "ba", data: "12/06/2026", hora: "19:00", cidade: "Toronto" },
         { id: 8, grupo: "Grupo B", mandante: "Qatar", siglaM: "QAT", flagCodeM: "qa", visitante: "Suíça", siglaV: "SUI", flagCodeV: "ch", data: "12/06/2026", hora: "16:00", cidade: "Vancouver" },
         { id: 9, grupo: "Grupo B", mandante: "Canadá", siglaM: "CAN", flagCodeM: "ca", visitante: "Qatar", siglaV: "QAT", flagCodeV: "qa", data: "18/06/2026", hora: "21:30", cidade: "Toronto" },
         { id: 10, grupo: "Grupo B", mandante: "Bósnia", siglaM: "BOS", flagCodeM: "ba", visitante: "Suíça", siglaV: "SUI", flagCodeV: "ch", data: "18/06/2026", hora: "18:00", cidade: "Vancouver" },
@@ -383,7 +383,7 @@
         { id: 31, grupo: "Grupo F", mandante: "Holanda", siglaM: "HOL", flagCodeM: "nl", visitante: "Japão", siglaV: "JAP", flagCodeV: "jp", data: "14/06/2026", hora: "21:00", cidade: "Nova York" },
         { id: 32, grupo: "Grupo F", mandante: "Suécia", siglaM: "SUE", flagCodeM: "se", visitante: "Tunísia", siglaV: "TUN", flagCodeV: "tn", data: "14/06/2026", hora: "17:00", cidade: "Dallas" },
         { id: 33, grupo: "Grupo F", mandante: "Holanda", siglaM: "HOL", flagCodeM: "nl", visitante: "Suécia", siglaV: "SUE", flagCodeV: "se", data: "20/06/2026", hora: "15:00", cidade: "Boston" },
-        { id: 34, group: "Grupo F", mandante: "Japão", siglaM: "JAP", flagCodeM: "jp", visitante: "Tunísia", siglaV: "TUN", flagCodeV: "tn", data: "20/06/2026", hora: "19:00", cidade: "Kansas City" },
+        { id: 34, grupo: "Grupo F", mandante: "Japão", siglaM: "JAP", flagCodeM: "jp", visitante: "Tunísia", siglaV: "TUN", flagCodeV: "tn", data: "20/06/2026", hora: "19:00", cidade: "Kansas City" },
         { id: 35, grupo: "Grupo F", mandante: "Tunísia", siglaM: "TUN", flagCodeM: "tn", visitante: "Holanda", siglaV: "HOL", flagCodeV: "nl", data: "26/06/2026", hora: "16:00", cidade: "Boston" },
         { id: 36, grupo: "Grupo F", mandante: "Japão", siglaM: "JAP", flagCodeM: "jp", visitante: "Suécia", siglaV: "SUE", flagCodeV: "se", data: "26/06/2026", hora: "16:00", cidade: "Nova York" },
         { id: 37, grupo: "Grupo G", mandante: "Bélgica", siglaM: "BEL", flagCodeM: "be", visitante: "Egito", siglaV: "EGI", flagCodeV: "eg", data: "15/06/2026", hora: "14:00", cidade: "Vancouver" },
@@ -431,6 +431,24 @@
     PARTICIPANTES.forEach(p => dadosBolao.palpites[p] = {});
 
     let listagemDesbloqueadaParaAmigo = false;
+
+    // Função de verificação de senha fixa solicitada
+    function solicitarSenhaBloqueio() {
+        const senhaDigitada = prompt("Digite a senha para liberar a alteração de palpites:");
+        if (senhaDigitada === "luiz2206") {
+            listagemDesbloqueadaParaAmigo = true;
+            alert("Acesso liberado! Agora você pode alterar os palpites.");
+            renderMatches();
+        } else {
+            alert("Senha incorreta! O bloqueio continua ativo.");
+        }
+    }
+
+    function loadUserPalpites() {
+        // Sempre que mudar o usuário, reseta a trava por segurança
+        listagemDesbloqueadaParaAmigo = false;
+        renderMatches();
+    }
 
     async function carregarDadosDoServidor() {
         try {
@@ -543,24 +561,20 @@
                     <div class="resultado-oficial-box">
                         <span class="label-oficial">Resultado Oficial FIFA:</span>
                         <span class="placar-oficial-texto">
-                            ${jogo.siglaM} <img class="flag-img" src="https://flagcdn.com/w40/${jogo.flagCodeM}.png" alt="${jogo.mandante}"> 
-                            <strong>${oficialM}</strong> x <strong>${oficialV}</strong> 
-                            <img class="flag-img" src="https://flagcdn.com/w40/${jogo.flagCodeV}.png" alt="${jogo.visitante}"> ${jogo.siglaV}
+                            <strong>${oficialM}</strong> x <strong>${oficialV}</strong>
                         </span>
                     </div>
                 `;
             }
 
-            let htmlPontosAtingidos = '';
+            let ptsTag = '';
             if (currentUser !== "Admin (Resultados Oficiais)") {
-                const oficialObj = dadosBolao.resultadosOficiais[jogo.id];
-                const palpiteObj = dadosBolao.palpites[currentUser] ? dadosBolao.palpites[currentUser][jogo.id] : null;
-                const ptsObtidos = calcularPontosDoJogo(oficialObj, palpiteObj);
-
-                if (ptsObtidos !== null) {
-                    let classePontos = 'zero';
-                    if (ptsObtidos > 0) classePontos = 'green';
-                    htmlPontosAtingidos = `<span class="match-points-tag ${classePontos}">${ptsObtidos} pontos</span>`;
+                const pts = calcularPontosDoJogo(dadosBolao.resultadosOficiais[jogo.id], (dadosBolao.palpites[currentUser] ? dadosBolao.palpites[currentUser][jogo.id] : null));
+                if (pts !== null) {
+                    if (pts === 25) ptsTag = `<span class="match-points-tag green">🎉 +25 pts (Placar Exato)</span>`;
+                    else if (pts === 15) ptsTag = `<span class="match-points-tag green">👍 +15 pts (Vencedor + Saldo)</span>`;
+                    else if (pts === 10) ptsTag = `<span class="match-points-tag green">⚖️ +10 pts (Acertou o Resultado)</span>`;
+                    else ptsTag = `<span class="match-points-tag zero">❌ 00 pts</span>`;
                 }
             }
 
@@ -568,23 +582,25 @@
             block.className = 'match-block';
             block.innerHTML = `
                 <div class="match-info">
-                    <strong>${jogo.grupo}</strong> • ${jogo.data} às ${jogo.hora} • 📍 ${jogo.cidade}
+                    <strong>${jogo.grupo}</strong> • ${jogo.data} às ${jogo.hora} • ${jogo.cidade}
                 </div>
-                 
                 ${htmlOficial}
-
                 <div class="match-row">
                     <div class="team-container team-left">
-                        <span class="team-sigla">${jogo.siglaM}</span>
+                        <span class="team-name">${jogo.mandante}</span>
+                        <span class="team-sigla">&nbsp;(${jogo.siglaM})</span>
                         <img class="flag-img flag-left" src="https://flagcdn.com/w40/${jogo.flagCodeM}.png" alt="${jogo.mandante}">
                     </div>
-                    <div><input type="number" min="0" id="m-${jogo.id}" value="${golsM}" ${isDisabled} oninput="updateInputState(${jogo.id}, 'm')"></div>
-                    <div class="vs">×</div>
-                    <div><input type="number" min="0" id="v-${jogo.id}" value="${golsV}" ${isDisabled} oninput="updateInputState(${jogo.id}, 'v')"></div>
+                    
+                    <input type="number" min="0" oninput="updateInputMemory(${jogo.id}, 'm', this.value)" value="${golsM}" ${isDisabled}>
+                    <span class="vs">x</span>
+                    <input type="number" min="0" oninput="updateInputMemory(${jogo.id}, 'v', this.value)" value="${golsV}" ${isDisabled}>
+                    
                     <div class="team-container team-right">
                         <img class="flag-img flag-right" src="https://flagcdn.com/w40/${jogo.flagCodeV}.png" alt="${jogo.visitante}">
-                        <span class="team-sigla">${jogo.siglaV}</span>
-                        ${htmlPontosAtingidos}
+                        <span class="team-name">${jogo.visitante}</span>
+                        <span class="team-sigla">&nbsp;(${jogo.siglaV})</span>
+                        ${ptsTag}
                     </div>
                 </div>
             `;
@@ -592,116 +608,101 @@
         });
     }
 
-    function solicitarSenhaBloqueio() {
-        if (listagemDesbloqueadaParaAmigo) {
-            listagemDesbloqueadaParaAmigo = false;
-            renderMatches();
-            return;
-        }
-        const senha = prompt("Digite a senha para liberar a edição de palpites:");
-        if (senha === "1234") {
-            listagemDesbloqueadaParaAmigo = true;
-            renderMatches();
-        } else {
-            alert("Senha incorreta!");
-        }
-    }
-
-    document.addEventListener("DOMContentLoaded", function() {
-        var styleEl = document.createElement('style');
-        styleEl.innerHTML = `input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; } input[type="number"] { -moz-appearance: textfield; }`;
-        document.head.appendChild(styleEl);
-    });
-
-    function updateInputState(id, tipo) {
+    function updateInputMemory(id, flag, val) {
         const currentUser = document.getElementById('select-user').value;
-        const val = document.getElementById(`${tipo}-${id}`).value;
-        
         if (currentUser === "Admin (Resultados Oficiais)") {
             if (!dadosBolao.resultadosOficiais[id]) dadosBolao.resultadosOficiais[id] = {};
-            dadosBolao.resultadosOficiais[id][tipo] = val;
+            dadosBolao.resultadosOficiais[id][flag] = val;
         } else {
             if (!dadosBolao.palpites[currentUser]) dadosBolao.palpites[currentUser] = {};
             if (!dadosBolao.palpites[currentUser][id]) dadosBolao.palpites[currentUser][id] = {};
-            dadosBolao.palpites[currentUser][id][tipo] = val;
-        }
-    }
-
-    function loadUserPalpites() {
-        listagemDesbloqueadaParaAmigo = false;
-        renderMatches();
-    }
-
-    async function saveData() {
-        alert("Palpites guardados em memória do navegador! Caso use um servidor backend, configure a rota correspondente.");
-        calculateRanking();
-        renderMatches();
-    }
-
-    function exportData() {
-        const currentUser = document.getElementById('select-user').value;
-        if (currentUser === "Admin (Resultados Oficiais)") {
-            alert("Selecione um participante antes de exportar.");
-            return;
-        }
-        const dadosExportacao = {
-            usuario: currentUser,
-            palpites: dadosBolao.palpites[currentUser]
-        };
-        const stringCodigo = btoa(JSON.stringify(dadosExportacao));
-        navigator.clipboard.writeText(stringCodigo);
-        alert(`Código de palpites de ${currentUser} copiado para a área de transferência! Envie no grupo.`);
-    }
-
-    function importFriendData() {
-        const area = document.getElementById('import-area');
-        try {
-            const jsonStr = atob(area.value.trim());
-            const objImportado = JSON.parse(jsonStr);
-            if (objImportado && objImportado.usuario && objImportado.palpites) {
-                dadosBolao.palpites[objImportado.usuario] = objImportado.palpites;
-                alert(`Palpites de ${objImportado.usuario} importados e atualizados com sucesso!`);
-                area.value = '';
-                calculateRanking();
-                renderMatches();
-            } else {
-                alert("Código de dados inválido.");
-            }
-        } catch (e) {
-            alert("Erro ao ler o código colado. Certifique-se de copiar o texto completo enviado por seu amigo.");
+            dadosBolao.palpites[currentUser][id][flag] = val;
         }
     }
 
     function calculateRanking() {
-        let ranking = PARTICIPANTES.map(p => {
-            let totalPts = 0;
-            JOGOS_OFICIAIS_FIFA.forEach(jogo => {
-                const oficial = dadosBolao.resultadosOficiais[jogo.id];
-                const palpite = dadosBolao.palpites[p] ? dadosBolao.palpites[p][jogo.id] : null;
-                const pts = calcularPontosDoJogo(oficial, palpite);
-                if (pts !== null) totalPts += pts;
+        const ranking = PARTICIPANTES.map(p => {
+            let total = 0;
+            JOGOS_OFICIAIS_FIFA.forEach(j => {
+                const pts = calcularPontosDoJogo(dadosBolao.resultadosOficiais[j.id], dadosBolao.palpites[p][j.id]);
+                if (pts) total += pts;
             });
-            return { nome: p, pontos: totalPts };
+            return { nome: p, pontos: total };
         });
 
         ranking.sort((a, b) => b.pontos - a.pontos);
-
         const tbody = document.getElementById('ranking-body');
         tbody.innerHTML = '';
-        ranking.forEach((r, i) => {
+        ranking.forEach((rk, index) => {
             tbody.innerHTML += `
                 <tr>
-                    <td class="pos">${i + 1}</td>
-                    <td>${r.nome}</td>
-                    <td class="pts">${r.pontos}</td>
+                    <td class="pos">${index + 1}º</td>
+                    <td><strong>${rk.nome}</strong></td>
+                    <td class="pts">${rk.pontos} pts</td>
                 </tr>
             `;
         });
     }
 
+    async function saveData() {
+        try {
+            const response = await fetch('/api/dados', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dadosBolao)
+            });
+            if (response.ok) {
+                alert("Dados salvos e sincronizados com sucesso no servidor!");
+                calculateRanking();
+                renderMatches();
+            } else {
+                alert("Armazenado localmente apenas. Servidor retornou erro.");
+            }
+        } catch(e) {
+            alert("Salvo offline. Erro ao persistir dados na nuvem.");
+            calculateRanking();
+            renderMatches();
+        }
+    }
+
+    function exportData() {
+        const currentUser = document.getElementById('select-user').value;
+        if(currentUser === "Admin (Resultados Oficiais)") {
+            alert("Selecione seu nome de jogador antes de exportar.");
+            return;
+        }
+        const envelope = { usuario: currentUser, dados: dadosBolao.palpites[currentUser] };
+        const stringfied = btoa(unescape(encodeURIComponent(JSON.stringify(envelope))));
+        navigator.clipboard.writeText(stringfied);
+        alert(`Código de palpites de ${currentUser} copiado para a Área de Transferência! Compartilhe no WhatsApp.`);
+    }
+
+    function importFriendData() {
+        const raw = document.getElementById('import-area').value.trim();
+        if(!raw) return alert("Cole o código gerado pelo seu amigo primeiro.");
+        try {
+            const parsed = JSON.parse(decodeURIComponent(escape(atob(raw))));
+            if (parsed && parsed.usuario && parsed.dados) {
+                if(!PARTICIPANTES.includes(parsed.usuario)) {
+                    return alert("Usuário contido no código não pertence a este grupo oficial do Bolão.");
+                }
+                dadosBolao.palpites[parsed.usuario] = parsed.dados;
+                alert(`Palpites de [ ${parsed.usuario} ] atualizados com sucesso! Lembre-se de salvar.`);
+                document.getElementById('import-area').value = '';
+                calculateRanking();
+                renderMatches();
+            } else {
+                alert("Formato de código inválido.");
+            }
+        } catch(e) {
+            alert("Código corrompido ou mal formatado.");
+        }
+    }
+
+    // Inicialização da Página
     window.onload = function() {
         carregarDadosDoServidor();
-    };
+    }
 </script>
 </body>
 </html>
