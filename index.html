@@ -123,13 +123,14 @@
             margin: 0 2px;
         }
 
-        /* Alinhamento idêntico à imagem de referência */
+        /* Alinhamento dos blocos e inputs */
         .match-row {
             display: grid;
             grid-template-columns: 1fr auto auto auto 1fr;
             align-items: center;
             justify-content: center;
             gap: 8px;
+            position: relative;
         }
         
         .team-container {
@@ -152,7 +153,6 @@
             color: #555;
         }
         
-        /* Estilização das bandeiras em imagem */
         .flag-img {
             width: 32px;
             height: auto;
@@ -186,6 +186,19 @@
             font-weight: normal;
             padding: 0 4px;
         }
+
+        /* Emblema indicador de pontos obtidos no jogo */
+        .match-points-tag {
+            display: inline-block;
+            margin-left: 15px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #e53e3e;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+        .match-points-tag.zero { color: #a0aec0; font-weight: normal; }
+        .match-points-tag.green { color: #38a169; }
 
         table {
             width: 100%;
@@ -332,7 +345,6 @@
 </div>
 
 <script>
-    // Configuração dos códigos ISO das bandeiras mapeados a partir do infográfico enviado
     const JOGOS_OFICIAIS_FIFA = [
         { id: 1, grupo: "Grupo A", mandante: "México", siglaM: "MEX", flagCodeM: "mx", visitante: "África do Sul", siglaV: "AFS", flagCodeV: "za", data: "Rodada 1" },
         { id: 2, grupo: "Grupo A", mandante: "Coreia do Sul", siglaM: "COR", flagCodeM: "kr", visitante: "Rep. Tcheca", siglaV: "TCH", flagCodeV: "cz", data: "Rodada 1" },
@@ -343,7 +355,7 @@
         { id: 7, grupo: "Grupo B", mandante: "Canadá", siglaM: "CAN", flagCodeM: "ca", visitante: "Bósnia", siglaV: "BOS", flagCodeV: "ba", data: "Rodada 1" },
         { id: 8, grupo: "Grupo B", mandante: "Qatar", siglaM: "QAT", flagCodeM: "qa", visitante: "Suíça", siglaV: "SUI", flagCodeV: "ch", data: "Rodada 1" },
         { id: 9, grupo: "Grupo B", mandante: "Canadá", siglaM: "CAN", flagCodeM: "ca", visitante: "Qatar", siglaV: "QAT", flagCodeV: "qa", data: "Rodada 2" },
-        { id: 10, grupo: "Grupo B", mandante: "Bósnia", siglaM: "BOS", flagCodeM: "ba", visitante: "Suíça", siglaV: "SUI", flagCodeV: "ch", data: "Rodada 2" },
+        { id: 10, group: "Grupo B", mandante: "Bósnia", siglaM: "BOS", flagCodeM: "ba", visitante: "Suíça", siglaV: "SUI", flagCodeV: "ch", data: "Rodada 2" },
         { id: 11, grupo: "Grupo B", mandante: "Suíça", siglaM: "SUI", flagCodeM: "ch", visitante: "Canadá", siglaV: "CAN", flagCodeV: "ca", data: "Rodada 3" },
         { id: 12, grupo: "Grupo B", mandante: "Bósnia", siglaM: "BOS", flagCodeM: "ba", visitante: "Qatar", siglaV: "QAT", flagCodeV: "qa", data: "Rodada 3" },
         { id: 13, grupo: "Grupo C", mandante: "Brasil", siglaM: "BRA", flagCodeM: "br", visitante: "Marrocos", siglaV: "MAR", flagCodeV: "ma", data: "Rodada 1 - Estreia" },
@@ -445,6 +457,33 @@
         renderMatches();
     }
 
+    // Função interna para calcular pontos individuais obtidos em uma partida específica
+    function calcularPontosDoJogo(oficial, palpite) {
+        if (!oficial || !palpite || 
+            oficial.m === undefined || oficial.m === null || oficial.m === "" ||
+            oficial.v === undefined || oficial.v === null || oficial.v === "" ||
+            palpite.m === undefined || palpite.m === null || palpite.m === "" ||
+            palpite.v === undefined || palpite.v === null || palpite.v === "") {
+            return null;
+        }
+
+        const oM = parseInt(oficial.m);
+        const oV = parseInt(oficial.v);
+        const pM = parseInt(palpite.m);
+        const pV = parseInt(palpite.v);
+
+        if (oM === pM && oV === pV) return 25;
+
+        const resOficial = Math.sign(oM - oV);
+        const resPalpite = Math.sign(pM - pV);
+
+        if (resOficial === resPalpite) {
+            if ((oM - oV) === (pM - pV)) return 15;
+            return 10;
+        }
+        return 0;
+    }
+
     function renderMatches() {
         const currentUser = document.getElementById('select-user').value;
         const container = document.getElementById('matches-container');
@@ -509,6 +548,20 @@
                 `;
             }
 
+            // Nova lógica para renderizar o texto de pontuação atingida ao lado do palpite do amigo
+            let htmlPontosAtingidos = '';
+            if (currentUser !== "Admin (Resultados Oficiais)") {
+                const oficialObj = dadosBolao.resultadosOficiais[jogo.id];
+                const palpiteObj = dadosBolao.palpites[currentUser] ? dadosBolao.palpites[currentUser][jogo.id] : null;
+                const ptsObtidos = calcularPontosDoJogo(oficialObj, palpiteObj);
+
+                if (ptsObtidos !== null) {
+                    let classePontos = 'zero';
+                    if (ptsObtidos > 0) classePontos = 'green';
+                    htmlPontosAtingidos = `<span class="match-points-tag ${classePontos}">${ptsObtidos} pontos</span>`;
+                }
+            }
+
             const block = document.createElement('div');
             block.className = 'match-block';
             block.innerHTML = `
@@ -529,6 +582,7 @@
                     <div class="team-container team-right">
                         <img class="flag-img flag-right" src="https://flagcdn.com/w40/${jogo.flagCodeV}.png" alt="${jogo.visitante}">
                         <span class="team-sigla">${jogo.siglaV}</span>
+                        ${htmlPontosAtingidos}
                     </div>
                 </div>
             `;
@@ -615,26 +669,9 @@
                 const oficial = dadosBolao.resultadosOficiais[idJogo];
                 const palpite = dadosBolao.palpites[amigo] ? dadosBolao.palpites[amigo][idJogo] : null;
 
-                if (palpite && oficial &&
-                    palpite.m !== undefined && palpite.m !== null && palpite.m !== "" &&
-                    palpite.v !== undefined && palpite.v !== null && palpite.v !== "" &&
-                    oficial.m !== undefined && oficial.m !== null && oficial.m !== "" &&
-                    oficial.v !== undefined && oficial.v !== null && oficial.v !== "") {
-                     
-                    const resOficial = Math.sign(oficial.m - oficial.v); 
-                    const resPalpite = Math.sign(palpite.m - palpite.v);
-
-                    if (oficial.m === palpite.m && oficial.v === palpite.v) {
-                        totalPontos += 25; 
-                    } else if (resOficial === resPalpite) {
-                        const saldoOficial = oficial.m - oficial.v;
-                        const saldoPalpite = palpite.m - palpite.v;
-                        if (saldoOficial === saldoPalpite) {
-                            totalPontos += 15; 
-                        } else {
-                            totalPontos += 10; 
-                        }
-                    }
+                const ptsObtidos = calcularPontosDoJogo(oficial, palpite);
+                if (ptsObtidos !== null) {
+                    totalPontos += ptsObtidos;
                 }
             });
 
