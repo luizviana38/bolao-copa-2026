@@ -102,7 +102,7 @@
             background-color: #f0f7f4;
             border: 1px solid #c2e0d1;
             border-radius: 6px;
-            padding: 4px 14px;
+            padding: 6px 14px;
             margin-bottom: 10px;
             font-size: 12px;
             color: #2d3748;
@@ -112,9 +112,15 @@
             color: var(--primary);
             margin-right: 6px;
         }
+        .placar-oficial-texto {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
         .placar-oficial-texto strong {
             color: #000;
             font-size: 13px;
+            margin: 0 2px;
         }
 
         /* Alinhamento idêntico à imagem de referência */
@@ -146,10 +152,14 @@
             color: #555;
         }
         
-        .flag-emoji {
-            font-size: 24px;
-            line-height: 1;
+        /* Estilização das bandeiras em imagem */
+        .flag-img {
+            width: 32px;
+            height: auto;
+            border-radius: 2px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
             display: inline-block;
+            vertical-align: middle;
         }
         .flag-left { margin-left: 8px; }
         .flag-right { margin-right: 8px; }
@@ -322,86 +332,81 @@
 </div>
 
 <script>
+    // Configuração dos códigos ISO das bandeiras mapeados a partir do infográfico enviado
     const JOGOS_OFICIAIS_FIFA = [
-        { id: 1, grupo: "Grupo A", mandante: "México", siglaM: "MEX", flagM: "🇲🇽", visitante: "África do Sul", siglaV: "AFS", flagV: "🇿🇦", data: "Rodada 1" },
-        { id: 2, grupo: "Grupo A", mandante: "Coreia do Sul", siglaM: "COR", flagM: "🇰🇷", visitante: "Rep. Tcheca", siglaV: "TCH", flagV: "🇨🇿", data: "Rodada 1" },
-        { id: 3, grupo: "Grupo A", mandante: "México", siglaM: "MEX", flagM: "🇲🇽", visitante: "Coreia do Sul", siglaV: "COR", flagV: "🇰🇷", data: "Rodada 2" },
-        { id: 4, grupo: "Grupo A", mandante: "África do Sul", siglaM: "AFS", flagM: "🇿🇦", visitante: "Rep. Tcheca", siglaV: "TCH", flagV: "🇨🇿", data: "Rodada 2" },
-        { id: 5, grupo: "Grupo A", mandante: "Rep. Tcheca", siglaM: "TCH", flagM: "🇨🇿", visitante: "México", siglaV: "MEX", flagV: "🇲🇽", data: "Rodada 3" },
-        { id: 6, grupo: "Grupo A", mandante: "África do Sul", siglaM: "AFS", flagM: "🇿🇦", visitante: "Coreia do Sul", siglaV: "COR", flagV: "🇰🇷", data: "Rodada 3" },
-        { id: 7, grupo: "Grupo B", mandante: "Canadá", siglaM: "CAN", flagM: "🇨🇦", visitante: "Bósnia", siglaV: "BOS", flagV: "🇧🇦", data: "Rodada 1" },
-        { id: 8, grupo: "Grupo B", mandante: "Qatar", siglaM: "QAT", flagM: "🇶🇦", visitante: "Suíça", siglaV: "SUI", flagV: "🇨🇭", data: "Rodada 1" },
-        { id: 9, grupo: "Grupo B", mandante: "Canadá", siglaM: "CAN", flagM: "🇨🇦", visitante: "Qatar", siglaV: "QAT", flagV: "🇶🇦", data: "Rodada 2" },
-        { id: 10, grupo: "Grupo B", mandante: "Bósnia", siglaM: "BOS", flagM: "🇧🇦", visitante: "Suíça", siglaV: "SUI", flagV: "🇨🇭", data: "Rodada 2" },
-        { id: 11, grupo: "Grupo B", mandante: "Suíça", siglaM: "SUI", flagM: "🇨🇭", visitante: "Canadá", siglaV: "CAN", flagV: "🇨🇦", data: "Rodada 3" },
-        { id: 12, grupo: "Grupo B", mandante: "Bósnia", siglaM: "BOS", flagM: "🇧🇦", visitante: "Qatar", siglaV: "QAT", flagV: "🇶🇦", data: "Rodada 3" },
-        { id: 13, grupo: "Grupo C", mandante: "Brasil", siglaM: "BRA", flagM: "🇧🇷", visitante: "Marrocos", siglaV: "MAR", flagV: "🇲🇦", data: "Rodada 1 - Estreia" },
-        { id: 14, grupo: "Grupo C", mandante: "Haiti", siglaM: "HAI", flagM: "🇭🇹", visitante: "Escócia", siglaV: "ESC", flagV: "🏴󠁧󠁢󠁳󠁣󠁴󠁿", data: "Rodada 1" },
-        { id: 15, grupo: "Grupo C", mandante: "Brasil", siglaM: "BRA", flagM: "🇧🇷", visitante: "Haiti", siglaV: "HAI", flagV: "🇭🇹", data: "Rodada 2" },
-        { id: 16, grupo: "Grupo C", mandante: "Marrocos", siglaM: "MAR", flagM: "🇲🇦", visitante: "Escócia", siglaV: "ESC", flagV: "🏴󠁧󠁢󠁳󠁣󠁴󠁿", data: "Rodada 2" },
-        { id: 17, grupo: "Grupo C", mandante: "Escócia", siglaM: "ESC", flagM: "🏴󠁧󠁢󠁳󠁣󠁴󠁿", visitante: "Brasil", siglaV: "BRA", flagV: "🇧🇷", data: "Rodada 3" },
-        { id: 18, grupo: "Grupo C", mandante: "Marrocos", siglaM: "MAR", flagM: "🇲🇦", visitante: "Haiti", siglaV: "HAI", flagV: "🇭🇹", data: "Rodada 3" },
-        { id: 19, grupo: "Grupo D", mandante: "EUA", siglaM: "EUA", flagM: "🇺🇸", visitante: "Paraguai", siglaV: "PAR", flagV: "🇵🇾", data: "Rodada 1" },
-        { id: 20, grupo: "Grupo D", mandante: "Austrália", siglaM: "AUS", flagM: "🇦🇺", visitante: "Turquia", siglaV: "TUR", flagV: "🇹🇷", data: "Rodada 1" },
-        { id: 21, grupo: "Grupo D", mandante: "EUA", siglaM: "EUA", flagM: "🇺🇸", visitante: "Austrália", siglaV: "AUS", flagV: "🇦🇺", data: "Rodada 2" },
-        { id: 22, grupo: "Grupo D", mandante: "Paraguai", siglaM: "PAR", flagM: "🇵🇾", visitante: "Turquia", siglaV: "TUR", flagV: "🇹🇷", data: "Rodada 2" },
-        { id: 23, grupo: "Grupo D", mandante: "Turquia", siglaM: "TUR", flagM: "🇹🇷", visitante: "EUA", siglaV: "EUA", flagV: "🇺🇸", data: "Rodada 3" },
-        { id: 24, group: "Grupo D", mandante: "Paraguai", siglaM: "PAR", flagM: "🇵🇾", visitante: "Austrália", siglaV: "AUS", flagV: "🇦🇺", data: "Rodada 3" },
-        { id: 25, grupo: "Grupo E", mandante: "Alemanha", siglaM: "ALE", flagM: "🇩🇪", visitante: "Curaçao", siglaV: "CUR", flagV: "🇨🇼", data: "Rodada 1" },
-        { id: 26, grupo: "Grupo E", mandante: "Costa do Marfim", siglaM: "CIV", flagM: "🇨🇮", visitante: "Equador", siglaV: "EQU", flagV: "🇪🇨", data: "Rodada 1" },
-        { id: 27, grupo: "Grupo E", mandante: "Alemanha", siglaM: "ALE", flagM: "🇩🇪", visitante: "Costa do Marfim", siglaV: "CIV", flagV: "🇨🇮", data: "Rodada 2" },
-        { id: 28, grupo: "Grupo E", mandante: "Curaçao", siglaM: "CUR", flagM: "🇨🇼", visitante: "Equador", siglaV: "EQU", flagV: "🇪🇨", data: "Rodada 2" },
-        { id: 29, grupo: "Grupo E", mandante: "Equador", siglaM: "EQU", flagM: "🇪🇨", visitante: "Alemanha", siglaV: "ALE", flagV: "🇩🇪", data: "Rodada 3" },
-        { id: 30, grupo: "Grupo E", mandante: "Curaçao", siglaM: "CUR", flagM: "🇨🇼", visitante: "Costa do Marfim", siglaV: "CIV", flagV: "🇨🇮", data: "Rodada 3" },
-        { id: 31, grupo: "Grupo F", mandante: "Holanda", siglaM: "HOL", flagM: "🇳🇱", visitante: "Japão", siglaV: "JAP", flagV: "🇯🇵", data: "Rodada 1" },
-        { id: 32, grupo: "Grupo F", mandante: "Suécia", siglaM: "SUE", flagM: "🇸🇪", visitante: "Tunísia", siglaV: "TUN", flagV: "🇹🇳", data: "Rodada 1" },
-        { id: 33, grupo: "Grupo F", mandante: "Holanda", siglaM: "HOL", flagM: "🇳🇱", visitante: "Suécia", siglaV: "SUE", flagV: "🇸🇪", data: "Rodada 2" },
-        { id: 34, grupo: "Grupo F", mandante: "Japão", siglaM: "JAP", flagM: "🇯🇵", visitante: "Tunísia", siglaV: "TUN", flagV: "🇹🇳", data: "Rodada 2" },
-        { id: 35, grupo: "Grupo F", mandante: "Tunísia", siglaM: "TUN", flagM: "🇹🇳", visitante: "Holanda", siglaV: "HOL", flagV: "🇳🇱", data: "Rodada 3" },
-        { id: 36, grupo: "Grupo F", mandante: "Japão", siglaM: "JAP", flagM: "🇯🇵", visitante: "Suécia", siglaV: "SUE", flagV: "🇸🇪", data: "Rodada 3" },
-        { id: 37, grupo: "Grupo G", mandante: "Bélgica", siglaM: "BEL", flagM: "🇧🇪", visitante: "Egito", siglaV: "EGI", flagV: "🇪🇬", data: "Rodada 1" },
-        { id: 38, grupo: "Grupo G", mandante: "Irã", siglaM: "IRA", flagM: "🇮🇷", visitante: "N. Zelândia", siglaV: "NZL", flagV: "🇳🇿", data: "Rodada 1" },
-        { id: 39, grupo: "Grupo G", mandante: "Bélgica", siglaM: "BEL", flagM: "🇧🇪", visitante: "Irã", siglaV: "IRA", flagV: "🇮🇷", data: "Rodada 2" },
-        { id: 40, grupo: "Grupo G", mandante: "Egito", siglaM: "EGI", flagM: "🇪🇬", visitante: "N. Zelândia", siglaV: "NZL", flagV: "🇳🇿", data: "Rodada 2" },
-        { id: 41, grupo: "Grupo G", mandante: "N. Zelândia", siglaM: "NZL", flagM: "🇳🇿", visitante: "Bélgica", siglaV: "BEL", flagV: "🇧🇪", data: "Rodada 3" },
-        { id: 42, grupo: "Grupo G", mandante: "Egito", siglaM: "EGI", flagM: "🇪🇬", visitante: "Irã", siglaV: "IRA", flagV: "🇮🇷", data: "Rodada 3" },
-        { id: 43, grupo: "Grupo H", mandante: "Espanha", siglaM: "ESP", flagM: "🇪🇸", visitante: "Cabo Verde", siglaV: "CPV", flagV: "🇨🇻", data: "Rodada 1" },
-        { id: 44, grupo: "Grupo H", mandante: "Arábia Saudita", siglaM: "ARA", flagM: "🇸🇦", visitante: "Uruguai", siglaV: "URU", flagV: "🇺🇾", data: "Rodada 1" },
-        { id: 45, grupo: "Grupo H", mandante: "Espanha", siglaM: "ESP", flagM: "🇪🇸", visitante: "Arábia Saudita", siglaV: "ARA", flagV: "🇸🇦", data: "Rodada 2" },
-        { id: 46, grupo: "Grupo H", mandante: "Cabo Verde", siglaM: "CPV", flagM: "🇨🇻", visitante: "Uruguai", siglaV: "URU", flagV: "🇺🇾", data: "Rodada 2" },
-        { id: 47, grupo: "Grupo H", mandante: "Uruguai", siglaM: "URU", flagM: "🇺🇾", visitante: "Espanha", siglaV: "ESP", flagV: "🇪🇸", data: "Rodada 3" },
-        { id: 48, grupo: "Grupo H", mandante: "Cabo Verde", siglaM: "CPV", flagM: "🇨🇻", visitante: "Arábia Saudita", siglaV: "ARA", flagV: "🇸🇦", data: "Rodada 3" },
-        { id: 49, grupo: "Grupo I", mandante: "França", siglaM: "FRA", flagM: "🇫🇷", visitante: "Senegal", siglaV: "SEN", flagV: "🇸🇳", data: "Rodada 1" },
-        { id: 50, grupo: "Grupo I", mandante: "Iraque", siglaM: "IRQ", flagM: "🇮🇶", visitante: "Noruega", siglaV: "NOR", flagV: "🇳🇴", data: "Rodada 1" },
-        { id: 51, grupo: "Grupo I", mandante: "França", siglaM: "FRA", flagM: "🇫🇷", visitante: "Iraque", siglaV: "IRQ", flagV: "🇮🇶", data: "Rodada 2" },
-        { id: 52, grupo: "Grupo I", mandante: "Senegal", siglaM: "SEN", flagM: "🇸🇳", visitante: "Noruega", siglaV: "NOR", flagV: "🇳🇴", data: "Rodada 2" },
-        { id: 53, grupo: "Grupo I", mandante: "Noruega", siglaM: "NOR", flagM: "🇳🇴", visitante: "França", siglaV: "FRA", flagV: "🇫🇷", data: "Rodada 3" },
-        { id: 54, grupo: "Grupo I", mandante: "Senegal", siglaM: "SEN", flagM: "🇸🇳", visitante: "Iraque", siglaV: "IRQ", flagV: "🇮🇶", data: "Rodada 3" },
-        { id: 55, grupo: "Grupo J", mandante: "Argentina", siglaM: "ARG", flagM: "🇦🇷", visitante: "Argélia", siglaV: "ALG", flagV: "🇩🇿", data: "Rodada 1" },
-        { id: 56, grupo: "Grupo J", mandante: "Áustria", siglaM: "AUT", flagM: "🇦🇹", visitante: "Jordânia", siglaV: "JOR", flagV: "🇯🇴", data: "Rodada 1" },
-        { id: 57, grupo: "Grupo J", mandante: "Argentina", siglaM: "ARG", flagM: "🇦🇷", visitante: "Áustria", siglaV: "AUT", flagV: "🇦🇹", data: "Rodada 2" },
-        { id: 58, grupo: "Grupo J", mandante: "Argélia", siglaM: "ALG", flagM: "🇩🇿", visitante: "Jordânia", siglaV: "JOR", flagV: "🇯🇴", data: "Rodada 2" },
-        { id: 59, grupo: "Grupo J", mandante: "Jordânia", siglaM: "JOR", flagM: "🇯🇴", visitante: "Argentina", siglaV: "ARG", flagV: "🇦🇷", data: "Rodada 3" },
-        { id: 60, grupo: "Grupo J", mandante: "Argélia", siglaM: "ALG", flagM: "🇩🇿", visitante: "Áustria", siglaV: "AUT", flagV: "🇦🇹", data: "Rodada 3" },
-        { id: 61, grupo: "Grupo K", mandante: "Portugal", siglaM: "POR", flagM: "🇵🇹", visitante: "RD Congo", siglaV: "RDC", flagV: "🇨🇩", data: "Rodada 1" },
-        { id: 62, grupo: "Grupo K", mandante: "Uzbequistão", siglaM: "UZB", flagM: "🇺🇿", visitante: "Colômbia", siglaV: "COL", flagV: "🇨🇴", data: "Rodada 1" },
-        { id: 63, grupo: "Grupo K", mandante: "Portugal", siglaM: "POR", flagM: "🇵🇹", visitante: "Uzbequistão", siglaV: "UZB", flagV: "🇺🇿", data: "Rodada 2" },
-        { id: 64, grupo: "Grupo K", mandante: "RD Congo", siglaM: "RDC", flagM: "🇨🇩", visitante: "Colômbia", siglaV: "COL", flagV: "🇨🇴", data: "Rodada 2" },
-        { id: 65, grupo: "Grupo K", mandante: "Colômbia", siglaM: "COL", flagM: "🇨🇴", visitante: "Portugal", siglaV: "POR", flagV: "🇵🇹", data: "Rodada 3" },
-        { id: 66, grupo: "Grupo K", mandante: "RD Congo", siglaM: "RDC", flagM: "🇨🇩", visitante: "Uzbequistão", siglaV: "UZB", flagV: "🇺🇿", data: "Rodada 3" },
-        { id: 67, grupo: "Grupo L", mandante: "Inglaterra", siglaM: "ING", flagM: "🏴%F0%9F%8F%A1", visitante: "Croácia", siglaV: "CRO", flagV: "🇭🇷", data: "Rodada 1" },
-        { id: 68, grupo: "Grupo L", mandante: "Gana", siglaM: "GAN", flagM: "🇬🇭", visitante: "Panamá", siglaV: "PAN", flagV: "🇵🇦", data: "Rodada 1" },
-        { id: 69, grupo: "Grupo L", mandante: "Inglaterra", siglaM: "ING", flagM: "🏴%F0%9F%8F%A1", visitante: "Gana", siglaV: "GAN", flagV: "🇬🇭", data: "Rodada 2" },
-        { id: 70, grupo: "Grupo L", mandante: "Croácia", siglaM: "CRO", flagV: "🇭🇷", visitante: "Panamá", siglaV: "PAN", flagV: "🇵🇦", data: "Rodada 2" },
-        { id: 71, grupo: "Grupo L", mandante: "Panamá", siglaM: "PAN", flagM: "🇵🇦", visitante: "Inglaterra", siglaV: "ING", flagV: "🏴%F0%9F%8F%A1", data: "Rodada 3" },
-        { id: 72, grupo: "Grupo L", mandante: "Croácia", siglaM: "CRO", flagM: "🇭🇷", visitante: "Gana", siglaV: "GAN", flagV: "🇬🇭", data: "Rodada 3" }
+        { id: 1, grupo: "Grupo A", mandante: "México", siglaM: "MEX", flagCodeM: "mx", visitante: "África do Sul", siglaV: "AFS", flagCodeV: "za", data: "Rodada 1" },
+        { id: 2, grupo: "Grupo A", mandante: "Coreia do Sul", siglaM: "COR", flagCodeM: "kr", visitante: "Rep. Tcheca", siglaV: "TCH", flagCodeV: "cz", data: "Rodada 1" },
+        { id: 3, grupo: "Grupo A", mandante: "México", siglaM: "MEX", flagCodeM: "mx", visitante: "Coreia do Sul", siglaV: "COR", flagCodeV: "kr", data: "Rodada 2" },
+        { id: 4, grupo: "Grupo A", mandante: "África do Sul", siglaM: "AFS", flagCodeM: "za", visitante: "Rep. Tcheca", siglaV: "TCH", flagCodeV: "cz", data: "Rodada 2" },
+        { id: 5, grupo: "Grupo A", mandante: "Rep. Tcheca", siglaM: "TCH", flagCodeM: "cz", visitante: "México", siglaV: "MEX", flagCodeM: "mx", data: "Rodada 3" },
+        { id: 6, grupo: "Grupo A", mandante: "África do Sul", siglaM: "AFS", flagCodeM: "za", visitante: "Coreia do Sul", siglaV: "COR", flagCodeV: "kr", data: "Rodada 3" },
+        { id: 7, grupo: "Grupo B", mandante: "Canadá", siglaM: "CAN", flagCodeM: "ca", visitante: "Bósnia", siglaV: "BOS", flagCodeV: "ba", data: "Rodada 1" },
+        { id: 8, grupo: "Grupo B", mandante: "Qatar", siglaM: "QAT", flagCodeM: "qa", visitante: "Suíça", siglaV: "SUI", flagCodeV: "ch", data: "Rodada 1" },
+        { id: 9, grupo: "Grupo B", mandante: "Canadá", siglaM: "CAN", flagCodeM: "ca", visitante: "Qatar", siglaV: "QAT", flagCodeV: "qa", data: "Rodada 2" },
+        { id: 10, grupo: "Grupo B", mandante: "Bósnia", siglaM: "BOS", flagCodeM: "ba", visitante: "Suíça", siglaV: "SUI", flagCodeV: "ch", data: "Rodada 2" },
+        { id: 11, grupo: "Grupo B", mandante: "Suíça", siglaM: "SUI", flagCodeM: "ch", visitante: "Canadá", siglaV: "CAN", flagCodeV: "ca", data: "Rodada 3" },
+        { id: 12, grupo: "Grupo B", mandante: "Bósnia", siglaM: "BOS", flagCodeM: "ba", visitante: "Qatar", siglaV: "QAT", flagCodeV: "qa", data: "Rodada 3" },
+        { id: 13, grupo: "Grupo C", mandante: "Brasil", siglaM: "BRA", flagCodeM: "br", visitante: "Marrocos", siglaV: "MAR", flagCodeV: "ma", data: "Rodada 1 - Estreia" },
+        { id: 14, grupo: "Grupo C", mandante: "Haiti", siglaM: "HAI", flagCodeM: "ht", visitante: "Escócia", siglaV: "ESC", flagCodeV: "gb-sct", data: "Rodada 1" },
+        { id: 15, grupo: "Grupo C", mandante: "Brasil", siglaM: "BRA", flagCodeM: "br", visitante: "Haiti", siglaV: "HAI", flagCodeV: "ht", data: "Rodada 2" },
+        { id: 16, grupo: "Grupo C", mandante: "Marrocos", siglaM: "MAR", flagCodeM: "ma", visitante: "Escócia", siglaV: "ESC", flagCodeV: "gb-sct", data: "Rodada 2" },
+        { id: 17, grupo: "Grupo C", mandante: "Escócia", siglaM: "ESC", flagCodeM: "gb-sct", visitante: "Brasil", siglaV: "BRA", flagCodeV: "br", data: "Rodada 3" },
+        { id: 18, grupo: "Grupo C", mandante: "Marrocos", siglaM: "MAR", flagCodeM: "ma", visitante: "Haiti", siglaV: "HAI", flagCodeV: "ht", data: "Rodada 3" },
+        { id: 19, grupo: "Grupo D", mandante: "EUA", siglaM: "EUA", flagCodeM: "us", visitante: "Paraguai", siglaV: "PAR", flagCodeV: "py", data: "Rodada 1" },
+        { id: 20, grupo: "Grupo D", mandante: "Austrália", siglaM: "AUS", flagCodeM: "au", visitante: "Turquia", siglaV: "TUR", flagCodeV: "tr", data: "Rodada 1" },
+        { id: 21, grupo: "Grupo D", mandante: "EUA", siglaM: "EUA", flagCodeM: "us", visitante: "Austrália", siglaV: "AUS", flagCodeV: "au", data: "Rodada 2" },
+        { id: 22, grupo: "Grupo D", mandante: "Paraguai", siglaM: "PAR", flagCodeM: "py", visitante: "Turquia", siglaV: "TUR", flagCodeV: "tr", data: "Rodada 2" },
+        { id: 23, grupo: "Grupo D", mandante: "Turquia", siglaM: "TUR", flagCodeM: "tr", visitante: "EUA", siglaV: "EUA", flagCodeV: "us", data: "Rodada 3" },
+        { id: 24, grupo: "Grupo D", mandante: "Paraguai", siglaM: "PAR", flagCodeM: "py", visitante: "Austrália", siglaV: "AUS", flagCodeV: "au", data: "Rodada 3" },
+        { id: 25, grupo: "Grupo E", mandante: "Alemanha", siglaM: "ALE", flagCodeM: "de", visitante: "Curaçao", siglaV: "CUR", flagCodeV: "cw", data: "Rodada 1" },
+        { id: 26, grupo: "Grupo E", mandante: "Costa do Marfim", siglaM: "CIV", flagCodeM: "ci", visitante: "Equador", siglaV: "EQU", flagCodeV: "ec", data: "Rodada 1" },
+        { id: 27, grupo: "Grupo E", mandante: "Alemanha", siglaM: "ALE", flagCodeM: "de", visitante: "Costa do Marfim", siglaV: "CIV", flagCodeV: "ci", data: "Rodada 2" },
+        { id: 28, grupo: "Grupo E", mandante: "Curaçao", siglaM: "CUR", flagCodeM: "cw", visitante: "Equador", siglaV: "EQU", flagCodeV: "ec", data: "Rodada 2" },
+        { id: 29, grupo: "Grupo E", mandante: "Equador", siglaM: "EQU", flagCodeM: "ec", visitante: "Alemanha", siglaM: "ALE", flagCodeM: "de", data: "Rodada 3" },
+        { id: 30, grupo: "Grupo E", mandante: "Curaçao", siglaM: "CUR", flagCodeM: "cw", visitante: "Costa do Marfim", siglaV: "CIV", flagCodeV: "ci", data: "Rodada 3" },
+        { id: 31, grupo: "Grupo F", mandante: "Holanda", siglaM: "HOL", flagCodeM: "nl", visitante: "Japão", siglaV: "JAP", flagCodeV: "jp", data: "Rodada 1" },
+        { id: 32, grupo: "Grupo F", mandante: "Suécia", siglaM: "SUE", flagCodeM: "se", visitante: "Tunísia", siglaV: "TUN", flagCodeV: "tn", data: "Rodada 1" },
+        { id: 33, grupo: "Grupo F", mandante: "Holanda", siglaM: "HOL", flagCodeM: "nl", visitante: "Suécia", siglaV: "SUE", flagCodeV: "se", data: "Rodada 2" },
+        { id: 34, grupo: "Grupo F", mandante: "Japão", siglaM: "JAP", flagCodeM: "jp", visitante: "Tunísia", siglaV: "TUN", flagCodeV: "tn", data: "Rodada 2" },
+        { id: 35, grupo: "Grupo F", mandante: "Tunísia", siglaM: "TUN", flagCodeM: "tn", visitante: "Holanda", siglaV: "HOL", flagCodeV: "nl", data: "Rodada 3" },
+        { id: 36, grupo: "Grupo F", mandante: "Japão", siglaM: "JAP", flagCodeM: "jp", visitante: "Suécia", siglaV: "SUE", flagCodeV: "se", data: "Rodada 3" },
+        { id: 37, grupo: "Grupo G", mandante: "Bélgica", siglaM: "BEL", flagCodeM: "be", visitante: "Egito", siglaV: "EGI", flagCodeV: "eg", data: "Rodada 1" },
+        { id: 38, grupo: "Grupo G", mandante: "Irã", siglaM: "IRA", flagCodeM: "ir", visitante: "N. Zelândia", siglaV: "NZL", flagCodeV: "nz", data: "Rodada 1" },
+        { id: 39, grupo: "Grupo G", mandante: "Bélgica", siglaM: "BEL", flagCodeM: "be", visitante: "Irã", siglaV: "IRA", flagCodeV: "ir", data: "Rodada 2" },
+        { id: 40, grupo: "Grupo G", mandante: "Egito", siglaM: "EGI", flagCodeM: "eg", visitante: "N. Zelândia", siglaV: "NZL", flagCodeV: "nz", data: "Rodada 2" },
+        { id: 41, grupo: "Grupo G", mandante: "N. Zelândia", siglaM: "NZL", flagCodeM: "nz", visitante: "Bélgica", siglaV: "BEL", flagCodeV: "be", data: "Rodada 3" },
+        { id: 42, grupo: "Grupo G", mandante: "Egito", siglaM: "EGI", flagCodeM: "eg", visitante: "Irã", siglaV: "IRA", flagCodeV: "ir", data: "Rodada 3" },
+        { id: 43, grupo: "Grupo H", mandante: "Espanha", siglaM: "ESP", flagCodeM: "es", visitante: "Cabo Verde", siglaV: "CPV", flagCodeV: "cv", data: "Rodada 1" },
+        { id: 44, grupo: "Grupo H", mandante: "Arábia Saudita", siglaM: "ARA", flagCodeM: "sa", visitante: "Uruguai", siglaV: "URU", flagCodeV: "uy", data: "Rodada 1" },
+        { id: 45, grupo: "Grupo H", mandante: "Espanha", siglaM: "ESP", flagCodeM: "es", visitante: "Arábia Saudita", siglaV: "ARA", flagCodeV: "sa", data: "Rodada 2" },
+        { id: 46, grupo: "Grupo H", mandante: "Cabo Verde", siglaM: "CPV", flagCodeM: "cv", visitante: "Uruguai", siglaV: "URU", flagCodeV: "uy", data: "Rodada 2" },
+        { id: 47, grupo: "Grupo H", mandante: "Uruguai", siglaM: "URU", flagCodeM: "uy", visitante: "Espanha", siglaV: "ESP", flagCodeV: "es", data: "Rodada 3" },
+        { id: 48, grupo: "Grupo H", mandante: "Cabo Verde", siglaM: "CPV", flagCodeM: "cv", visitante: "Arábia Saudita", siglaV: "ARA", flagCodeV: "sa", data: "Rodada 3" },
+        { id: 49, grupo: "Grupo I", mandante: "França", siglaM: "FRA", flagCodeM: "fr", visitante: "Senegal", siglaV: "SEN", flagCodeV: "sn", data: "Rodada 1" },
+        { id: 50, grupo: "Grupo I", mandante: "Iraque", siglaM: "IRQ", flagCodeM: "iq", visitante: "Noruega", siglaV: "NOR", flagCodeV: "no", data: "Rodada 1" },
+        { id: 51, grupo: "Grupo I", mandante: "França", siglaM: "FRA", flagCodeM: "fr", visitante: "Iraque", siglaV: "IRQ", flagCodeV: "iq", data: "Rodada 2" },
+        { id: 52, grupo: "Grupo I", mandante: "Senegal", siglaM: "SEN", flagCodeM: "sn", visitante: "Noruega", siglaV: "NOR", flagCodeV: "no", data: "Rodada 2" },
+        { id: 53, grupo: "Grupo I", mandante: "Noruega", siglaM: "NOR", flagCodeM: "no", visitante: "França", siglaV: "FRA", flagCodeV: "fr", data: "Rodada 3" },
+        { id: 54, grupo: "Grupo I", mandante: "Senegal", siglaM: "SEN", flagCodeM: "sn", visitante: "Iraque", siglaV: "IRQ", flagCodeV: "iq", data: "Rodada 3" },
+        { id: 55, grupo: "Grupo J", mandante: "Argentina", siglaM: "ARG", flagCodeM: "ar", visitante: "Argélia", siglaV: "ALG", flagCodeV: "dz", data: "Rodada 1" },
+        { id: 56, grupo: "Grupo J", mandante: "Áustria", siglaM: "AUT", flagCodeM: "at", visitante: "Jordânia", siglaV: "JOR", flagCodeV: "jo", data: "Rodada 1" },
+        { id: 57, grupo: "Grupo J", mandante: "Argentina", siglaM: "ARG", flagCodeM: "ar", visitante: "Áustria", siglaV: "AUT", flagCodeV: "at", data: "Rodada 2" },
+        { id: 58, grupo: "Grupo J", mandante: "Argélia", siglaM: "ALG", flagCodeM: "dz", visitante: "Jordânia", siglaV: "JOR", flagCodeV: "jo", data: "Rodada 2" },
+        { id: 59, grupo: "Grupo J", mandante: "Jordânia", siglaM: "JOR", flagCodeM: "jo", visitante: "Argentina", siglaV: "ARG", flagCodeV: "ar", data: "Rodada 3" },
+        { id: 60, grupo: "Grupo J", mandante: "Argélia", siglaM: "ALG", flagCodeM: "dz", visitante: "Áustria", siglaV: "AUT", flagCodeV: "at", data: "Rodada 3" },
+        { id: 61, grupo: "Grupo K", mandante: "Portugal", siglaM: "POR", flagCodeM: "pt", visitante: "RD Congo", siglaV: "RDC", flagCodeV: "cd", data: "Rodada 1" },
+        { id: 62, grupo: "Grupo K", mandante: "Uzbequistão", siglaM: "UZB", flagCodeM: "uz", visitante: "Colômbia", siglaV: "COL", flagCodeV: "co", data: "Rodada 1" },
+        { id: 63, grupo: "Grupo K", mandante: "Portugal", siglaM: "POR", flagCodeM: "pt", visitante: "Uzbequistão", siglaV: "UZB", flagCodeV: "uz", data: "Rodada 2" },
+        { id: 64, grupo: "Grupo K", mandante: "RD Congo", siglaM: "RDC", flagCodeM: "cd", visitante: "Colômbia", siglaV: "COL", flagCodeV: "co", data: "Rodada 2" },
+        { id: 65, grupo: "Grupo K", mandante: "Colômbia", siglaM: "COL", flagCodeM: "co", visitante: "Portugal", siglaV: "POR", flagCodeV: "pt", data: "Rodada 3" },
+        { id: 66, grupo: "Grupo K", mandante: "RD Congo", siglaM: "RDC", flagCodeM: "cd", visitante: "Uzbequistão", siglaV: "UZB", flagCodeV: "uz", data: "Rodada 3" },
+        { id: 67, grupo: "Grupo L", mandante: "Inglaterra", siglaM: "ING", flagCodeM: "gb-eng", visitante: "Croácia", siglaV: "CRO", flagCodeV: "hr", data: "Rodada 1" },
+        { id: 68, grupo: "Grupo L", mandante: "Gana", siglaM: "GAN", flagCodeM: "gh", visitante: "Panamá", siglaV: "PAN", flagCodeV: "pa", data: "Rodada 1" },
+        { id: 69, grupo: "Grupo L", mandante: "Inglaterra", siglaM: "ING", flagCodeM: "gb-eng", visitante: "Gana", siglaV: "GAN", flagCodeV: "gh", data: "Rodada 2" },
+        { id: 70, grupo: "Grupo L", mandante: "Croácia", siglaM: "CRO", flagCodeM: "hr", visitante: "Panamá", siglaV: "PAN", flagCodeV: "pa", data: "Rodada 2" },
+        { id: 71, grupo: "Grupo L", mandante: "Panamá", siglaM: "PAN", flagCodeM: "pa", visitante: "Inglaterra", siglaV: "ING", flagCodeV: "gb-eng", data: "Rodada 3" },
+        { id: 72, grupo: "Grupo L", mandante: "Croácia", siglaM: "CRO", flagCodeM: "hr", visitante: "Gana", siglaV: "GAN", flagCodeV: "gh", data: "Rodada 3" }
     ];
-
-    // Correção pontual para renderização da flag da Inglaterra
-    JOGOS_OFICIAIS_FIFA.forEach(j => {
-        if(j.flagM === "🏴%F0%9F%8F%A1") j.flagM = "🏴󠁧󠁢󠁥󠁮󠁧󠁿";
-        if(j.flagV === "🏴%F0%9F%8F%A1") j.flagV = "🏴󠁧󠁢󠁥󠁮󠁧󠁿";
-    });
 
     const PARTICIPANTES = ["Luiz Viana", "Caio", "David", "Márcio", "Tainá"];
     let currentGroupFilter = "TODOS";
@@ -496,9 +501,9 @@
                     <div class="resultado-oficial-box">
                         <span class="label-oficial">Resultado Oficial FIFA:</span>
                         <span class="placar-oficial-texto">
-                            ${jogo.siglaM} <span class="flag-emoji">${jogo.flagM}</span> 
+                            ${jogo.siglaM} <img class="flag-img" src="https://flagcdn.com/w40/${jogo.flagCodeM}.png" alt="${jogo.mandante}"> 
                             <strong>${oficialM}</strong> x <strong>${oficialV}</strong> 
-                            <span class="flag-emoji">${jogo.flagV}</span> ${jogo.siglaV}
+                            <img class="flag-img" src="https://flagcdn.com/w40/${jogo.flagCodeV}.png" alt="${jogo.visitante}"> ${jogo.siglaV}
                         </span>
                     </div>
                 `;
@@ -516,13 +521,13 @@
                 <div class="match-row">
                     <div class="team-container team-left">
                         <span class="team-sigla">${jogo.siglaM}</span>
-                        <span class="flag-emoji flag-left">${jogo.flagM}</span>
+                        <img class="flag-img flag-left" src="https://flagcdn.com/w40/${jogo.flagCodeM}.png" alt="${jogo.mandante}">
                     </div>
                     <div><input type="number" min="0" id="m-${jogo.id}" value="${golsM}" ${isDisabled} oninput="updateInputState(${jogo.id}, 'm')"></div>
                     <div class="vs">×</div>
                     <div><input type="number" min="0" id="v-${jogo.id}" value="${golsV}" ${isDisabled} oninput="updateInputState(${jogo.id}, 'v')"></div>
                     <div class="team-container team-right">
-                        <span class="flag-emoji flag-right">${jogo.flagV}</span>
+                        <img class="flag-img flag-right" src="https://flagcdn.com/w40/${jogo.flagCodeV}.png" alt="${jogo.visitante}">
                         <span class="team-sigla">${jogo.siglaV}</span>
                     </div>
                 </div>
