@@ -83,6 +83,7 @@
         .match-block {
             padding: 12px 0;
             border-bottom: 1px solid #eee;
+            text-align: center;
         }
         .match-block:last-child { border: none; }
         
@@ -90,6 +91,30 @@
             font-size: 11px;
             color: #777;
             margin-bottom: 4px;
+            text-align: left;
+        }
+
+        /* NOVO: Estilo para o Box de Exibição do Resultado Oficial */
+        .resultado-oficial-box {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f0f7f4;
+            border: 1px solid #c2e0d1;
+            border-radius: 6px;
+            padding: 4px 14px;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: #2d3748;
+        }
+        .label-oficial {
+            font-weight: bold;
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .placar-oficial-texto strong {
+            color: #000;
+            font-size: 13px;
         }
 
         .match-row {
@@ -303,7 +328,7 @@
         { id: 36, grupo: "Grupo F", mandante: "Japão", visitante: "Suécia", data: "Rodada 3" },
         { id: 37, grupo: "Grupo G", mandante: "Bélgica", visitante: "Egito", data: "Rodada 1" },
         { id: 38, grupo: "Grupo G", mandante: "Irã", visitante: "N. Zelândia", data: "Rodada 1" },
-        { id: 39, grupo: "Grupo G", mandante: "Bélgica", visitante: "Irã", data: "Rodada 2" },
+        { id: 39, group: "Grupo G", mandante: "Bélgica", visitante: "Irã", data: "Rodada 2" },
         { id: 40, grupo: "Grupo G", mandante: "Egito", visitante: "N. Zelândia", data: "Rodada 2" },
         { id: 41, grupo: "Grupo G", mandante: "N. Zelândia", visitante: "Bélgica", data: "Rodada 3" },
         { id: 42, grupo: "Grupo G", mandante: "Egito", visitante: "Irã", data: "Rodada 3" },
@@ -419,12 +444,35 @@
                 }
             }
 
+            // Busca os valores salvos no Admin (Resultados reais da partida)
+            let oficialM = '';
+            let oficialV = '';
+            if (dadosBolao.resultadosOficiais[jogo.id] !== undefined) {
+                oficialM = dadosBolao.resultadosOficiais[jogo.id].m !== undefined ? dadosBolao.resultadosOficiais[jogo.id].m : '';
+                oficialV = dadosBolao.resultadosOficiais[jogo.id].v !== undefined ? dadosBolao.resultadosOficiais[jogo.id].v : '';
+            }
+
+            // Constrói a caixinha com o Placar Oficial se os dados existirem e se não estiver na tela do Admin
+            let htmlOficial = '';
+            if (currentUser !== "Admin (Resultados Oficiais)" && oficialM !== '' && oficialV !== '') {
+                htmlOficial = `
+                    <div class="resultado-oficial-box">
+                        <span class="label-oficial">Resultado Oficial FIFA:</span>
+                        <span class="placar-oficial-texto">${jogo.mandante} <strong>${oficialM}</strong> x <strong>${oficialV}</strong> ${jogo.visitante}</span>
+                    </div>
+                `;
+            }
+
             const block = document.createElement('div');
             block.className = 'match-block';
             block.innerHTML = `
                 <div class="match-info">
                     <strong>${jogo.grupo}</strong> • ${jogo.data}
                 </div>
+                
+                <!-- Box do Placar Oficial renderizado acima da linha de palpites -->
+                ${htmlOficial}
+
                 <div class="match-row">
                     <div class="team-name team-left">${jogo.mandante}</div>
                     <div><input type="number" min="0" id="m-${jogo.id}" value="${golsM}" ${isDisabled} oninput="updateInputState(${jogo.id}, 'm')"></div>
@@ -571,12 +619,10 @@
             const decodedStr = decodeURIComponent(escape(atob(inputArea)));
             const importedObj = JSON.parse(decodedStr);
             
-            // 1. Atualiza resultados oficiais de forma segura
             if(importedObj.resultadosOficiais) {
                 Object.assign(dadosBolao.resultadosOficiais, importedObj.resultadosOficiais);
             }
             
-            // 2. Mesclagem profunda (Deep Merge) de cada palpite individual jogo a jogo
             if (importedObj.palpites) {
                 PARTICIPANTES.forEach(p => {
                     if (importedObj.palpites[p]) {
@@ -589,7 +635,6 @@
                 });
             }
 
-            // 3. Renderiza imediatamente e envia direto para salvar tudo no servidor
             renderMatches();
             calculateRanking();
             document.getElementById('import-area').value = '';
