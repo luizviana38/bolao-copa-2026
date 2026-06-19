@@ -34,7 +34,7 @@
             margin-bottom: 25px;
         }
         header h1 { margin: 0; font-size: 26px; color: var(--secondary); }
-        
+         
         .grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -86,7 +86,7 @@
             text-align: center;
         }
         .match-block:last-child { border: none; }
-        
+         
         .match-info {
             font-size: 11px;
             color: #777;
@@ -126,7 +126,7 @@
         .team-name { font-weight: 600; font-size: 14px; }
         .team-right { text-align: left; padding-left: 10px; }
         .team-left { text-align: right; padding-right: 10px; }
-        
+         
         input[type="number"] {
             width: 42px;
             height: 32px;
@@ -173,7 +173,7 @@
         .btn:hover { background-color: #004422; }
         .btn-sec { background-color: #6c757d; }
         .btn-sec:hover { background-color: #5a6268; }
-        
+         
         .btn-lock {
             background-color: #ff9900;
             color: black;
@@ -222,13 +222,13 @@
                     <option value="Márcio">🏃 Márcio</option>
                     <option value="Tainá">🏃 Tainá</option>
                 </select>
-                
+                 
                 <button id="btn-lock-status" class="btn btn-lock" onclick="solicitarSenhaBloqueio()">🔒 Palpites Bloqueados (Clique para liberar)</button>
             </div>
 
             <div class="card">
                 <h2 id="match-card-title">Palpites dos Jogos</h2>
-                
+                 
                 <div class="group-filter-container">
                     <button class="filter-btn active" onclick="filterGroup('TODOS', this)">Todos</button>
                     <button class="filter-btn" onclick="filterGroup('Grupo A', this)">Gr. A</button>
@@ -250,7 +250,7 @@
                     <button class="btn" onclick="saveData()">💾 Salvar Meus Palpites</button>
                 </div>
             </div>
-            
+             
             <div class="card">
                 <h2>Sincronização via WhatsApp</h2>
                 <p style="font-size: 13px; color:#555;">Clique em copiar, envie no grupo. Quando os outros mandarem o código deles, cole abaixo e clique em Atualizar.</p>
@@ -325,10 +325,10 @@
         { id: 33, grupo: "Grupo F", mandante: "Holanda", visitante: "Suécia", data: "Rodada 2" },
         { id: 34, grupo: "Grupo F", mandante: "Japão", visitante: "Tunísia", data: "Rodada 2" },
         { id: 35, grupo: "Grupo F", mandante: "Tunísia", visitante: "Holanda", data: "Rodada 3" },
-        { id: 36, grupo: "Grupo F", mandante: "Japão", visitante: "Suécia", data: "Rodada 3" },
+        { id: 36, group: "Grupo F", mandante: "Japão", visitante: "Suécia", data: "Rodada 3" },
         { id: 37, grupo: "Grupo G", mandante: "Bélgica", visitante: "Egito", data: "Rodada 1" },
         { id: 38, grupo: "Grupo G", mandante: "Irã", visitante: "N. Zelândia", data: "Rodada 1" },
-        { id: 39, group: "Grupo G", mandante: "Bélgica", visitante: "Irã", data: "Rodada 2" },
+        { id: 39, grupo: "Grupo G", mandante: "Bélgica", visitante: "Irã", data: "Rodada 2" }, /* CORRIGIDO: de group para grupo */
         { id: 40, grupo: "Grupo G", mandante: "Egito", visitante: "N. Zelândia", data: "Rodada 2" },
         { id: 41, grupo: "Grupo G", mandante: "N. Zelândia", visitante: "Bélgica", data: "Rodada 3" },
         { id: 42, grupo: "Grupo G", mandante: "Egito", visitante: "Irã", data: "Rodada 3" },
@@ -366,7 +366,7 @@
 
     const PARTICIPANTES = ["Luiz Viana", "Caio", "David", "Márcio", "Tainá"];
     let currentGroupFilter = "TODOS";
-    
+     
     let dadosBolao = { resultadosOficiais: {}, palpites: {} };
     PARTICIPANTES.forEach(p => dadosBolao.palpites[p] = {});
 
@@ -444,7 +444,6 @@
                 }
             }
 
-            // Busca os valores salvos no Admin (Resultados reais da partida)
             let oficialM = '';
             let oficialV = '';
             if (dadosBolao.resultadosOficiais[jogo.id] !== undefined) {
@@ -452,7 +451,6 @@
                 oficialV = dadosBolao.resultadosOficiais[jogo.id].v !== undefined ? dadosBolao.resultadosOficiais[jogo.id].v : '';
             }
 
-            // Constrói a caixinha com o Placar Oficial se os dados existirem e se não estiver na tela do Admin
             let htmlOficial = '';
             if (currentUser !== "Admin (Resultados Oficiais)" && oficialM !== '' && oficialV !== '') {
                 htmlOficial = `
@@ -469,8 +467,7 @@
                 <div class="match-info">
                     <strong>${jogo.grupo}</strong> • ${jogo.data}
                 </div>
-                
-                <!-- Box do Placar Oficial renderizado acima da linha de palpites -->
+                 
                 ${htmlOficial}
 
                 <div class="match-row">
@@ -505,7 +502,7 @@
     function updateInputState(idJogo, tipo) {
         const currentUser = document.getElementById('select-user').value;
         const val = document.getElementById(`${tipo}-${idJogo}`).value;
-        
+         
         if(val === '') {
             if(currentUser === "Admin (Resultados Oficiais)") {
                 if(dadosBolao.resultadosOficiais[idJogo]) delete dadosBolao.resultadosOficiais[idJogo][tipo];
@@ -515,7 +512,7 @@
             calculateRanking();
             return;
         }
-        
+         
         const gols = parseInt(val);
 
         if (currentUser === "Admin (Resultados Oficiais)") {
@@ -569,7 +566,7 @@
                     palpite.v !== undefined && palpite.v !== null && palpite.v !== "" &&
                     oficial.m !== undefined && oficial.m !== null && oficial.m !== "" &&
                     oficial.v !== undefined && oficial.v !== null && oficial.v !== "") {
-                    
+                     
                     const resOficial = Math.sign(oficial.m - oficial.v); 
                     const resPalpite = Math.sign(palpite.m - palpite.v);
 
@@ -618,16 +615,16 @@
         try {
             const decodedStr = decodeURIComponent(escape(atob(inputArea)));
             const importedObj = JSON.parse(decodedStr);
-            
+             
             if(importedObj.resultadosOficiais) {
                 Object.assign(dadosBolao.resultadosOficiais, importedObj.resultadosOficiais);
             }
-            
+             
             if (importedObj.palpites) {
                 PARTICIPANTES.forEach(p => {
                     if (importedObj.palpites[p]) {
                         if (!dadosBolao.palpites[p]) dadosBolao.palpites[p] = {};
-                        
+                         
                         Object.keys(importedObj.palpites[p]).forEach(idJogo => {
                             dadosBolao.palpites[p][idJogo] = importedObj.palpites[p][idJogo];
                         });
@@ -650,14 +647,17 @@
             } else {
                 alert("⚠ Dados aplicados em tela, mas falhou ao sincronizar em nuvem.");
             }
-            
+             
         } catch(e) {
             console.error(e);
             alert("❌ Código inválido! Certifique-se de copiar o texto completo do WhatsApp.");
         }
     }
 
-    carregarDadosDoServidor();
+    /* CORRIGIDO: Executa apenas após o DOM estar pronto */
+    window.onload = function() {
+        carregarDadosDoServidor();
+    };
 </script>
 </body>
 </html>
