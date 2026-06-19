@@ -1,6 +1,12 @@
 {
+  "name": "bolao-copa-2026",
+  "version": "1.0.0",
+  "description": "Bolão da Copa 2026",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
   "dependencies": {
-    "cors": "^2.8.6",
-    "express": "^5.2.1"
+    "express": "^4.19.2"
   }
 }
