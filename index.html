@@ -98,7 +98,6 @@
             border-left: 3px solid var(--primary);
         }
 
-        /* Box de Exibição do Resultado Oficial */
         .resultado-oficial-box {
             display: inline-flex;
             align-items: center;
@@ -127,7 +126,6 @@
             margin: 0 2px;
         }
 
-        /* Alinhamento dos blocos e inputs */
         .match-row {
             display: grid;
             grid-template-columns: 1fr auto auto auto 1fr;
@@ -191,7 +189,6 @@
             padding: 0 4px;
         }
 
-        /* Emblema indicador de pontos obtidos no jogo */
         .match-points-tag {
             display: inline-block;
             margin-left: 15px;
@@ -353,7 +350,7 @@
         { id: 1, grupo: "Grupo A", mandante: "México", siglaM: "MEX", flagCodeM: "mx", visitante: "África do Sul", siglaV: "AFS", flagCodeV: "za", data: "11/06/2026", hora: "15:30", cidade: "Cidade do México" },
         { id: 2, grupo: "Grupo A", mandante: "Coreia do Sul", siglaM: "COR", flagCodeM: "kr", visitante: "Rep. Tcheca", siglaV: "TCH", flagCodeV: "cz", data: "11/06/2026", hora: "19:00", cidade: "Guadalajara" },
         { id: 3, grupo: "Grupo A", mandante: "México", siglaM: "MEX", flagCodeM: "mx", visitante: "Coreia do Sul", siglaV: "COR", flagCodeV: "kr", data: "17/06/2026", hora: "21:00", cidade: "Cidade do México" },
-        { id: 4, group: "Grupo A", mandante: "África do Sul", siglaM: "AFS", flagCodeM: "za", visitante: "Rep. Tcheca", siglaV: "TCH", flagCodeV: "cz", data: "17/06/2026", hora: "18:00", cidade: "Monterrey" },
+        { id: 4, grupo: "Grupo A", mandante: "África do Sul", siglaM: "AFS", flagCodeM: "za", visitante: "Rep. Tcheca", siglaV: "TCH", flagCodeV: "cz", data: "17/06/2026", hora: "18:00", cidade: "Monterrey" },
         { id: 5, grupo: "Grupo A", mandante: "Rep. Tcheca", siglaM: "TCH", flagCodeM: "cz", visitante: "México", siglaV: "MEX", flagCodeV: "mx", data: "24/06/2026", hora: "21:00", cidade: "Cidade do México" },
         { id: 6, grupo: "Grupo A", mandante: "África do Sul", siglaM: "AFS", flagCodeM: "za", visitante: "Coreia do Sul", siglaV: "COR", flagCodeV: "kr", data: "24/06/2026", hora: "21:00", cidade: "Monterrey" },
         { id: 7, grupo: "Grupo B", mandante: "Canadá", siglaM: "CAN", flagCodeM: "ca", visitante: "Bósnia", siglaV: "BOS", flagCodeV: "ba", data: "12/06/2026", hora: "19:00", cidade: "Toronto" },
@@ -432,7 +429,6 @@
 
     let listagemDesbloqueadaParaAmigo = false;
 
-    // Função de verificação de senha fixa solicitada
     function solicitarSenhaBloqueio() {
         const senhaDigitada = prompt("Digite a senha para liberar a alteração de palpites:");
         if (senhaDigitada === "luiz2206") {
@@ -612,9 +608,10 @@
         }
     }
 
-    // Função de Salvar adaptada para se comunicar via POST com a API do servidor
+    // Função de Salvar atualizada com diagnóstico detalhado de erro
     async function saveData() {
         try {
+            console.log("Tentando salvar dados:", dadosBolao);
             const response = await fetch('/api/salvar', {
                 method: 'POST',
                 headers: {
@@ -624,15 +621,16 @@
             });
 
             if (response.ok) {
-                alert("Dados sincronizados e salvos com sucesso no servidor!");
+                alert("✅ Sucesso! Dados sincronizados e salvos com sucesso no servidor.");
                 calculateRanking();
                 renderMatches();
             } else {
-                alert("Erro ao gravar os dados no servidor remoto.");
+                const textoErro = await response.text();
+                alert(`❌ O servidor recusou o salvamento (Status ${response.status}).\nResposta do servidor: ${textoErro || 'Nenhuma'}`);
             }
         } catch (error) {
             console.error("Erro na requisição POST:", error);
-            alert("Falha de rede ao tentar salvar dados.");
+            alert(`🚨 Falha de Rede ou Conexão!\nO navegador não conseguiu falar com o servidor.\n\nDetalhe do erro: ${error.message}\n\nVerifique se o seu 'servidor.js' está rodando na mesma porta e se você acessou a página através do endereço do servidor (Ex: http://localhost:3000), e não abrindo o arquivo direto.`);
         }
     }
 
@@ -665,7 +663,6 @@
         });
     }
 
-    // 📋 Mecanismo de fallback de exportação manual por texto codificado no WhatsApp
     function exportData() {
         const currentUser = document.getElementById('select-user').value;
         if (currentUser === "Admin (Resultados Oficiais)") {
@@ -682,7 +679,6 @@
         });
     }
 
-    // 📥 Mecanismo de importação manual caso o servidor não seja usado por algum participante
     function importFriendData() {
         const area = document.getElementById('import-area');
         const cru = area.value.trim();
