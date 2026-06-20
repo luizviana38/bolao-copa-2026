@@ -353,10 +353,10 @@
         { id: 1, grupo: "Grupo A", mandante: "México", siglaM: "MEX", flagCodeM: "mx", visitante: "África do Sul", siglaV: "AFS", flagCodeV: "za", data: "11/06/2026", hora: "15:30", cidade: "Cidade do México" },
         { id: 2, grupo: "Grupo A", mandante: "Coreia do Sul", siglaM: "COR", flagCodeM: "kr", visitante: "Rep. Tcheca", siglaV: "TCH", flagCodeV: "cz", data: "11/06/2026", hora: "19:00", cidade: "Guadalajara" },
         { id: 3, grupo: "Grupo A", mandante: "México", siglaM: "MEX", flagCodeM: "mx", visitante: "Coreia do Sul", siglaV: "COR", flagCodeV: "kr", data: "17/06/2026", hora: "21:00", cidade: "Cidade do México" },
-        { id: 4, grupo: "Grupo A", mandante: "África do Sul", siglaM: "AFS", flagCodeM: "za", visitante: "Rep. Tcheca", siglaV: "TCH", flagCodeV: "cz", data: "17/06/2026", hora: "18:00", cidade: "Monterrey" },
+        { id: 4, group: "Grupo A", mandante: "África do Sul", siglaM: "AFS", flagCodeM: "za", visitante: "Rep. Tcheca", siglaV: "TCH", flagCodeV: "cz", data: "17/06/2026", hora: "18:00", cidade: "Monterrey" },
         { id: 5, grupo: "Grupo A", mandante: "Rep. Tcheca", siglaM: "TCH", flagCodeM: "cz", visitante: "México", siglaV: "MEX", flagCodeV: "mx", data: "24/06/2026", hora: "21:00", cidade: "Cidade do México" },
         { id: 6, grupo: "Grupo A", mandante: "África do Sul", siglaM: "AFS", flagCodeM: "za", visitante: "Coreia do Sul", siglaV: "COR", flagCodeV: "kr", data: "24/06/2026", hora: "21:00", cidade: "Monterrey" },
-        { id: 7, group: "Grupo B", mandante: "Canadá", siglaM: "CAN", flagCodeM: "ca", visitante: "Bósnia", siglaV: "BOS", flagCodeV: "ba", data: "12/06/2026", hora: "19:00", cidade: "Toronto" },
+        { id: 7, grupo: "Grupo B", mandante: "Canadá", siglaM: "CAN", flagCodeM: "ca", visitante: "Bósnia", siglaV: "BOS", flagCodeV: "ba", data: "12/06/2026", hora: "19:00", cidade: "Toronto" },
         { id: 8, grupo: "Grupo B", mandante: "Qatar", siglaM: "QAT", flagCodeM: "qa", visitante: "Suíça", siglaV: "SUI", flagCodeV: "ch", data: "12/06/2026", hora: "16:00", cidade: "Vancouver" },
         { id: 9, grupo: "Grupo B", mandante: "Canadá", siglaM: "CAN", flagCodeM: "ca", visitante: "Qatar", siglaV: "QAT", flagCodeV: "qa", data: "18/06/2026", hora: "21:30", cidade: "Toronto" },
         { id: 10, grupo: "Grupo B", mandante: "Bósnia", siglaM: "BOS", flagCodeM: "ba", visitante: "Suíça", siglaV: "SUI", flagCodeV: "ch", data: "18/06/2026", hora: "18:00", cidade: "Vancouver" },
@@ -445,7 +445,6 @@
     }
 
     function loadUserPalpites() {
-        // Sempre que mudar o usuário, reseta a trava por segurança
         listagemDesbloqueadaParaAmigo = false;
         renderMatches();
     }
@@ -514,19 +513,20 @@
         document.getElementById('match-card-title').innerText = 
             currentUser === "Admin (Resultados Oficiais)" ? "⚙️ Registrar Placar Real da FIFA" : `🔮 Palpites de: ${currentUser}`;
 
+        let isDisabled = "";
         if (currentUser === "Admin (Resultados Oficiais)") {
             lockBtn.style.display = "none";
-            var isDisabled = ""; 
+            isDisabled = ""; 
         } else {
             lockBtn.style.display = "block";
             if (listagemDesbloqueadaParaAmigo) {
                 lockBtn.innerText = "🔓 Palpites Liberados (Senha Aplicada)";
                 lockBtn.className = "btn btn-lock unlocked";
-                var isDisabled = "";
+                isDisabled = "";
             } else {
                 lockBtn.innerText = "🔒 Palpites Bloqueados (Clique para liberar)";
                 lockBtn.className = "btn btn-lock";
-                var isDisabled = "disabled";
+                isDisabled = "disabled";
             }
         }
 
@@ -548,33 +548,27 @@
                 }
             }
 
-            let oficialM = '';
-            let oficialV = '';
-            if (dadosBolao.resultadosOficiais[jogo.id] !== undefined) {
-                oficialM = dadosBolao.resultadosOficiais[jogo.id].m !== undefined ? dadosBolao.resultadosOficiais[jogo.id].m : '';
-                oficialV = dadosBolao.resultadosOficiais[jogo.id].v !== undefined ? dadosBolao.resultadosOficiais[jogo.id].v : '';
-            }
+            let oficialHTML = '';
+            let pontosHTML = '';
 
-            let htmlOficial = '';
-            if (currentUser !== "Admin (Resultados Oficiais)" && oficialM !== '' && oficialV !== '') {
-                htmlOficial = `
-                    <div class="resultado-oficial-box">
-                        <span class="label-oficial">Resultado Oficial FIFA:</span>
-                        <span class="placar-oficial-texto">
-                            <strong>${oficialM}</strong> x <strong>${oficialV}</strong>
-                        </span>
-                    </div>
-                `;
-            }
-
-            let ptsTag = '';
             if (currentUser !== "Admin (Resultados Oficiais)") {
-                const pts = calcularPontosDoJogo(dadosBolao.resultadosOficiais[jogo.id], (dadosBolao.palpites[currentUser] ? dadosBolao.palpites[currentUser][jogo.id] : null));
-                if (pts !== null) {
-                    if (pts === 25) ptsTag = `<span class="match-points-tag green">🎉 +25 pts (Placar Exato)</span>`;
-                    else if (pts === 15) ptsTag = `<span class="match-points-tag green">👍 +15 pts (Vencedor + Saldo)</span>`;
-                    else if (pts === 10) ptsTag = `<span class="match-points-tag green">⚖️ +10 pts (Acertou o Resultado)</span>`;
-                    else ptsTag = `<span class="match-points-tag zero">❌ 00 pts</span>`;
+                if (dadosBolao.resultadosOficiais[jogo.id] && dadosBolao.resultadosOficiais[jogo.id].m !== "" && dadosBolao.resultadosOficiais[jogo.id].v !== "") {
+                    const oM = dadosBolao.resultadosOficiais[jogo.id].m;
+                    const oV = dadosBolao.resultadosOficiais[jogo.id].v;
+                    oficialHTML = `
+                        <div class="resultado-oficial-box">
+                            <span class="label-oficial">OFICIAL:</span>
+                            <span class="placar-oficial-texto">${jogo.siglaM} <strong>${oM}</strong> x <strong>${oV}</strong> ${jogo.siglaV}</span>
+                        </div>
+                    `;
+
+                    const pts = calcularPontosDoJogo(dadosBolao.resultadosOficiais[jogo.id], { m: golsM, v: golsV });
+                    if (pts !== null) {
+                        let classePontos = "zero";
+                        if (pts === 25) classePontos = "green";
+                        else if (pts > 0) classePontos = "green";
+                        pontosHTML = `<span class="match-points-tag ${classePontos}">+${pts} pts</span>`;
+                    }
                 }
             }
 
@@ -584,23 +578,21 @@
                 <div class="match-info">
                     <strong>${jogo.grupo}</strong> • ${jogo.data} às ${jogo.hora} • ${jogo.cidade}
                 </div>
-                ${htmlOficial}
+                ${oficialHTML}
                 <div class="match-row">
                     <div class="team-container team-left">
-                        <span class="team-name">${jogo.mandante}</span>
+                        <span>${jogo.mandante}</span>
                         <span class="team-sigla">&nbsp;(${jogo.siglaM})</span>
                         <img class="flag-img flag-left" src="https://flagcdn.com/w40/${jogo.flagCodeM}.png" alt="${jogo.mandante}">
                     </div>
-                    
-                    <input type="number" min="0" oninput="updateInputMemory(${jogo.id}, 'm', this.value)" value="${golsM}" ${isDisabled}>
+                    <input type="number" min="0" ${isDisabled} value="${golsM}" oninput="updatePlacarValue(${jogo.id}, 'm', this.value)">
                     <span class="vs">x</span>
-                    <input type="number" min="0" oninput="updateInputMemory(${jogo.id}, 'v', this.value)" value="${golsV}" ${isDisabled}>
-                    
+                    <input type="number" min="0" ${isDisabled} value="${golsV}" oninput="updatePlacarValue(${jogo.id}, 'v', this.value)">
                     <div class="team-container team-right">
                         <img class="flag-img flag-right" src="https://flagcdn.com/w40/${jogo.flagCodeV}.png" alt="${jogo.visitante}">
-                        <span class="team-name">${jogo.visitante}</span>
+                        <span>${jogo.visitante}</span>
                         <span class="team-sigla">&nbsp;(${jogo.siglaV})</span>
-                        ${ptsTag}
+                        ${pontosHTML}
                     </div>
                 </div>
             `;
@@ -608,101 +600,116 @@
         });
     }
 
-    function updateInputMemory(id, flag, val) {
+    function updatePlacarValue(jogoId, tipo, valor) {
         const currentUser = document.getElementById('select-user').value;
         if (currentUser === "Admin (Resultados Oficiais)") {
-            if (!dadosBolao.resultadosOficiais[id]) dadosBolao.resultadosOficiais[id] = {};
-            dadosBolao.resultadosOficiais[id][flag] = val;
+            if (!dadosBolao.resultadosOficiais[jogoId]) dadosBolao.resultadosOficiais[jogoId] = { m: '', v: '' };
+            dadosBolao.resultadosOficiais[jogoId][tipo] = valor;
         } else {
             if (!dadosBolao.palpites[currentUser]) dadosBolao.palpites[currentUser] = {};
-            if (!dadosBolao.palpites[currentUser][id]) dadosBolao.palpites[currentUser][id] = {};
-            dadosBolao.palpites[currentUser][id][flag] = val;
+            if (!dadosBolao.palpites[currentUser][jogoId]) dadosBolao.palpites[currentUser][jogoId] = { m: '', v: '' };
+            dadosBolao.palpites[currentUser][jogoId][tipo] = valor;
+        }
+    }
+
+    // Função de Salvar adaptada para se comunicar via POST com a API do servidor
+    async function saveData() {
+        try {
+            const response = await fetch('/api/salvar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(dadosBolao)
+            });
+
+            if (response.ok) {
+                alert("Dados sincronizados e salvos com sucesso no servidor!");
+                calculateRanking();
+                renderMatches();
+            } else {
+                alert("Erro ao gravar os dados no servidor remoto.");
+            }
+        } catch (error) {
+            console.error("Erro na requisição POST:", error);
+            alert("Falha de rede ao tentar salvar dados.");
         }
     }
 
     function calculateRanking() {
-        const ranking = PARTICIPANTES.map(p => {
-            let total = 0;
-            JOGOS_OFICIAIS_FIFA.forEach(j => {
-                const pts = calcularPontosDoJogo(dadosBolao.resultadosOficiais[j.id], dadosBolao.palpites[p][j.id]);
-                if (pts) total += pts;
+        let listaRanking = [];
+
+        PARTICIPANTES.forEach(user => {
+            let totalPts = 0;
+            JOGOS_OFICIAIS_FIFA.forEach(jogo => {
+                const oficial = dadosBolao.resultadosOficiais[jogo.id];
+                const palpite = dadosBolao.palpites[user] ? dadosBolao.palpites[user][jogo.id] : null;
+                const pts = calcularPontosDoJogo(oficial, palpite);
+                if (pts !== null) totalPts += pts;
             });
-            return { nome: p, pontos: total };
+            listaRanking.push({ nome: user, pontos: totalPts });
         });
 
-        ranking.sort((a, b) => b.pontos - a.pontos);
-        const tbody = document.getElementById('ranking-body');
-        tbody.innerHTML = '';
-        ranking.forEach((rk, index) => {
-            tbody.innerHTML += `
-                <tr>
-                    <td class="pos">${index + 1}º</td>
-                    <td><strong>${rk.nome}</strong></td>
-                    <td class="pts">${rk.pontos} pts</td>
-                </tr>
+        listaRanking.sort((a, b) => b.pontos - a.pontos);
+
+        const rankingBody = document.getElementById('ranking-body');
+        rankingBody.innerHTML = '';
+        listaRanking.forEach((posicao, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="pos">${index + 1}</td>
+                <td>${posicao.nome}</td>
+                <td class="pts">${posicao.pontos} pts</td>
             `;
+            rankingBody.appendChild(row);
         });
     }
 
-    async function saveData() {
-        try {
-            const response = await fetch('/api/dados', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(dadosBolao)
-            });
-            if (response.ok) {
-                alert("Dados salvos e sincronizados com sucesso no servidor!");
-                calculateRanking();
-                renderMatches();
-            } else {
-                alert("Armazenado localmente apenas. Servidor retornou erro.");
-            }
-        } catch(e) {
-            alert("Salvo offline. Erro ao persistir dados na nuvem.");
-            calculateRanking();
-            renderMatches();
-        }
-    }
-
+    // 📋 Mecanismo de fallback de exportação manual por texto codificado no WhatsApp
     function exportData() {
         const currentUser = document.getElementById('select-user').value;
-        if(currentUser === "Admin (Resultados Oficiais)") {
-            alert("Selecione seu nome de jogador antes de exportar.");
-            return;
+        if (currentUser === "Admin (Resultados Oficiais)") {
+            return alert("Escolha o seu nome real para exportar os seus palpites.");
         }
-        const envelope = { usuario: currentUser, dados: dadosBolao.palpites[currentUser] };
-        const stringfied = btoa(unescape(encodeURIComponent(JSON.stringify(envelope))));
-        navigator.clipboard.writeText(stringfied);
-        alert(`Código de palpites de ${currentUser} copiado para a Área de Transferência! Compartilhe no WhatsApp.`);
+        const userPalpites = dadosBolao.palpites[currentUser] || {};
+        const pacote = { usuario: currentUser, dados: userPalpites };
+        const base64String = btoa(unescape(encodeURIComponent(JSON.stringify(pacote))));
+        
+        navigator.clipboard.writeText(base64String).then(() => {
+            alert(`Código de [${currentUser}] copiado! Cole no WhatsApp do grupo.`);
+        }).catch(() => {
+            alert("Erro ao copiar automaticamente. Use a gravação padrão no botão azul.");
+        });
     }
 
+    // 📥 Mecanismo de importação manual caso o servidor não seja usado por algum participante
     function importFriendData() {
-        const raw = document.getElementById('import-area').value.trim();
-        if(!raw) return alert("Cole o código gerado pelo seu amigo primeiro.");
+        const area = document.getElementById('import-area');
+        const cru = area.value.trim();
+        if (!cru) return alert('Cole o código do seu amigo gerado no campo de texto primeiro.');
+
         try {
-            const parsed = JSON.parse(decodeURIComponent(escape(atob(raw))));
-            if (parsed && parsed.usuario && parsed.dados) {
-                if(!PARTICIPANTES.includes(parsed.usuario)) {
-                    return alert("Usuário contido no código não pertence a este grupo oficial do Bolão.");
+            const analisado = JSON.parse(decodeURIComponent(escape(atob(cru))));
+            if (analisado && analisado.usuario && analisado.dados) {
+                if (!PARTICIPANTES.includes(analisado.usuario)) {
+                    return alert("O participante contido no código não é membro oficial cadastrado deste bolão.");
                 }
-                dadosBolao.palpites[parsed.usuario] = parsed.dados;
-                alert(`Palpites de [ ${parsed.usuario} ] atualizados com sucesso! Lembre-se de salvar.`);
-                document.getElementById('import-area').value = '';
+                dadosBolao.palpites[analisado.usuario] = analisado.dados;
+                alert(`Palpites de [${analisado.usuario}] importados com sucesso! Lembre-se de clicar em salvar para mantê-los.`);
+                area.value = '';
                 calculateRanking();
                 renderMatches();
             } else {
-                alert("Formato de código inválido.");
+                alert("Formato de criptografia inválido.");
             }
         } catch(e) {
-            alert("Código corrompido ou mal formatado.");
+            alert("Código de dados corrompido.");
         }
     }
 
-    // Inicialização da Página
     window.onload = function() {
         carregarDadosDoServidor();
-    }
+    };
 </script>
 </body>
 </html>
