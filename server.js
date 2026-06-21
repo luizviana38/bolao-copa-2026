@@ -107,7 +107,7 @@ const dadosIniciais = {
 // 2. RECUPERAÇÃO FORÇADA NA INICIALIZAÇÃO
 // ==========================================
 // Grava as informações forçadamente no arquivo toda vez que o servidor inicia
-fs.writeFileSync(DATA_FILE, JSON.stringify(dadosIniciais, null, 2), 'utf8');
+//fs.writeFileSync(DATA_FILE, JSON.stringify(dadosIniciais, null, 2), 'utf8');
 
 // ==========================================
 // 3. CONFIGURAÇÕES DO EXPRESS
