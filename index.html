@@ -4,17 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bolão Copa 2026 - Grupos Oficiais</title>
-    <!-- Mantenha aqui o seu <style> que você já possui -->
 </head>
 <body>
 
-<div class="container">
-    <!-- Mantenha aqui o seu <header> e estrutura HTML que você já possui -->
+<div class="container" id="matches-container">
+    <!-- O conteúdo será gerado pelo JavaScript -->
 </div>
 
 <script>
-    // 1. SUA LISTA DE JOGOS (Substitua a linha abaixo pela sua lista completa)
-    const JOGOS_OFICIAIS_FIFA = [...]; 
+    // 1. SUA LISTA DE JOGOS
+    const JOGOS_OFICIAIS_FIFA = [
+        { id: 1, grupo: "Grupo A", mandante: "México", visitante: "África do Sul", data: "11/06/2026", cidade: "Cidade do México" },
+        { id: 2, grupo: "Grupo A", mandante: "Coreia do Sul", visitante: "Rep. Tcheca", data: "11/06/2026", cidade: "Guadalajara" },
+        // ... (mantenha o restante da sua lista de 76 jogos aqui dentro) ...
+        { id: 76, grupo: "Grupo L", mandante: "Croácia", visitante: "Panamá", data: "05/07/2026", cidade: "Boston" }
+    ];
 
     // 2. CONFIGURAÇÕES INICIAIS
     const PARTICIPANTES = ["Luiz Viana", "Caio", "David", "Márcio", "Tainá"];
@@ -28,7 +32,7 @@
 
     // 3. FUNÇÕES PRINCIPAIS
     function renderMatches() {
-        const user = document.getElementById('select-user').value;
+        const user = document.getElementById('select-user') ? document.getElementById('select-user').value : "Luiz Viana";
         const container = document.getElementById('matches-container');
         container.innerHTML = '';
 
@@ -57,30 +61,15 @@
     }
 
     function update(id, campo, valor) {
-        const user = document.getElementById('select-user').value;
+        const user = document.getElementById('select-user') ? document.getElementById('select-user').value : "Luiz Viana";
         if (!dadosBolao.palpites[user]) dadosBolao.palpites[user] = {};
         if (!dadosBolao.palpites[user][id]) dadosBolao.palpites[user][id] = { m: "", v: "" };
         dadosBolao.palpites[user][id][campo] = valor;
     }
 
-    function saveData() {
-        localStorage.setItem('bolao2026', JSON.stringify(dadosBolao));
-        alert("Palpites salvos com sucesso!");
-        location.reload();
-    }
-
-    function filterGroup(grupo, btn) {
-        currentGroupFilter = grupo;
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        renderMatches();
-    }
-
-    // Inicialização
     window.onload = function() {
         renderMatches();
     };
-
 </script>
 </body>
 </html>
