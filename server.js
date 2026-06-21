@@ -1,5 +1,4 @@
 const express = require('express');
-const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
 
@@ -8,11 +7,10 @@ const app = express();
 // O Render define automaticamente a porta na variável de ambiente process.env.PORT
 const PORT = process.env.PORT || 3000;
 
-// Caminho para salvar o arquivo de dados persistentes de forma simples
+// Caminho para salvar o arquivo de dados
 const DATA_FILE = path.join(__dirname, 'dados.json');
 
-// Middlewares obrigatórios
-app.use(cors());
+// Middlewares obrigatórios (Removemos o CORS para não exigir instalação de módulo)
 app.use(express.json());
 
 // Servir os arquivos estáticos da pasta raiz (onde está o seu index.html)
@@ -28,27 +26,24 @@ function lerDados() {
     } catch (error) {
         console.error("Erro ao ler dados.json, resetando estrutura:", error);
     }
-    // Estrutura inicial padrão caso o arquivo não exista ou esteja corrompido
     return { resultadosOficiais: {}, palpites: {} };
 }
 
-// Rota GET: Envia os dados para o frontend index.html ao carregar a página
+// Rota GET: Envia os dados para o frontend
 app.get('/api/dados', (req, res) => {
     const dados = lerDados();
     res.json(dados);
 });
 
-// Rota POST: Salva os palpites e resultados oficiais enviados pelo frontend
+// Rota POST: Salva os palpites e resultados oficiais
 app.post('/api/dados', (req, res) => {
     try {
         const novosDados = req.body;
         
-        // Validação mínima para evitar salvar arquivos corrompidos ou vazios
         if (!novosDados || typeof novosDados !== 'object') {
             return res.status(400).json({ error: "Dados inválidos." });
         }
 
-        // Salva os dados no arquivo JSON local formatado com recuo de 2 espaços
         fs.writeFileSync(DATA_FILE, JSON.stringify(novosDados, null, 2), 'utf8');
         console.log("Dados do Bolão atualizados com sucesso!");
         
@@ -64,7 +59,7 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Inicialização estável escutando a porta correta exigida pelo Render
+// Inicialização estável escutando a porta exigida pelo Render
 app.listen(PORT, () => {
     console.log(`Servidor rodando com sucesso na porta ${PORT}`);
 });
