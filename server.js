@@ -4,7 +4,7 @@ const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const DATA_FILE = path.join(__dirname, 'dados.json');
+const DATA_FILE = path.join(__dirname, 'dados.json'); 
 
 // ==========================================
 // 1. DADOS INICIAIS COMPLETOS (Luiz, Caio, David, Márcio e Tainá)
