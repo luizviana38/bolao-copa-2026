@@ -1,62 +1,53 @@
-const express = require('express');
-const path = require('path');
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-app.use(express.json());
-app.use(express.static(__dirname));
-
-// O Render vai injetar esses valores de forma segura através das variáveis de ambiente
-const BIN_ID = process.env.BIN_ID;
-const API_KEY = process.env.API_KEY; 
-const URL_JSONBIN = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
-
-// Rota para ler os dados salvos (GET)
-app.get('/api/dados', async (req, res) => {
-    try {
-        if (!BIN_ID || !API_KEY) {
-            return res.status(500).send("Configurações do banco de dados ausentes.");
-        }
-        const resposta = await fetch(`${URL_JSONBIN}/latest`, {
-            method: 'GET',
-            headers: { 'X-Master-Key': API_KEY }
-        });
-        const dados = await resposta.json();
-        res.json(dados.record || { resultadosOficiais: {}, palpites: {} });
-    } catch (err) {
-        console.error("Erro ao ler dados da nuvem:", err);
-        res.status(500).send("Erro ao ler dados.");
+async function carregarDadosDoServidor() {
+    // 1. Tenta carregar primeiro o backup de emergência do navegador
+    const backupLocal = localStorage.getItem('backup_emergencia_bolao');
+    if (backupLocal) {
+        dadosBolao = JSON.parse(backupLocal);
     }
-});
 
-// Rota para salvar os dados recebidos (POST)
-app.post('/api/salvar', async (req, res) => {
     try {
-        const novosDados = req.body;
-        const resposta = await fetch(URL_JSONBIN, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Master-Key': API_KEY
-            },
-            body: JSON.stringify(novosDados)
-        });
+        const response = await fetch('/api/dados');
+        if (response.ok) {
+            const dadosServidor = await response.json();
+            if (dadosServidor && (dadosServidor.resultadosOficiais || dadosServidor.palpites)) {
+                if(dadosServidor.resultadosOficiais) dadosBolao.resultadosOficiais = dadosServidor.resultadosOficiais;
+                if(dadosServidor.palpites) {
+                    PARTICIPANTES.forEach(p => {
+                        if(dadosServidor.palpites[p]) dadosBolao.palpites[p] = dadosServidor.palpites[p];
+                    });
+                }
+                // Atualiza o backup local com os dados frescos do servidor
+                localStorage.setItem('backup_emergencia_bolao', JSON.stringify(dadosBolao));
+            }
+        }
+    } catch (error) {
+        console.error("Erro ao conectar com o servidor. Usando dados locais.", error);
+    } finally {
+        renderMatches();
+        calculateRanking();
+    }
+}
 
-        if (resposta.ok) {
-            res.send("Dados salvos com sucesso na nuvem.");
+// E modifique a sua função saveData() para salvar no localStorage também:
+async function saveData() {
+    // Salva localmente primeiro para garantir
+    localStorage.setItem('backup_emergencia_bolao', JSON.stringify(dadosBolao));
+
+    try {
+        const response = await fetch('/api/dados', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dadosBolao)
+        });
+        if (response.ok) {
+            alert("Dados salvos com sucesso na nuvem e localmente!");
+            calculateRanking();
+            renderMatches();
         } else {
-            throw new Error("Falha na resposta do JSONBin");
+            alert("Erro ao salvar dados no servidor, mas seu palpite está salvo no seu navegador!");
         }
-    } catch (err) {
-        console.error("Erro ao salvar dados na nuvem:", err);
-        res.status(500).send("Erro ao salvar dados.");
+    } catch (error) {
+        console.error("Erro ao enviar dados.", error);
+        alert("Erro de conexão. Palpites guardados temporariamente no seu navegador.");
     }
-});
-
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-app.listen(PORT, () => {
-    console.log(`Servidor a rodar na porta ${PORT}`);
-});
+}
