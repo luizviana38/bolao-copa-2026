@@ -1,42 +1,58 @@
 const express = require('express');
 const path = require('path');
-const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware essencial para ler o JSON enviado pelo index.html
 app.use(express.json());
-
-// Servir os ficheiros estáticos (index.html, imagens, etc.)
 app.use(express.static(__dirname));
 
-const caminhoDados = path.join(__dirname, 'dados_bolao.json');
+// O Render vai injetar esses valores de forma segura através das variáveis de ambiente
+const BIN_ID = process.env.BIN_ID;
+const API_KEY = process.env.API_KEY; 
+const URL_JSONBIN = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
 // Rota para ler os dados salvos (GET)
-app.get('/api/dados', (req, res) => {
-    if (!fs.existsSync(caminhoDados)) {
-        return res.json({ resultadosOficiais: {}, palpites: {} });
-    }
-    fs.readFile(caminhoDados, 'utf8', (err, data) => {
-        if (err) return res.status(500).send("Erro ao ler dados.");
-        try {
-            res.json(JSON.parse(data || '{}'));
-        } catch (e) {
-            res.json({ resultadosOficiais: {}, palpites: {} });
+app.get('/api/dados', async (req, res) => {
+    try {
+        if (!BIN_ID || !API_KEY) {
+            return res.status(500).send("Configurações do banco de dados ausentes.");
         }
-    });
+        const resposta = await fetch(`${URL_JSONBIN}/latest`, {
+            method: 'GET',
+            headers: { 'X-Master-Key': API_KEY }
+        });
+        const dados = await resposta.json();
+        res.json(dados.record || { resultadosOficiais: {}, palpites: {} });
+    } catch (err) {
+        console.error("Erro ao ler dados da nuvem:", err);
+        res.status(500).send("Erro ao ler dados.");
+    }
 });
 
-// Rota para salvar os dados recebidos do index.html (POST)
-app.post('/api/salvar', (req, res) => {
-    const novosDados = req.body;
-    fs.writeFile(caminhoDados, JSON.stringify(novosDados, null, 2), 'utf8', (err) => {
-        if (err) return res.status(500).send("Erro ao salvar dados.");
-        res.send("Dados salvos com sucesso.");
-    });
+// Rota para salvar os dados recebidos (POST)
+app.post('/api/salvar', async (req, res) => {
+    try {
+        const novosDados = req.body;
+        const resposta = await fetch(URL_JSONBIN, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Master-Key': API_KEY
+            },
+            body: JSON.stringify(novosDados)
+        });
+
+        if (resposta.ok) {
+            res.send("Dados salvos com sucesso na nuvem.");
+        } else {
+            throw new Error("Falha na resposta do JSONBin");
+        }
+    } catch (err) {
+        console.error("Erro ao salvar dados na nuvem:", err);
+        res.status(500).send("Erro ao salvar dados.");
+    }
 });
 
-// Forçar qualquer outra rota a carregar o index.html
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
