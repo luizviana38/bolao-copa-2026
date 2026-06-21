@@ -4,378 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bolão Copa 2026 - Grupos Oficiais</title>
-    <style>
-        :root {
-            --primary: #006633;
-            --secondary: #fed100;
-            --dark: #1a1a1a;
-            --light: #f4f4f9;
-            --success: #28a745;
-            --danger: #dc3545;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--light);
-            margin: 0;
-            padding: 20px;
-            color: var(--dark);
-        }
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-        header {
-            background: linear-gradient(135deg, var(--primary), #004422);
-            color: white;
-            padding: 25px 20px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            margin-bottom: 25px;
-        }
-        header h1 { margin: 0; font-size: 26px; color: var(--secondary); }
-        
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-        }
-        @media(min-width: 768px) {
-            .grid { grid-template-columns: 2.2fr 1fr; }
-        }
-
-        .card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-        }
-        h2 { margin-top: 0; border-bottom: 2px solid var(--primary); padding-bottom: 8px; color: var(--primary); font-size: 18px; }
-
-        .group-filter-container {
-            margin-bottom: 15px;
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-        }
-        .filter-btn {
-            background: #e0e0e0;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: bold;
-            transition: all 0.2s;
-        }
-        .filter-btn.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        .matches-scroll {
-            max-height: 650px;
-            overflow-y: auto;
-            padding-right: 5px;
-        }
-
-        .match-block {
-            padding: 15px 0;
-            border-bottom: 1px solid #eee;
-            text-align: center;
-        }
-        .match-block:last-child { border: none; }
-         
-        .match-info {
-            font-size: 11px;
-            color: #555;
-            margin-bottom: 8px;
-            text-align: left;
-            background-color: #f8f9fa;
-            padding: 4px 8px;
-            border-radius: 4px;
-            border-left: 3px solid var(--primary);
-        }
-
-        .resultado-oficial-box {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #f0f7f4;
-            border: 1px solid #c2e0d1;
-            border-radius: 6px;
-            padding: 6px 14px;
-            margin-bottom: 10px;
-            font-size: 12px;
-            color: #2d3748;
-        }
-        .label-oficial {
-            font-weight: bold;
-            color: var(--primary);
-            margin-right: 6px;
-        }
-        .placar-oficial-texto {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .placar-oficial-texto strong {
-            color: #000;
-            font-size: 13px;
-            margin: 0 2px;
-        }
-
-        .match-row {
-            display: grid;
-            grid-template-columns: 1fr auto auto auto 1fr;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            position: relative;
-        }
-        
-        .team-container {
-            display: flex;
-            align-items: center;
-            font-size: 15px;
-            color: #444;
-        }
-        .team-left {
-            justify-content: flex-end;
-            text-align: right;
-        }
-        .team-right {
-            justify-content: flex-start;
-            text-align: left;
-        }
-        
-        .team-sigla {
-            font-weight: 400;
-            color: #555;
-        }
-        
-        .flag-img {
-            width: 32px;
-            height: auto;
-            border-radius: 2px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
-            display: inline-block;
-            vertical-align: middle;
-        }
-        .flag-left { margin-left: 8px; }
-        .flag-right { margin-right: 8px; }
-
-        input[type="number"] {
-            width: 45px;
-            height: 35px;
-            text-align: center;
-            font-size: 18px;
-            font-weight: bold;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background-color: #fff;
-        }
-        input[type="number"]:disabled {
-            background-color: #e9ecef;
-            color: #6c757d;
-            cursor: not-allowed;
-            border: 1px dashed #ccc;
-        }
-        .vs { 
-            font-size: 14px; 
-            color: #999; 
-            font-weight: normal;
-            padding: 0 4px;
-        }
-
-        .match-points-tag {
-            display: inline-block;
-            margin-left: 15px;
-            font-size: 14px;
-            font-weight: bold;
-            color: #e53e3e;
-            vertical-align: middle;
-            white-space: nowrap;
-        }
-        .match-points-tag.zero { color: #a0aec0; font-weight: normal; }
-        .match-points-tag.green { color: #38a169; }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-            font-size: 14px;
-        }
-        th { background-color: var(--primary); color: white; }
-        tr:nth-child(even) td { background-color: #f9f9f9; }
-        .pos { font-weight: bold; width: 25px; }
-        .pts { font-weight: bold; color: var(--success); text-align: right; }
-
-        .btn {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            width: 100%;
-            transition: background 0.2s;
-        }
-        .btn:hover { background-color: #004422; }
-        .btn-sec { background-color: #6c757d; }
-        .btn-sec:hover { background-color: #5a6268; }
-         
-        .btn-lock {
-            background-color: #ff9900;
-            color: black;
-            padding: 8px 12px;
-            font-size: 13px;
-            margin-top: -5px;
-            margin-bottom: 10px;
-            display: none;
-        }
-        .btn-lock.unlocked {
-            background-color: var(--success);
-            color: white;
-        }
-
-        select {
-            width: 100%;
-            padding: 10px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            font-size: 16px;
-        }
-        .flex-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-    </style>
+    <!-- Mantenha aqui o seu <style> que você já possui -->
 </head>
 <body>
 
 <div class="container">
-    <header>
-        <h1>Bolão da Copa do Mundo FIFA 2026</h1>
-        <p style="margin-bottom: 12px;">🏆 Grupos Oficiais Conforme Infográfico • Luiz Viana, Caio, David, Márcio e Tainá</p>
-        
-        <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.2); margin: 10px auto; max-width: 400px;">
-        
-        <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 10px;">
-            <img src="https://github.com/luizviana38.png" alt="Luiz Viana" style="width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--secondary); box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
-            <span style="font-size: 13px; color: #fff; opacity: 0.9;">
-                Desenvolvido por: <a href="https://github.com/luizviana38" target="_blank" style="color: var(--secondary); font-weight: bold; text-decoration: none; border-bottom: 1px dashed var(--secondary);">Luiz Viana</a>
-            </span>
-        </div>
-    </header>
-
-    <div class="grid">
-        <div class="left-col">
-            <div class="card">
-                <h2>1. Selecione seu Nome</h2>
-                <select id="select-user" onchange="loadUserPalpites()">
-                    <option value="Admin (Resultados Oficiais)">⚙️ Admin (Resultados Oficiais)</option>
-                    <option value="Luiz Viana">🏃 Luiz Viana</option>
-                    <option value="Caio">🏃 Caio</option>
-                    <option value="David">🏃 David</option>
-                    <option value="Márcio">🏃 Márcio</option>
-                    <option value="Tainá">🏃 Tainá</option>
-                </select>
-                 
-                <button id="btn-lock-status" class="btn btn-lock" onclick="solicitarSenhaBloqueio()">🔒 Palpites Bloqueados (Clique para liberar)</button>
-            </div>
-
-            <div class="card">
-                <h2 id="match-card-title">Palpites dos Jogos</h2>
-                 
-                <div class="group-filter-container">
-                    <button class="filter-btn active" onclick="filterGroup('TODOS', this)">Todos</button>
-                    <button class="filter-btn" onclick="filterGroup('Grupo A', this)">Gr. A</button>
-                    <button class="filter-btn" onclick="filterGroup('Grupo B', this)">Gr. B</button>
-                    <button class="filter-btn" onclick="filterGroup('Grupo C', this)">Gr. C (Brasil)</button>
-                    <button class="filter-btn" onclick="filterGroup('Grupo D', this)">Gr. D</button>
-                    <button class="filter-btn" onclick="filterGroup('Grupo E', this)">Gr. E</button>
-                    <button class="filter-btn" onclick="filterGroup('Grupo F', this)">Gr. F</button>
-                    <button class="filter-btn" onclick="filterGroup('Grupo G', this)">Gr. G</button>
-                    <button class="filter-btn" onclick="filterGroup('Grupo H', this)">Gr. H</button>
-                    <button class="filter-btn" onclick="filterGroup('Grupo I', this)">Gr. I</button>
-                    <button class="filter-btn" onclick="filterGroup('Grupo J', this)">Gr. J</button>
-                    <button class="filter-btn" onclick="filterGroup('Grupo K', this)">Gr. K</button>
-                    <button class="filter-btn" onclick="filterGroup('Grupo L', this)">Gr. L</button>
-                </div>
-
-                <div class="matches-scroll" id="matches-container"></div>
-                <div class="flex-buttons">
-                    <button class="btn" onclick="saveData()">💾 Salvar Meus Palpites</button>
-                </div>
-            </div>
-             
-            <div class="card">
-                <h2>Sincronização via WhatsApp</h2>
-                <p style="font-size: 13px; color:#555;">Clique em copiar, envie no grupo. Quando os outros mandarem o código deles, cole abaixo e clique em Atualizar.</p>
-                <button class="btn btn-sec" onclick="exportData()">📋 Copiar Meu Código de Palpites</button>
-                <textarea id="import-area" rows="3" style="width:100%; margin-top:10px; border-radius:6px; padding:5px; font-family: monospace;" placeholder="Cole o código do seu amigo aqui..."></textarea>
-                <button class="btn btn-sec" style="margin-top:5px;" onclick="importFriendData()">📥 Atualizar com Dados do Amigo</button>
-            </div>
-        </div>
-
-        <div class="right-col">
-            <div class="card">
-                <h2>Classificação Atual</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th class="pos">#</th>
-                            <th>Nome</th>
-                            <th style="text-align:right">Pts</th>
-                        </tr>
-                    </thead>
-                    <tbody id="ranking-body"></tbody>
-                </table>
-            </div>
-
-            <div class="card">
-                <h3>Critério de Pontos</h3>
-                <ul style="font-size: 12px; padding-left: 15px; line-height: 1.6; margin: 0;">
-                    <li><strong>25 pts:</strong> Placar Exato</li>
-                    <li><strong>15 pts:</strong> Vencedor + Saldo de Gols</li>
-                    <li><strong>10 pts:</strong> Apenas vencedor/empate</li>
-                    <li><strong>00 pts:</strong> Erro total</li>
-                </ul>
-            </div>
-        </div>
-    </div>
+    <!-- Mantenha aqui o seu <header> e estrutura HTML que você já possui -->
 </div>
 
-// Cole aqui toda a sua lista JOGOS_OFICIAIS_FIFA que você já tem
-    const JOGOS_OFICIAIS_FIFA = [ ... ]; // (Mantenha seus 76 objetos aqui)
+<script>
+    // 1. SUA LISTA DE JOGOS (Substitua a linha abaixo pela sua lista completa)
+    const JOGOS_OFICIAIS_FIFA = [...]; 
 
+    // 2. CONFIGURAÇÕES INICIAIS
     const PARTICIPANTES = ["Luiz Viana", "Caio", "David", "Márcio", "Tainá"];
     let currentGroupFilter = "TODOS";
     let listagemDesbloqueadaParaAmigo = false;
 
-    // Carrega dados do localStorage ou inicia objeto vazio
     let dadosBolao = JSON.parse(localStorage.getItem('bolao2026')) || { 
         resultadosOficiais: {}, 
         palpites: {} 
     };
 
-    function init() {
-        renderMatches();
-        calculateRanking();
-    }
-
+    // 3. FUNÇÕES PRINCIPAIS
     function renderMatches() {
         const user = document.getElementById('select-user').value;
         const container = document.getElementById('matches-container');
-        const lockBtn = document.getElementById('btn-lock-status');
         container.innerHTML = '';
 
         const isAdmin = user === "Admin (Resultados Oficiais)";
@@ -386,7 +40,6 @@
 
             if (!dadosBolao.palpites[user]) dadosBolao.palpites[user] = {};
             const palpite = dadosBolao.palpites[user][jogo.id] || { m: "", v: "" };
-            const oficial = dadosBolao.resultadosOficiais[jogo.id] || { m: "", v: "" };
 
             container.innerHTML += `
                 <div class="match-block">
@@ -412,11 +65,22 @@
 
     function saveData() {
         localStorage.setItem('bolao2026', JSON.stringify(dadosBolao));
-        alert("Palpites salvos localmente!");
-        calculateRanking();
+        alert("Palpites salvos com sucesso!");
+        location.reload();
     }
 
-    // (Inclua aqui as suas funções de calcularPontosDoJogo, filterGroup, etc.)
+    function filterGroup(grupo, btn) {
+        currentGroupFilter = grupo;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderMatches();
+    }
 
-    window.onload = init;</body>
+    // Inicialização
+    window.onload = function() {
+        renderMatches();
+    };
+
+</script>
+</body>
 </html>
