@@ -27,14 +27,14 @@
         header {
             background: linear-gradient(135deg, var(--primary), #004422);
             color: white;
-            padding: 20px;
+            padding: 25px 20px;
             border-radius: 12px;
             text-align: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             margin-bottom: 25px;
         }
         header h1 { margin: 0; font-size: 26px; color: var(--secondary); }
-         
+        
         .grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -264,7 +264,16 @@
 <div class="container">
     <header>
         <h1>Bolão da Copa do Mundo FIFA 2026</h1>
-        <p>🏆 Grupos Oficiais Conforme Infográfico • Luiz Viana, Caio, David, Márcio e Tainá</p>
+        <p style="margin-bottom: 12px;">🏆 Grupos Oficiais Conforme Infográfico • Luiz Viana, Caio, David, Márcio e Tainá</p>
+        
+        <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.2); margin: 10px auto; max-width: 400px;">
+        
+        <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 10px;">
+            <img src="https://github.com/luizviana38.png" alt="Luiz Viana" style="width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--secondary); box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+            <span style="font-size: 13px; color: #fff; opacity: 0.9;">
+                Desenvolvido por: <a href="https://github.com/luizviana38" target="_blank" style="color: var(--secondary); font-weight: bold; text-decoration: none; border-bottom: 1px dashed var(--secondary);">Luiz Viana</a>
+            </span>
+        </div>
     </header>
 
     <div class="grid">
@@ -369,13 +378,13 @@
         { id: 20, grupo: "Grupo D", mandante: "Austrália", siglaM: "AUS", flagCodeM: "au", visitante: "Turquia", siglaV: "TUR", flagCodeV: "tr", data: "13/06/2026", hora: "14:00", cidade: "Seattle" },
         { id: 21, grupo: "Grupo D", mandante: "EUA", siglaM: "EUA", flagCodeM: "us", visitante: "Austrália", siglaV: "AUS", flagCodeV: "au", data: "19/06/2026", hora: "20:00", cidade: "São Francisco" },
         { id: 22, grupo: "Grupo D", mandante: "Paraguai", siglaM: "PAR", flagCodeM: "py", visitante: "Turquia", siglaV: "TUR", flagCodeV: "tr", data: "19/06/2026", hora: "16:00", cidade: "Houston" },
-        { id: 23, grupo: "Grupo D", mandante: "Turquia", siglaM: "TUR", flagCodeM: "tr", visitante: "EUA", siglaV: "EUA", flagCodeV: "us", data: "25/06/2026", hora: "16:00", cidade: "Los Angeles" },
+        { id: 23, group: "Grupo D", mandante: "Turquia", siglaM: "TUR", flagCodeM: "tr", visitante: "EUA", siglaV: "EUA", flagCodeV: "us", data: "25/06/2026", hora: "16:00", cidade: "Los Angeles" },
         { id: 24, grupo: "Grupo D", mandante: "Paraguai", siglaM: "PAR", flagCodeM: "py", visitante: "Austrália", siglaV: "AUS", flagCodeV: "au", data: "25/06/2026", hora: "16:00", cidade: "São Francisco" },
         { id: 25, grupo: "Grupo E", mandante: "Alemanha", siglaM: "ALE", flagCodeM: "de", visitante: "Curaçao", siglaV: "CUR", flagCodeV: "cw", data: "14/06/2026", hora: "15:00", cidade: "Oakland" },
         { id: 26, grupo: "Grupo E", mandante: "Costa do Marfim", siglaM: "CIV", flagCodeM: "ci", visitante: "Equador", siglaV: "EQU", flagCodeV: "ec", data: "14/06/2026", hora: "19:00", cidade: "Atlanta" },
         { id: 27, grupo: "Grupo E", mandante: "Alemanha", siglaM: "ALE", flagCodeM: "de", visitante: "Costa do Marfim", siglaV: "CIV", flagCodeV: "ci", data: "20/06/2026", hora: "18:00", cidade: "Filadélfia" },
         { id: 28, grupo: "Grupo E", mandante: "Curaçao", siglaM: "CUR", flagCodeM: "cw", visitante: "Equador", siglaV: "EQU", flagCodeV: "ec", data: "20/06/2026", hora: "21:00", cidade: "Houston" },
-        { id: 29, grupo: "Grupo E", mandante: "Equador", siglaM: "EQU", flagCodeM: "ec", visitante: "Alemanha", siglaV: "ALE", flagCodeV: "de", data: "25/06/2026", hora: "13:00", cidade: "Filadélfia" },
+        { id: 29, grupo: "Grupo E", mandante: "Equador", siglaM: "EQU", flagCodeM: "ec", visitante: "Alemanha", siglaM: "ALE", flagCodeM: "de", data: "25/06/2026", hora: "13:00", cidade: "Filadélfia" },
         { id: 30, grupo: "Grupo E", mandante: "Curaçao", siglaM: "CUR", flagCodeM: "cw", visitante: "Costa do Marfim", siglaV: "CIV", flagCodeV: "ci", data: "25/06/2026", hora: "13:00", cidade: "Atlanta" },
         { id: 31, grupo: "Grupo F", mandante: "Holanda", siglaM: "HOL", flagCodeM: "nl", visitante: "Japão", siglaV: "JAP", flagCodeV: "jp", data: "14/06/2026", hora: "21:00", cidade: "Nova York" },
         { id: 32, grupo: "Grupo F", mandante: "Suécia", siglaM: "SUE", flagCodeM: "se", visitante: "Tunísia", siglaV: "TUN", flagCodeV: "tn", data: "14/06/2026", hora: "17:00", cidade: "Dallas" },
@@ -413,10 +422,6 @@
         { id: 64, grupo: "Grupo K", mandante: "RD Congo", siglaM: "RDC", flagCodeM: "cd", visitante: "Colômbia", siglaV: "COL", flagCodeV: "co", data: "23/06/2026", hora: "21:00", cidade: "Cidade do México" },
         { id: 65, grupo: "Grupo K", mandante: "Colômbia", siglaM: "COL", flagCodeM: "co", visitante: "Portugal", siglaV: "POR", flagCodeV: "pt", data: "27/06/2026", hora: "21:00", cidade: "Guadalajara" },
         { id: 66, grupo: "Grupo K", mandante: "RD Congo", siglaM: "RDC", flagCodeM: "cd", visitante: "Uzbequistão", siglaV: "UZB", flagCodeV: "uz", data: "27/06/2026", hora: "21:00", cidade: "Monterrey" },
-        { id: 67, grupo: "Grupo L", mandante: "Inglaterra", siglaM: "ING", flagCodeM: "gb-eng", visitante: "Croácia", siglaV: "CRO", flagCodeV: "hr", data: "17/06/2026", hora: "21:00", cidade: "Seattle" },
-        { id: 68, grupo: "Grupo L", mandante: "Gana", siglaM: "GAN", flagCodeM: "gh", visitante: "Panamá", siglaV: "PAN", flagCodeV: "pa", data: "18/06/2026", hora: "15:00", cidade: "Atlanta" },
-        { id: 69, grupo: "Grupo L", mandante: "Inglaterra", siglaM: "ING", flagCodeM: "gb-eng", visitante: "Gana", siglaV: "GAN", flagCodeV: "gh", data: "23/06/2026", hora: "15:00", cidade: "Boston" },
-        { id: 70, grupo: "Grupo L", mandante: "Croácia", siglaM: "CRO", flagCodeM: "hr", visitante: "Panamá", siglaV: "PAN", flagCodeV: "pa", data: "23/06/2026", hora: "19:00", cidade: "Filadélfia" },
         { id: 71, grupo: "Grupo L", mandante: "Panamá", siglaM: "PAN", flagCodeM: "pa", visitante: "Inglaterra", siglaV: "ING", flagCodeV: "gb-eng", data: "27/06/2026", hora: "14:00", cidade: "Filadélfia" },
         { id: 72, grupo: "Grupo L", mandante: "Croácia", siglaM: "CRO", flagCodeM: "hr", visitante: "Gana", siglaV: "GAN", flagCodeV: "gh", data: "27/06/2026", hora: "14:00", cidade: "Boston" }
     ];
@@ -553,11 +558,11 @@
                     const oV = dadosBolao.resultadosOficiais[jogo.id].v;
                     oficialHTML = `
                         <div class="resultado-oficial-box">
-                            <span class="label-oficial">OFICIAL:</span>
+                            <span class="label-oficial">Placar Real FIFA:</span>
                             <span class="placar-oficial-texto">${jogo.siglaM} <strong>${oM}</strong> x <strong>${oV}</strong> ${jogo.siglaV}</span>
                         </div>
                     `;
-
+                    
                     const pts = calcularPontosDoJogo(dadosBolao.resultadosOficiais[jogo.id], { m: golsM, v: golsV });
                     if (pts !== null) {
                         let classePontos = "zero";
@@ -568,9 +573,9 @@
                 }
             }
 
-            const block = document.createElement('div');
-            block.className = 'match-block';
-            block.innerHTML = `
+            const div = document.createElement('div');
+            div.className = 'match-block';
+            div.innerHTML = `
                 <div class="match-info">
                     <strong>${jogo.grupo}</strong> • ${jogo.data} às ${jogo.hora} • ${jogo.cidade}
                 </div>
@@ -578,134 +583,125 @@
                 <div class="match-row">
                     <div class="team-container team-left">
                         <span>${jogo.mandante}</span>
-                        <span class="team-sigla">&nbsp;(${jogo.siglaM})</span>
-                        <img class="flag-img flag-left" src="https://flagcdn.com/w40/${jogo.flagCodeM}.png" alt="${jogo.mandante}">
+                        <span class="team-sigla" style="margin-left:5px; margin-right:5px;">(${jogo.siglaM})</span>
+                        <img src="https://flagcdn.com/w40/${jogo.flagCodeM}.png" class="flag-img flag-left" alt="Bandeira ${jogo.mandante}">
                     </div>
-                    <input type="number" min="0" ${isDisabled} value="${golsM}" oninput="updatePlacarValue(${jogo.id}, 'm', this.value)">
+                    <input type="number" min="0" id="m-${jogo.id}" value="${golsM}" ${isDisabled} onchange="atualizarDadosMemoria(${jogo.id}, 'm', this.value)">
                     <span class="vs">x</span>
-                    <input type="number" min="0" ${isDisabled} value="${golsV}" oninput="updatePlacarValue(${jogo.id}, 'v', this.value)">
+                    <input type="number" min="0" id="v-${jogo.id}" value="${golsV}" ${isDisabled} onchange="atualizarDadosMemoria(${jogo.id}, 'v', this.value)">
                     <div class="team-container team-right">
-                        <img class="flag-img flag-right" src="https://flagcdn.com/w40/${jogo.flagCodeV}.png" alt="${jogo.visitante}">
+                        <img src="https://flagcdn.com/w40/${jogo.flagCodeV}.png" class="flag-img flag-right" alt="Bandeira ${jogo.visitante}">
                         <span>${jogo.visitante}</span>
-                        <span class="team-sigla">&nbsp;(${jogo.siglaV})</span>
+                        <span class="team-sigla" style="margin-left:5px;">(${jogo.siglaV})</span>
                         ${pontosHTML}
                     </div>
                 </div>
             `;
-            container.appendChild(block);
+            container.appendChild(div);
         });
     }
 
-    function updatePlacarValue(jogoId, tipo, valor) {
+    function atualizarDadosMemoria(jogoId, tipo, valor) {
         const currentUser = document.getElementById('select-user').value;
         if (currentUser === "Admin (Resultados Oficiais)") {
-            if (!dadosBolao.resultadosOficiais[jogoId]) dadosBolao.resultadosOficiais[jogoId] = { m: '', v: '' };
+            if (!dadosBolao.resultadosOficiais[jogoId]) dadosBolao.resultadosOficiais[jogoId] = { m: "", v: "" };
             dadosBolao.resultadosOficiais[jogoId][tipo] = valor;
         } else {
             if (!dadosBolao.palpites[currentUser]) dadosBolao.palpites[currentUser] = {};
-            if (!dadosBolao.palpites[currentUser][jogoId]) dadosBolao.palpites[currentUser][jogoId] = { m: '', v: '' };
+            if (!dadosBolao.palpites[currentUser][jogoId]) dadosBolao.palpites[currentUser][jogoId] = { m: "", v: "" };
             dadosBolao.palpites[currentUser][jogoId][tipo] = valor;
         }
     }
 
-    // Função de Salvar atualizada com diagnóstico detalhado de erro
     async function saveData() {
         try {
-            console.log("Tentando salvar dados:", dadosBolao);
-            const response = await fetch('/api/salvar', {
+            const response = await fetch('/api/dados', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dadosBolao)
             });
-
             if (response.ok) {
-                alert("✅ Sucesso! Dados sincronizados e salvos com sucesso no servidor.");
+                alert("Dados salvos com sucesso na nuvem!");
                 calculateRanking();
                 renderMatches();
             } else {
-                const textoErro = await response.text();
-                alert(`❌ O servidor recusou o salvamento (Status ${response.status}).\nResposta do servidor: ${textoErro || 'Nenhuma'}`);
+                alert("Erro ao salvar dados.");
             }
         } catch (error) {
-            console.error("Erro na requisição POST:", error);
-            alert(`🚨 Falha de Rede ou Conexão!\nO navegador não conseguiu falar com o servidor.\n\nDetalhe do erro: ${error.message}\n\nVerifique se o seu 'servidor.js' está rodando na mesma porta e se você acessou a página através do endereço do servidor (Ex: http://localhost:3000), e não abrindo o arquivo direto.`);
+            console.error("Erro ao enviar dados.", error);
+            alert("Erro de conexão com o servidor.");
         }
     }
 
     function calculateRanking() {
-        let listaRanking = [];
-
-        PARTICIPANTES.forEach(user => {
+        let ranking = PARTICIPANTES.map(p => {
             let totalPts = 0;
             JOGOS_OFICIAIS_FIFA.forEach(jogo => {
                 const oficial = dadosBolao.resultadosOficiais[jogo.id];
-                const palpite = dadosBolao.palpites[user] ? dadosBolao.palpites[user][jogo.id] : null;
+                const palpite = dadosBolao.palpites[p] ? dadosBolao.palpites[p][jogo.id] : null;
                 const pts = calcularPontosDoJogo(oficial, palpite);
                 if (pts !== null) totalPts += pts;
             });
-            listaRanking.push({ nome: user, pontos: totalPts });
+            return { nome: p, pontos: totalPts };
         });
 
-        listaRanking.sort((a, b) => b.pontos - a.pontos);
+        ranking.sort((a, b) => b.pontos - a.pontos);
 
-        const rankingBody = document.getElementById('ranking-body');
-        rankingBody.innerHTML = '';
-        listaRanking.forEach((posicao, index) => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td class="pos">${index + 1}</td>
-                <td>${posicao.nome}</td>
-                <td class="pts">${posicao.pontos} pts</td>
+        const tbody = document.getElementById('ranking-body');
+        tbody.innerHTML = '';
+        ranking.forEach((pos, idx) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="pos">${idx + 1}º</td>
+                <td>${pos.nome}</td>
+                <td class="pts">${pos.pontos} pts</td>
             `;
-            rankingBody.appendChild(row);
+            tbody.appendChild(tr);
         });
     }
 
     function exportData() {
         const currentUser = document.getElementById('select-user').value;
         if (currentUser === "Admin (Resultados Oficiais)") {
-            return alert("Escolha o seu nome real para exportar os seus palpites.");
+            alert("Selecione um participante real para exportar palpites!");
+            return;
         }
-        const userPalpites = dadosBolao.palpites[currentUser] || {};
-        const pacote = { usuario: currentUser, dados: userPalpites };
-        const base64String = btoa(unescape(encodeURIComponent(JSON.stringify(pacote))));
+        const dadosExportar = { user: currentUser, palpites: dadosBolao.palpites[currentUser] };
+        const stringBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(dadosExportar))));
         
-        navigator.clipboard.writeText(base64String).then(() => {
-            alert(`Código de [${currentUser}] copiado! Cole no WhatsApp do grupo.`);
-        }).catch(() => {
-            alert("Erro ao copiar automaticamente. Use a gravação padrão no botão azul.");
+        navigator.clipboard.writeText(`BOLAO2026:${stringBase64}`).then(() => {
+            alert(`Código de palpites de ${currentUser} copiado com sucesso! Compartilhe no WhatsApp.`);
         });
     }
 
     function importFriendData() {
-        const area = document.getElementById('import-area');
-        const cru = area.value.trim();
-        if (!cru) return alert('Cole o código do seu amigo gerado no campo de texto primeiro.');
-
+        const input = document.getElementById('import-area').value.trim();
+        if (!input.startsWith("BOLAO2026:")) {
+            alert("Código inválido! Certifique-se de que o código começa com 'BOLAO2026:'");
+            return;
+        }
         try {
-            const analisado = JSON.parse(decodeURIComponent(escape(atob(cru))));
-            if (analisado && analisado.usuario && analisado.dados) {
-                if (!PARTICIPANTES.includes(analisado.usuario)) {
-                    return alert("O participante contido no código não é membro oficial cadastrado deste bolão.");
+            const hash = input.replace("BOLAO2026:", "");
+            const stringDecodificada = decodeURIComponent(escape(atob(hash)));
+            const dadosAmigo = JSON.parse(stringDecodificada);
+            
+            if(dadosAmigo && dadosAmigo.user && dadosAmigo.palpites) {
+                if(PARTICIPANTES.includes(dadosAmigo.user)) {
+                    dadosBolao.palpites[dadosAmigo.user] = dadosAmigo.palpites;
+                    alert(`Palpites de ${dadosAmigo.user} atualizados com sucesso no sistema! Salve as mudanças.`);
+                    document.getElementById('import-area').value = '';
+                    calculateRanking();
+                    renderMatches();
+                } else {
+                    alert("Este participante não faz parte do grupo oficial.");
                 }
-                dadosBolao.palpites[analisado.usuario] = analisado.dados;
-                alert(`Palpites de [${analisado.usuario}] importados com sucesso! Lembre-se de clicar em salvar para mantê-los.`);
-                area.value = '';
-                calculateRanking();
-                renderMatches();
-            } else {
-                alert("Formato de criptografia inválido.");
             }
         } catch(e) {
-            alert("Código de dados corrompido.");
+            alert("Erro ao processar o código. Verifique se copiou o texto por completo.");
         }
     }
 
-    window.onload = function() {
-        carregarDadosDoServidor();
-    };
+    window.onload = carregarDadosDoServidor;
 </script>
 </body>
 </html>
