@@ -4,44 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bolão Copa 2026 - Grupos Oficiais</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f4f4f4; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; }
+        .match-block { border-bottom: 1px solid #ddd; padding: 15px 0; }
+        .match-info { font-size: 0.8em; color: #666; margin-bottom: 5px; }
+        .match-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        input { width: 40px; text-align: center; padding: 5px; }
+        .team-container { flex: 1; font-weight: bold; }
+        .team-left { text-align: right; }
+        .team-right { text-align: left; }
+    </style>
 </head>
 <body>
 
-<div class="container" id="matches-container">
-    <!-- O conteúdo será gerado pelo JavaScript -->
+<div class="container">
+    <h2>Bolão Copa 2026</h2>
+    <label>Selecione seu nome:</label>
+    <select id="select-user" onchange="renderMatches()">
+        <option value="Luiz Viana">Luiz Viana</option>
+        <option value="Caio">Caio</option>
+        <option value="David">David</option>
+        <option value="Márcio">Márcio</option>
+        <option value="Tainá">Tainá</option>
+    </select>
+    <hr>
+    <div id="matches-container"></div>
+    <button onclick="saveData()" style="margin-top:20px; padding:10px; width:100%;">Salvar Palpites</button>
 </div>
 
 <script>
-    // 1. SUA LISTA DE JOGOS
     const JOGOS_OFICIAIS_FIFA = [
         { id: 1, grupo: "Grupo A", mandante: "México", visitante: "África do Sul", data: "11/06/2026", cidade: "Cidade do México" },
         { id: 2, grupo: "Grupo A", mandante: "Coreia do Sul", visitante: "Rep. Tcheca", data: "11/06/2026", cidade: "Guadalajara" },
-        // ... (mantenha o restante da sua lista de 76 jogos aqui dentro) ...
         { id: 76, grupo: "Grupo L", mandante: "Croácia", visitante: "Panamá", data: "05/07/2026", cidade: "Boston" }
+        // Lembre-se de completar com seus 76 jogos aqui dentro!
     ];
 
-    // 2. CONFIGURAÇÕES INICIAIS
-    const PARTICIPANTES = ["Luiz Viana", "Caio", "David", "Márcio", "Tainá"];
-    let currentGroupFilter = "TODOS";
-    let listagemDesbloqueadaParaAmigo = false;
+    let dadosBolao = JSON.parse(localStorage.getItem('bolao2026')) || { palpites: {} };
 
-    let dadosBolao = JSON.parse(localStorage.getItem('bolao2026')) || { 
-        resultadosOficiais: {}, 
-        palpites: {} 
-    };
-
-    // 3. FUNÇÕES PRINCIPAIS
     function renderMatches() {
-        const user = document.getElementById('select-user') ? document.getElementById('select-user').value : "Luiz Viana";
+        const user = document.getElementById('select-user').value;
         const container = document.getElementById('matches-container');
         container.innerHTML = '';
 
-        const isAdmin = user === "Admin (Resultados Oficiais)";
-        let isDisabled = (isAdmin || listagemDesbloqueadaParaAmigo) ? "" : "disabled";
-
         JOGOS_OFICIAIS_FIFA.forEach(jogo => {
-            if (currentGroupFilter !== "TODOS" && jogo.grupo !== currentGroupFilter) return;
-
             if (!dadosBolao.palpites[user]) dadosBolao.palpites[user] = {};
             const palpite = dadosBolao.palpites[user][jogo.id] || { m: "", v: "" };
 
@@ -50,9 +57,9 @@
                     <div class="match-info">${jogo.data} • ${jogo.cidade} • ${jogo.grupo}</div>
                     <div class="match-row">
                         <div class="team-container team-left">${jogo.mandante}</div>
-                        <input type="number" ${isDisabled} value="${palpite.m}" onchange="update(${jogo.id}, 'm', this.value)">
+                        <input type="number" value="${palpite.m}" onchange="update(${jogo.id}, 'm', this.value)">
                         <span>x</span>
-                        <input type="number" ${isDisabled} value="${palpite.v}" onchange="update(${jogo.id}, 'v', this.value)">
+                        <input type="number" value="${palpite.v}" onchange="update(${jogo.id}, 'v', this.value)">
                         <div class="team-container team-right">${jogo.visitante}</div>
                     </div>
                 </div>
@@ -61,15 +68,18 @@
     }
 
     function update(id, campo, valor) {
-        const user = document.getElementById('select-user') ? document.getElementById('select-user').value : "Luiz Viana";
+        const user = document.getElementById('select-user').value;
         if (!dadosBolao.palpites[user]) dadosBolao.palpites[user] = {};
         if (!dadosBolao.palpites[user][id]) dadosBolao.palpites[user][id] = { m: "", v: "" };
         dadosBolao.palpites[user][id][campo] = valor;
     }
 
-    window.onload = function() {
-        renderMatches();
-    };
+    function saveData() {
+        localStorage.setItem('bolao2026', JSON.stringify(dadosBolao));
+        alert("Palpites salvos!");
+    }
+
+    window.onload = renderMatches;
 </script>
 </body>
 </html>
