@@ -5,53 +5,258 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bolão Copa 2026 - Grupos Oficiais</title>
     <style>
-        :root { --primary: #006633; --secondary: #fed100; --dark: #1a1a1a; --light: #f4f4f9; --success: #28a745; --danger: #dc3545; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--light); margin: 0; padding: 20px; color: var(--dark); }
-        .container { max-width: 1100px; margin: 0 auto; }
-        header { background: linear-gradient(135deg, var(--primary), #004422); color: white; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 25px; }
+        :root {
+            --primary: #006633;
+            --secondary: #fed100;
+            --dark: #1a1a1a;
+            --light: #f4f4f9;
+            --success: #28a745;
+            --danger: #dc3545;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light);
+            margin: 0;
+            padding: 20px;
+            color: var(--dark);
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        header {
+            background: linear-gradient(135deg, var(--primary), #004422);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
         header h1 { margin: 0; font-size: 26px; color: var(--secondary); }
-        .grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        @media(min-width: 768px) { .grid { grid-template-columns: 2.2fr 1fr; } }
-        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; }
+         
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        @media(min-width: 768px) {
+            .grid { grid-template-columns: 2.2fr 1fr; }
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
         h2 { margin-top: 0; border-bottom: 2px solid var(--primary); padding-bottom: 8px; color: var(--primary); font-size: 18px; }
-        .group-filter-container { margin-bottom: 15px; display: flex; gap: 5px; flex-wrap: wrap; }
-        .filter-btn { background: #e0e0e0; border: none; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: bold; transition: all 0.2s; }
-        .filter-btn.active { background: var(--primary); color: white; }
-        .matches-scroll { max-height: 650px; overflow-y: auto; padding-right: 5px; }
-        .match-block { padding: 15px 0; border-bottom: 1px solid #eee; text-align: center; }
+
+        .group-filter-container {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            background: #e0e0e0;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .matches-scroll {
+            max-height: 650px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .match-block {
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+            text-align: center;
+        }
         .match-block:last-child { border: none; }
-        .match-info { font-size: 11px; color: #555; margin-bottom: 8px; text-align: left; background-color: #f8f9fa; padding: 4px 8px; border-radius: 4px; border-left: 3px solid var(--primary); }
-        .resultado-oficial-box { display: inline-flex; align-items: center; justify-content: center; background-color: #f0f7f4; border: 1px solid #c2e0d1; border-radius: 6px; padding: 6px 14px; margin-bottom: 10px; font-size: 12px; color: #2d3748; }
-        .label-oficial { font-weight: bold; color: var(--primary); margin-right: 6px; }
-        .placar-oficial-texto { display: inline-flex; align-items: center; gap: 6px; }
-        .placar-oficial-texto strong { color: #000; font-size: 13px; margin: 0 2px; }
-        .match-row { display: grid; grid-template-columns: 1fr auto auto auto 1fr; align-items: center; justify-content: center; gap: 8px; position: relative; }
-        .team-container { display: flex; align-items: center; font-size: 15px; color: #444; }
-        .team-left { justify-content: flex-end; text-align: right; }
-        .team-right { justify-content: flex-start; text-align: left; }
-        .team-sigla { font-weight: 400; color: #555; }
-        .flag-img { width: 32px; height: auto; border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.15); display: inline-block; vertical-align: middle; }
+         
+        .match-info {
+            font-size: 11px;
+            color: #555;
+            margin-bottom: 8px;
+            text-align: left;
+            background-color: #f8f9fa;
+            padding: 4px 8px;
+            border-radius: 4px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .resultado-oficial-box {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f0f7f4;
+            border: 1px solid #c2e0d1;
+            border-radius: 6px;
+            padding: 6px 14px;
+            margin-bottom: 10px;
+            font-size: 12px;
+            color: #2d3748;
+        }
+        .label-oficial {
+            font-weight: bold;
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .placar-oficial-texto {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .placar-oficial-texto strong {
+            color: #000;
+            font-size: 13px;
+            margin: 0 2px;
+        }
+
+        .match-row {
+            display: grid;
+            grid-template-columns: 1fr auto auto auto 1fr;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            position: relative;
+        }
+        
+        .team-container {
+            display: flex;
+            align-items: center;
+            font-size: 15px;
+            color: #444;
+        }
+        .team-left {
+            justify-content: flex-end;
+            text-align: right;
+        }
+        .team-right {
+            justify-content: flex-start;
+            text-align: left;
+        }
+        
+        .team-sigla {
+            font-weight: 400;
+            color: #555;
+        }
+        
+        .flag-img {
+            width: 32px;
+            height: auto;
+            border-radius: 2px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+            display: inline-block;
+            vertical-align: middle;
+        }
         .flag-left { margin-left: 8px; }
         .flag-right { margin-right: 8px; }
-        input[type="number"] { width: 45px; height: 35px; text-align: center; font-size: 18px; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; background-color: #fff; }
-        input[type="number"]:disabled { background-color: #e9ecef; color: #6c757d; cursor: not-allowed; border: 1px dashed #ccc; }
-        .vs { font-size: 14px; color: #999; font-weight: normal; padding: 0 4px; }
-        .match-points-tag { display: inline-block; margin-left: 15px; font-size: 14px; font-weight: bold; color: #e53e3e; vertical-align: middle; white-space: nowrap; }
+
+        input[type="number"] {
+            width: 45px;
+            height: 35px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #fff;
+        }
+        input[type="number"]:disabled {
+            background-color: #e9ecef;
+            color: #6c757d;
+            cursor: not-allowed;
+            border: 1px dashed #ccc;
+        }
+        .vs { 
+            font-size: 14px; 
+            color: #999; 
+            font-weight: normal;
+            padding: 0 4px;
+        }
+
+        .match-points-tag {
+            display: inline-block;
+            margin-left: 15px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #e53e3e;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
         .match-points-tag.zero { color: #a0aec0; font-weight: normal; }
         .match-points-tag.green { color: #38a169; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; font-size: 14px; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            font-size: 14px;
+        }
         th { background-color: var(--primary); color: white; }
         tr:nth-child(even) td { background-color: #f9f9f9; }
         .pos { font-weight: bold; width: 25px; }
         .pts { font-weight: bold; color: var(--success); text-align: right; }
-        .btn { background-color: var(--primary); color: white; border: none; padding: 12px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; transition: background 0.2s; }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            transition: background 0.2s;
+        }
         .btn:hover { background-color: #004422; }
         .btn-sec { background-color: #6c757d; }
-        .btn-lock { background-color: #ff9900; color: black; padding: 8px 12px; font-size: 13px; margin-top: -5px; margin-bottom: 10px; display: none; }
-        .btn-lock.unlocked { background-color: var(--success); color: white; }
-        select { width: 100%; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 16px; }
-        .flex-buttons { display: flex; gap: 10px; margin-top: 15px; }
+        .btn-sec:hover { background-color: #5a6268; }
+         
+        .btn-lock {
+            background-color: #ff9900;
+            color: black;
+            padding: 8px 12px;
+            font-size: 13px;
+            margin-top: -5px;
+            margin-bottom: 10px;
+            display: none;
+        }
+        .btn-lock.unlocked {
+            background-color: var(--success);
+            color: white;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        .flex-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body>
@@ -74,11 +279,13 @@
                     <option value="Márcio">🏃 Márcio</option>
                     <option value="Tainá">🏃 Tainá</option>
                 </select>
+                 
                 <button id="btn-lock-status" class="btn btn-lock" onclick="solicitarSenhaBloqueio()">🔒 Palpites Bloqueados (Clique para liberar)</button>
             </div>
 
             <div class="card">
                 <h2 id="match-card-title">Palpites dos Jogos</h2>
+                 
                 <div class="group-filter-container">
                     <button class="filter-btn active" onclick="filterGroup('TODOS', this)">Todos</button>
                     <button class="filter-btn" onclick="filterGroup('Grupo A', this)">Gr. A</button>
@@ -94,12 +301,13 @@
                     <button class="filter-btn" onclick="filterGroup('Grupo K', this)">Gr. K</button>
                     <button class="filter-btn" onclick="filterGroup('Grupo L', this)">Gr. L</button>
                 </div>
+
                 <div class="matches-scroll" id="matches-container"></div>
                 <div class="flex-buttons">
                     <button class="btn" onclick="saveData()">💾 Salvar Meus Palpites</button>
                 </div>
             </div>
-            
+             
             <div class="card">
                 <h2>Sincronização via WhatsApp</h2>
                 <p style="font-size: 13px; color:#555;">Clique em copiar, envie no grupo. Quando os outros mandarem o código deles, cole abaixo e clique em Atualizar.</p>
@@ -123,6 +331,7 @@
                     <tbody id="ranking-body"></tbody>
                 </table>
             </div>
+
             <div class="card">
                 <h3>Critério de Pontos</h3>
                 <ul style="font-size: 12px; padding-left: 15px; line-height: 1.6; margin: 0;">
@@ -137,84 +346,86 @@
 </div>
 
 <script>
-    const JOGOS_OFICIAIS_FIFA = [
-        { id: 1, grupo: "Grupo A", mandante: "México", siglaM: "MEX", flagCodeM: "mx", visitante: "África do Sul", siglaV: "AFS", flagCodeV: "za", data: "11/06/2026", hora: "16:00", cidade: "Guadalajara" },
-        { id: 2, grupo: "Grupo A", mandante: "Coreia do Sul", siglaM: "COR", flagCodeM: "kr", visitante: "Rep. Tcheca", siglaV: "TCH", flagCodeV: "cz", data: "11/06/2026", hora: "23:00", cidade: "Cidade do México" },
-        { id: 3, grupo: "Grupo A", mandante: "México", siglaM: "MEX", flagCodeM: "mx", visitante: "Coreia do Sul", siglaV: "COR", flagCodeV: "kr", data: "18/06/2026", hora: "22:00", cidade: "Vancouver" },
-        { id: 4, grupo: "Grupo A", mandante: "África do Sul", siglaM: "AFS", flagCodeM: "za", visitante: "Rep. Tcheca", siglaV: "TCH", flagCodeV: "cz", data: "18/06/2026", hora: "13:00", cidade: "Seattle" },
-        { id: 5, grupo: "Grupo A", mandante: "Rep. Tcheca", siglaM: "TCH", flagCodeM: "cz", visitante: "México", siglaV: "MEX", flagCodeV: "mx", data: "24/06/2026", hora: "22:00", cidade: "Monterrey" },
-        { id: 6, grupo: "Grupo A", mandante: "África do Sul", siglaM: "AFS", flagCodeM: "za", visitante: "Coreia do Sul", siglaV: "COR", flagCodeV: "kr", data: "24/06/2026", hora: "22:00", cidade: "Monterrey" },
-        { id: 7, grupo: "Grupo B", mandante: "Canadá", siglaM: "CAN", flagCodeM: "ca", visitante: "Bósnia", siglaV: "BOS", flagCodeV: "ba", data: "12/06/2026", hora: "16:00", cidade: "Toronto" },
-        { id: 8, grupo: "Grupo B", mandante: "Qatar", siglaM: "QAT", flagCodeM: "qa", visitante: "Suíça", siglaV: "SUI", flagCodeV: "ch", data: "13/06/2026", hora: "16:00", cidade: "Vancouver" },
-        { id: 9, grupo: "Grupo B", mandante: "Canadá", siglaM: "CAN", flagCodeM: "ca", visitante: "Qatar", siglaV: "QAT", flagCodeV: "qa", data: "18/06/2026", hora: "19:00", cidade: "Toronto" },
-        { id: 10, grupo: "Grupo B", mandante: "Bósnia", siglaM: "BOS", flagCodeM: "ba", visitante: "Suíça", siglaV: "SUI", flagCodeV: "ch", data: "18/06/2026", hora: "16:00", cidade: "Monterrey" },
-        { id: 11, grupo: "Grupo B", mandante: "Suíça", siglaM: "SUI", flagCodeM: "ch", visitante: "Canadá", siglaV: "CAN", flagCodeV: "ca", data: "24/06/2026", hora: "16:00", cidade: "Vancouver" },
-        { id: 12, grupo: "Grupo B", mandante: "Bósnia", siglaM: "BOS", flagCodeM: "ba", visitante: "Qatar", siglaV: "QAT", flagCodeV: "qa", data: "24/06/2026", hora: "16:00", cidade: "Monterrey" },
-        { id: 13, grupo: "Grupo C", mandante: "Brasil", siglaM: "BRA", flagCodeM: "br", visitante: "Marrocos", siglaV: "MAR", flagCodeV: "ma", data: "13/06/2026", hora: "19:00", cidade: "East Rutherford" },
-        { id: 14, grupo: "Grupo C", mandante: "Haiti", siglaM: "HAI", flagCodeM: "ht", visitante: "Escócia", siglaV: "ESC", flagCodeV: "gb-sct", data: "13/06/2026", hora: "22:00", cidade: "Toronto" },
-        { id: 15, grupo: "Grupo C", mandante: "Brasil", siglaM: "BRA", flagCodeM: "br", visitante: "Haiti", siglaV: "HAI", flagCodeV: "ht", data: "19/06/2026", hora: "21:30", cidade: "Santa Clara" },
-        { id: 16, grupo: "Grupo C", mandante: "Marrocos", siglaM: "MAR", flagCodeM: "ma", visitante: "Escócia", siglaV: "ESC", flagCodeV: "gb-sct", data: "19/06/2026", hora: "19:00", cidade: "Seattle" },
-        { id: 17, grupo: "Grupo C", mandante: "Escócia", siglaM: "ESC", flagCodeM: "gb-sct", visitante: "Brasil", siglaV: "BRA", flagCodeV: "br", data: "24/06/2026", hora: "19:00", cidade: "Inglewood" },
-        { id: 18, grupo: "Grupo C", mandante: "Marrocos", siglaM: "MAR", flagCodeM: "ma", visitante: "Haiti", siglaV: "HAI", flagCodeV: "ht", data: "24/06/2026", hora: "19:00", cidade: "Santa Clara" },
-        { id: 19, grupo: "Grupo D", mandante: "EUA", siglaM: "EUA", flagCodeM: "us", visitante: "Paraguai", siglaV: "PAR", flagCodeV: "py", data: "12/06/2026", hora: "22:00", cidade: "East Rutherford" },
-        { id: 20, grupo: "Grupo D", mandante: "Austrália", siglaM: "AUS", flagCodeM: "au", visitante: "Turquia", siglaV: "TUR", flagCodeV: "tr", data: "14/06/2026", hora: "01:00", cidade: "Filadélfia" },
-        { id: 21, grupo: "Grupo D", mandante: "EUA", siglaM: "EUA", flagCodeM: "us", visitante: "Austrália", siglaV: "AUS", flagCodeV: "au", data: "19/06/2026", hora: "16:00", cidade: "Seattle" },
-        { id: 22, grupo: "Grupo D", mandante: "Paraguai", siglaM: "PAR", flagCodeM: "py", visitante: "Turquia", siglaV: "TUR", flagCodeV: "tr", data: "20/06/2026", hora: "00:00", cidade: "Houston" },
-        { id: 23, grupo: "Grupo D", mandante: "Turquia", siglaM: "TUR", flagCodeM: "tr", visitante: "EUA", siglaV: "EUA", flagCodeV: "us", data: "25/06/2026", hora: "23:00", cidade: "Inglewood" },
-        { id: 24, grupo: "Grupo D", mandante: "Paraguai", siglaM: "PAR", flagCodeM: "py", visitante: "Austrália", siglaV: "AUS", flagCodeV: "au", data: "25/06/2026", hora: "23:00", cidade: "Filadélfia" },
-        { id: 25, grupo: "Grupo E", mandante: "Alemanha", siglaM: "ALE", flagCodeM: "de", visitante: "Curaçao", siglaV: "CUR", flagCodeV: "cw", data: "14/06/2026", hora: "14:00", cidade: "Dallas" },
-        { id: 26, grupo: "Grupo E", mandante: "Costa do Marfim", siglaM: "CIV", flagCodeM: "ci", visitante: "Equador", siglaV: "EQU", flagCodeV: "ec", data: "14/06/2026", hora: "20:00", cidade: "Atlanta" },
-        { id: 27, grupo: "Grupo E", mandante: "Alemanha", siglaM: "ALE", flagCodeM: "de", visitante: "Costa do Marfim", siglaV: "CIV", flagCodeV: "ci", data: "20/06/2026", hora: "17:00", cidade: "Houston" },
-        { id: 28, grupo: "Grupo E", mandante: "Curaçao", siglaM: "CUR", flagCodeM: "cw", visitante: "Equador", siglaV: "EQU", flagCodeV: "ec", data: "20/06/2026", hora: "21:00", cidade: "Monterrey" },
-        { id: 29, grupo: "Grupo E", mandante: "Equador", siglaM: "EQU", flagCodeM: "ec", visitante: "Alemanha", siglaV: "ALE", flagCodeV: "de", data: "25/06/2026", hora: "17:00", cidade: "Filadélfia" },
-        { id: 30, grupo: "Grupo E", mandante: "Curaçao", siglaM: "CUR", flagCodeM: "cw", visitante: "Costa do Marfim", siglaV: "CIV", flagCodeV: "ci", data: "25/06/2026", hora: "17:00", cidade: "Dallas" },
-        { id: 31, grupo: "Grupo F", mandante: "Holanda", siglaM: "HOL", flagCodeM: "nl", visitante: "Japão", siglaV: "JAP", flagCodeV: "jp", data: "14/06/2026", hora: "17:00", cidade: "Dallas" },
-        { id: 32, grupo: "Grupo F", mandante: "Suécia", siglaM: "SUE", flagCodeM: "se", visitante: "Tunísia", siglaV: "TUN", flagCodeV: "tn", data: "14/06/2026", hora: "23:00", cidade: "Filadélfia" },
-        { id: 33, grupo: "Grupo F", mandante: "Holanda", siglaM: "HOL", flagCodeM: "nl", visitante: "Suécia", siglaV: "SUE", flagCodeV: "se", data: "20/06/2026", hora: "14:00", cidade: "Houston" },
-        { id: 34, grupo: "Grupo F", mandante: "Japão", siglaM: "JAP", flagCodeM: "jp", visitante: "Tunísia", siglaV: "TUN", flagCodeV: "tn", data: "20/06/2026", hora: "01:00", cidade: "Monterrey" },
-        { id: 35, grupo: "Grupo F", mandante: "Tunísia", siglaM: "TUN", flagCodeM: "tn", visitante: "Holanda", siglaV: "HOL", flagCodeV: "nl", data: "25/06/2026", hora: "20:00", cidade: "Monterrey" },
-        { id: 36, grupo: "Grupo F", mandante: "Japão", siglaM: "JAP", flagCodeM: "jp", visitante: "Suécia", siglaV: "SUE", flagCodeV: "se", data: "25/06/2026", hora: "20:00", cidade: "Dallas" },
-        { id: 37, grupo: "Grupo G", mandante: "Bélgica", siglaM: "BEL", flagCodeM: "be", visitante: "Egito", siglaV: "EGI", flagCodeV: "eg", data: "15/06/2026", hora: "16:00", cidade: "Atlanta" },
-        { id: 38, grupo: "Grupo G", mandante: "Irã", siglaM: "IRA", flagCodeM: "ir", visitante: "N. Zelândia", siglaV: "NZL", flagCodeV: "nz", data: "15/06/2026", hora: "22:00", cidade: "Vancouver" },
-        { id: 39, grupo: "Grupo G", mandante: "Bélgica", siglaM: "BEL", flagCodeM: "be", visitante: "Irã", siglaV: "IRA", flagCodeV: "ir", data: "21/06/2026", hora: "16:00", cidade: "Vancouver" },
-        { id: 40, grupo: "Grupo G", mandante: "Egito", siglaM: "EGI", flagCodeM: "eg", visitante: "N. Zelândia", siglaV: "NZL", flagCodeV: "nz", data: "21/06/2026", hora: "22:00", cidade: "Atlanta" },
-        { id: 41, grupo: "Grupo G", mandante: "N. Zelândia", siglaM: "NZL", flagCodeM: "nz", visitante: "Bélgica", siglaV: "BEL", flagCodeV: "be", data: "26/06/2026", hora: "00:00", cidade: "Guadalajara" },
-        { id: 42, grupo: "Grupo G", mandante: "Egito", siglaM: "EGI", flagCodeM: "eg", visitante: "Irã", siglaV: "IRA", flagCodeV: "ir", data: "26/06/2026", hora: "00:00", cidade: "Guadalajara" },
-        { id: 43, grupo: "Grupo H", mandante: "Espanha", siglaM: "ESP", flagCodeM: "es", visitante: "Cabo Verde", siglaV: "CPV", flagCodeV: "cv", data: "15/06/2026", hora: "13:00", cidade: "Atlanta" },
-        { id: 44, grupo: "Grupo H", mandante: "Arábia Saudita", siglaM: "ARA", flagCodeM: "sa", visitante: "Uruguai", siglaV: "URU", flagCodeV: "uy", data: "15/06/2026", hora: "19:00", cidade: "East Rutherford" },
-        { id: 45, grupo: "Grupo H", mandante: "Espanha", siglaM: "ESP", flagCodeM: "es", visitante: "Arábia Saudita", siglaV: "ARA", flagCodeV: "sa", data: "21/06/2026", hora: "13:00", cidade: "Atlanta" },
-        { id: 46, grupo: "Grupo H", mandante: "Cabo Verde", siglaM: "CPV", flagCodeM: "cv", visitante: "Uruguai", siglaV: "URU", flagCodeV: "uy", data: "21/06/2026", hora: "19:00", cidade: "East Rutherford" },
-        { id: 47, grupo: "Grupo H", mandante: "Uruguai", siglaM: "URU", flagCodeM: "uy", visitante: "Espanha", siglaV: "ESP", flagCodeV: "es", data: "26/06/2026", hora: "21:00", cidade: "East Rutherford" },
-        { id: 48, grupo: "Grupo H", mandante: "Cabo Verde", siglaM: "CPV", flagCodeM: "cv", visitante: "Arábia Saudita", siglaV: "ARA", flagCodeV: "sa", data: "26/06/2026", hora: "21:00", cidade: "East Rutherford" },
-        { id: 49, grupo: "Grupo I", mandante: "França", siglaM: "FRA", flagCodeM: "fr", visitante: "Senegal", siglaV: "SEN", flagCodeV: "sn", data: "16/06/2026", hora: "16:00", cidade: "East Rutherford" },
-        { id: 50, grupo: "Grupo I", mandante: "Iraque", siglaM: "IRQ", flagCodeM: "iq", visitante: "Noruega", siglaV: "NOR", flagCodeV: "no", data: "16/06/2026", hora: "19:00", cidade: "Kansas City" },
-        { id: 51, grupo: "Grupo I", mandante: "França", siglaM: "FRA", flagCodeM: "fr", visitante: "Iraque", siglaV: "IRQ", flagCodeV: "iq", data: "22/06/2026", hora: "18:00", cidade: "Dallas" },
-        { id: 52, grupo: "Grupo I", mandante: "Senegal", siglaM: "SEN", flagCodeM: "sn", visitante: "Noruega", siglaV: "NOR", flagCodeV: "no", data: "22/06/2026", hora: "21:00", cidade: "East Rutherford" },
-        { id: 53, grupo: "Grupo I", mandante: "Noruega", siglaM: "NOR", flagCodeM: "no", visitante: "França", siglaV: "FRA", flagCodeV: "fr", data: "26/06/2026", hora: "16:00", cidade: "Dallas" },
-        { id: 54, grupo: "Grupo I", mandante: "Senegal", siglaM: "SEN", flagCodeM: "sn", visitante: "Iraque", siglaV: "IRQ", flagCodeV: "iq", data: "26/06/2026", hora: "16:00", cidade: "Dallas" },
-        { id: 55, grupo: "Grupo J", mandante: "Argentina", siglaM: "ARG", flagCodeM: "ar", visitante: "Argélia", siglaV: "ALG", flagCodeV: "dz", data: "16/06/2026", hora: "22:00", cidade: "Kansas City" },
-        { id: 56, grupo: "Grupo J", mandante: "Áustria", siglaM: "AUT", flagCodeM: "at", visitante: "Jordânia", siglaV: "JOR", flagCodeV: "jo", data: "17/06/2026", hora: "01:00", cidade: "Dallas" },
-        { id: 57, grupo: "Grupo J", mandante: "Argentina", siglaM: "ARG", flagCodeM: "ar", visitante: "Áustria", siglaV: "AUT", flagCodeV: "at", data: "22/06/2026", hora: "14:00", cidade: "Dallas" },
-        { id: 58, grupo: "Grupo J", mandante: "Argélia", siglaM: "ALG", flagCodeM: "dz", visitante: "Jordânia", siglaV: "JOR", flagCodeV: "jo", data: "23/06/2026", hora: "00:00", cidade: "Houston" },
-        { id: 59, grupo: "Grupo J", mandante: "Jordânia", siglaM: "JOR", flagCodeM: "jo", visitante: "Argentina", siglaV: "ARG", flagCodeV: "ar", data: "27/06/2026", hora: "23:00", cidade: "Dallas" },
-        { id: 60, grupo: "Grupo J", mandante: "Argélia", siglaM: "ALG", flagCodeM: "dz", visitante: "Áustria", siglaV: "AUT", flagCodeV: "at", data: "27/06/2026", hora: "23:00", cidade: "Houston" },
-        { id: 61, grupo: "Grupo K", mandante: "Portugal", siglaM: "POR", flagCodeM: "pt", visitante: "RD Congo", siglaV: "RDC", flagCodeV: "cd", data: "17/06/2026", hora: "14:00", cidade: "Santa Clara" },
-        { id: 62, grupo: "Grupo K", mandante: "Uzbequistão", siglaM: "UZB", flagCodeM: "uz", visitante: "Colômbia", siglaV: "COL", flagCodeV: "co", data: "17/06/2026", hora: "23:00", cidade: "Toronto" },
-        { id: 63, grupo: "Grupo K", mandante: "Portugal", siglaM: "POR", flagCodeM: "pt", visitante: "Uzbequistão", siglaV: "UZB", flagCodeV: "uz", data: "23/06/2026", hora: "14:00", cidade: "Toronto" },
-        { id: 64, grupo: "Grupo K", mandante: "RD Congo", siglaM: "RDC", flagCodeM: "cd", visitante: "Colômbia", siglaV: "COL", flagCodeV: "co", data: "23/06/2026", hora: "23:00", cidade: "Toronto" },
-        { id: 65, grupo: "Grupo K", mandante: "Colômbia", siglaM: "COL", flagCodeM: "co", visitante: "Portugal", siglaV: "POR", flagCodeV: "pt", data: "27/06/2026", hora: "20:30", cidade: "East Rutherford" },
-        { id: 66, grupo: "Grupo K", mandante: "RD Congo", siglaM: "RDC", flagCodeM: "cd", visitante: "Uzbequistão", siglaV: "UZB", flagCodeV: "uz", data: "27/06/2026", hora: "20:30", cidade: "East Rutherford" },
-        { id: 67, grupo: "Grupo L", mandante: "Inglaterra", siglaM: "ING", flagCodeM: "gb-eng", visitante: "Croácia", siglaV: "CRO", flagCodeV: "hr", data: "17/06/2026", hora: "17:00", cidade: "Santa Clara" },
-        { id: 68, grupo: "Grupo L", mandante: "Gana", siglaM: "GAN", flagCodeM: "gh", visitante: "Panamá", siglaV: "PAN", flagCodeV: "pa", data: "17/06/2026", hora: "20:00", cidade: "Toronto" },
-        { id: 69, grupo: "Grupo L", mandante: "Inglaterra", siglaM: "ING", flagCodeM: "gb-eng", visitante: "Gana", siglaV: "GAN", flagCodeV: "gh", data: "23/06/2026", hora: "17:00", cidade: "Toronto" },
-        { id: 70, grupo: "Grupo L", mandante: "Croácia", siglaM: "CRO", flagCodeM: "hr", visitante: "Panamá", siglaV: "PAN", flagCodeV: "pa", data: "23/06/2026", hora: "20:00", cidade: "Toronto" },
-        { id: 71, grupo: "Grupo L", mandante: "Panamá", siglaM: "PAN", flagCodeM: "pa", visitante: "Inglaterra", siglaV: "ING", flagCodeV: "gb-eng", data: "27/06/2026", hora: "18:00", cidade: "East Rutherford" },
-        { id: 72, grupo: "Grupo L", mandante: "Croácia", siglaM: "CRO", flagCodeM: "hr", visitante: "Gana", siglaV: "GAN", flagCodeV: "gh", data: "27/06/2026", hora: "18:00", cidade: "East Rutherford" }
-    ];
+const JOGOS_OFICIAIS_FIFA = [
+    { id: 1, grupo: "Grupo A", mandante: "México", siglaM: "MEX", flagCodeM: "mx", visitante: "África do Sul", siglaV: "AFS", flagCodeV: "za", data: "11/06/2026", hora: "16:00", cidade: "Guadalajara" },
+    { id: 2, grupo: "Grupo A", mandante: "Coreia do Sul", siglaM: "COR", flagCodeM: "kr", visitante: "Rep. Tcheca", siglaV: "TCH", flagCodeV: "cz", data: "11/06/2026", hora: "23:00", cidade: "Cidade do México" },
+    { id: 3, grupo: "Grupo A", mandante: "México", siglaM: "MEX", flagCodeM: "mx", visitante: "Coreia do Sul", siglaV: "COR", flagCodeV: "kr", data: "18/06/2026", hora: "22:00", cidade: "Vancouver" },
+    { id: 4, grupo: "Grupo A", mandante: "África do Sul", siglaM: "AFS", flagCodeM: "za", visitante: "Rep. Tcheca", siglaV: "TCH", flagCodeV: "cz", data: "18/06/2026", hora: "13:00", cidade: "Seattle" },
+    { id: 5, grupo: "Grupo A", mandante: "Rep. Tcheca", siglaM: "TCH", flagCodeM: "cz", visitante: "México", siglaV: "MEX", flagCodeV: "mx", data: "24/06/2026", hora: "22:00", cidade: "Monterrey" },
+    { id: 6, grupo: "Grupo A", mandante: "África do Sul", siglaM: "AFS", flagCodeM: "za", visitante: "Coreia do Sul", siglaV: "COR", flagCodeV: "kr", data: "24/06/2026", hora: "22:00", cidade: "Monterrey" },
+    { id: 7, grupo: "Grupo B", mandante: "Canadá", siglaM: "CAN", flagCodeM: "ca", visitante: "Bósnia", siglaV: "BOS", flagCodeV: "ba", data: "12/06/2026", hora: "16:00", cidade: "Toronto" },
+    { id: 8, grupo: "Grupo B", mandante: "Qatar", siglaM: "QAT", flagCodeM: "qa", visitante: "Suíça", siglaV: "SUI", flagCodeV: "ch", data: "13/06/2026", hora: "16:00", cidade: "Vancouver" },
+    { id: 9, grupo: "Grupo B", mandante: "Canadá", siglaM: "CAN", flagCodeM: "ca", visitante: "Qatar", siglaV: "QAT", flagCodeV: "qa", data: "18/06/2026", hora: "19:00", cidade: "Toronto" },
+    { id: 10, grupo: "Grupo B", mandante: "Bósnia", siglaM: "BOS", flagCodeM: "ba", visitante: "Suíça", siglaV: "SUI", flagCodeV: "ch", data: "18/06/2026", hora: "16:00", cidade: "Monterrey" },
+    { id: 11, grupo: "Grupo B", mandante: "Suíça", siglaM: "SUI", flagCodeM: "ch", visitante: "Canadá", siglaV: "CAN", flagCodeV: "ca", data: "24/06/2026", hora: "16:00", cidade: "Vancouver" },
+    { id: 12, grupo: "Grupo B", mandante: "Bósnia", siglaM: "BOS", flagCodeM: "ba", visitante: "Qatar", siglaV: "QAT", flagCodeV: "qa", data: "24/06/2026", hora: "16:00", cidade: "Monterrey" },
+    { id: 13, grupo: "Grupo C", mandante: "Brasil", siglaM: "BRA", flagCodeM: "br", visitante: "Marrocos", siglaV: "MAR", flagCodeV: "ma", data: "13/06/2026", hora: "19:00", cidade: "East Rutherford" },
+    { id: 14, grupo: "Grupo C", mandante: "Haiti", siglaM: "HAI", flagCodeM: "ht", visitante: "Escócia", siglaV: "ESC", flagCodeV: "gb-sct", data: "13/06/2026", hora: "22:00", cidade: "Toronto" },
+    { id: 15, grupo: "Grupo C", mandante: "Brasil", siglaM: "BRA", flagCodeM: "br", visitante: "Haiti", siglaV: "HAI", flagCodeV: "ht", data: "19/06/2026", hora: "21:30", cidade: "Santa Clara" },
+    { id: 16, grupo: "Grupo C", mandante: "Marrocos", siglaM: "MAR", flagCodeM: "ma", visitante: "Escócia", siglaV: "ESC", flagCodeV: "gb-sct", data: "19/06/2026", hora: "19:00", cidade: "Seattle" },
+    { id: 17, grupo: "Grupo C", mandante: "Escócia", siglaM: "ESC", flagCodeM: "gb-sct", visitante: "Brasil", siglaV: "BRA", flagCodeV: "br", data: "24/06/2026", hora: "19:00", cidade: "Inglewood" },
+    { id: 18, grupo: "Grupo C", mandante: "Marrocos", siglaM: "MAR", flagCodeM: "ma", visitante: "Haiti", siglaV: "HAI", flagCodeV: "ht", data: "24/06/2026", hora: "19:00", cidade: "Santa Clara" },
+    { id: 19, grupo: "Grupo D", mandante: "EUA", siglaM: "EUA", flagCodeM: "us", visitante: "Paraguai", siglaV: "PAR", flagCodeV: "py", data: "12/06/2026", hora: "22:00", cidade: "East Rutherford" },
+    { id: 20, grupo: "Grupo D", mandante: "Austrália", siglaM: "AUS", flagCodeM: "au", visitante: "Turquia", siglaV: "TUR", flagCodeV: "tr", data: "14/06/2026", hora: "01:00", cidade: "Filadélfia" },
+    { id: 21, grupo: "Grupo D", mandante: "EUA", siglaM: "EUA", flagCodeM: "us", visitante: "Austrália", siglaV: "AUS", flagCodeV: "au", data: "19/06/2026", hora: "16:00", cidade: "Seattle" },
+    { id: 22, grupo: "Grupo D", mandante: "Paraguai", siglaM: "PAR", flagCodeM: "py", visitante: "Turquia", siglaV: "TUR", flagCodeV: "tr", data: "20/06/2026", hora: "00:00", cidade: "Houston" },
+    { id: 23, grupo: "Grupo D", mandante: "Turquia", siglaM: "TUR", flagCodeM: "tr", visitante: "EUA", siglaV: "EUA", flagCodeV: "us", data: "25/06/2026", hora: "23:00", cidade: "Inglewood" },
+    { id: 24, grupo: "Grupo D", mandante: "Paraguai", siglaM: "PAR", flagCodeM: "py", visitante: "Austrália", siglaV: "AUS", flagCodeV: "au", data: "25/06/2026", hora: "23:00", cidade: "Filadélfia" },
+    { id: 25, grupo: "Grupo E", mandante: "Alemanha", siglaM: "ALE", flagCodeM: "de", visitante: "Curaçao", siglaV: "CUR", flagCodeV: "cw", data: "14/06/2026", hora: "14:00", cidade: "Dallas" },
+    { id: 26, grupo: "Grupo E", mandante: "Costa do Marfim", siglaM: "CIV", flagCodeM: "ci", visitante: "Equador", siglaV: "EQU", flagCodeV: "ec", data: "14/06/2026", hora: "20:00", cidade: "Atlanta" },
+    { id: 27, grupo: "Grupo E", mandante: "Alemanha", siglaM: "ALE", flagCodeM: "de", visitante: "Costa do Marfim", siglaV: "CIV", flagCodeV: "ci", data: "20/06/2026", hora: "17:00", cidade: "Houston" },
+    { id: 28, grupo: "Grupo E", mandante: "Curaçao", siglaM: "CUR", flagCodeM: "cw", visitante: "Equador", siglaV: "EQU", flagCodeV: "ec", data: "20/06/2026", hora: "21:00", cidade: "Monterrey" },
+    { id: 29, grupo: "Grupo E", mandante: "Equador", siglaM: "EQU", flagCodeM: "ec", visitante: "Alemanha", siglaV: "ALE", flagCodeV: "de", data: "25/06/2026", hora: "17:00", cidade: "Filadélfia" },
+    { id: 30, grupo: "Grupo E", mandante: "Curaçao", siglaM: "CUR", flagCodeM: "cw", visitante: "Costa do Marfim", siglaV: "CIV", flagCodeV: "ci", data: "25/06/2026", hora: "17:00", cidade: "Dallas" },
+    { id: 31, grupo: "Grupo F", mandante: "Holanda", siglaM: "HOL", flagCodeM: "nl", visitante: "Japão", siglaV: "JAP", flagCodeV: "jp", data: "14/06/2026", hora: "17:00", cidade: "Dallas" },
+    { id: 32, grupo: "Grupo F", mandante: "Suécia", siglaM: "SUE", flagCodeM: "se", visitante: "Tunísia", siglaV: "TUN", flagCodeV: "tn", data: "14/06/2026", hora: "23:00", cidade: "Filadélfia" },
+    { id: 33, grupo: "Grupo F", mandante: "Holanda", siglaM: "HOL", flagCodeM: "nl", visitante: "Suécia", siglaV: "SUE", flagCodeV: "se", data: "20/06/2026", hora: "14:00", cidade: "Houston" },
+    { id: 34, grupo: "Grupo F", mandante: "Japão", siglaM: "JAP", flagCodeM: "jp", visitante: "Tunísia", siglaV: "TUN", flagCodeV: "tn", data: "20/06/2026", hora: "01:00", cidade: "Monterrey" },
+    { id: 35, grupo: "Grupo F", mandante: "Tunísia", siglaM: "TUN", flagCodeM: "tn", visitante: "Holanda", siglaV: "HOL", flagCodeV: "nl", data: "25/06/2026", hora: "20:00", cidade: "Monterrey" },
+    { id: 36, grupo: "Grupo F", mandante: "Japão", siglaM: "JAP", flagCodeM: "jp", visitante: "Suécia", siglaV: "SUE", flagCodeV: "se", data: "25/06/2026", hora: "20:00", cidade: "Dallas" },
+    { id: 37, grupo: "Grupo G", mandante: "Bélgica", siglaM: "BEL", flagCodeM: "be", visitante: "Egito", siglaV: "EGI", flagCodeV: "eg", data: "15/06/2026", hora: "16:00", cidade: "Atlanta" },
+    { id: 38, grupo: "Grupo G", mandante: "Irã", siglaM: "IRA", flagCodeM: "ir", visitante: "N. Zelândia", siglaV: "NZL", flagCodeV: "nz", data: "15/06/2026", hora: "22:00", cidade: "Vancouver" },
+    { id: 39, grupo: "Grupo G", mandante: "Bélgica", siglaM: "BEL", flagCodeM: "be", visitante: "Irã", siglaV: "IRA", flagCodeV: "ir", data: "21/06/2026", hora: "16:00", cidade: "Vancouver" },
+    { id: 40, grupo: "Grupo G", mandante: "Egito", siglaM: "EGI", flagCodeM: "eg", visitante: "N. Zelândia", siglaV: "NZL", flagCodeV: "nz", data: "21/06/2026", hora: "22:00", cidade: "Atlanta" },
+    { id: 41, grupo: "Grupo G", mandante: "N. Zelândia", siglaM: "NZL", flagCodeM: "nz", visitante: "Bélgica", siglaV: "BEL", flagCodeV: "be", data: "26/06/2026", hora: "00:00", cidade: "Guadalajara" },
+    { id: 42, grupo: "Grupo G", mandante: "Egito", siglaM: "EGI", flagCodeM: "eg", visitante: "Irã", siglaV: "IRA", flagCodeV: "ir", data: "26/06/2026", hora: "00:00", cidade: "Guadalajara" },
+    { id: 43, grupo: "Grupo H", mandante: "Espanha", siglaM: "ESP", flagCodeM: "es", visitante: "Cabo Verde", siglaV: "CPV", flagCodeV: "cv", data: "15/06/2026", hora: "13:00", cidade: "Atlanta" },
+    { id: 44, grupo: "Grupo H", mandante: "Arábia Saudita", siglaM: "ARA", flagCodeM: "sa", visitante: "Uruguai", siglaV: "URU", flagCodeV: "uy", data: "15/06/2026", hora: "19:00", cidade: "East Rutherford" },
+    { id: 45, grupo: "Grupo H", mandante: "Espanha", siglaM: "ESP", flagCodeM: "es", visitante: "Arábia Saudita", siglaV: "ARA", flagCodeV: "sa", data: "21/06/2026", hora: "13:00", cidade: "Atlanta" },
+    { id: 46, grupo: "Grupo H", mandante: "Cabo Verde", siglaM: "CPV", flagCodeM: "cv", visitante: "Uruguai", siglaV: "URU", flagCodeV: "uy", data: "21/06/2026", hora: "19:00", cidade: "East Rutherford" },
+    { id: 47, grupo: "Grupo H", mandante: "Uruguai", siglaM: "URU", flagCodeM: "uy", visitante: "Espanha", siglaV: "ESP", flagCodeV: "es", data: "26/06/2026", hora: "21:00", cidade: "East Rutherford" },
+    { id: 48, grupo: "Grupo H", mandante: "Cabo Verde", siglaM: "CPV", flagCodeM: "cv", visitante: "Arábia Saudita", siglaV: "ARA", flagCodeV: "sa", data: "26/06/2026", hora: "21:00", cidade: "East Rutherford" },
+    { id: 49, grupo: "Grupo I", mandante: "França", siglaM: "FRA", flagCodeM: "fr", visitante: "Senegal", siglaV: "SEN", flagCodeV: "sn", data: "16/06/2026", hora: "16:00", cidade: "East Rutherford" },
+    { id: 50, grupo: "Grupo I", mandante: "Iraque", siglaM: "IRQ", flagCodeM: "iq", visitante: "Noruega", siglaV: "NOR", flagCodeV: "no", data: "16/06/2026", hora: "19:00", cidade: "Kansas City" },
+    { id: 51, grupo: "Grupo I", mandante: "França", siglaM: "FRA", flagCodeM: "fr", visitante: "Iraque", siglaV: "IRQ", flagCodeV: "iq", data: "22/06/2026", hora: "18:00", cidade: "Dallas" },
+    { id: 52, grupo: "Grupo I", mandante: "Senegal", siglaM: "SEN", flagCodeM: "sn", visitante: "Noruega", siglaV: "NOR", flagCodeV: "no", data: "22/06/2026", hora: "21:00", cidade: "East Rutherford" },
+    { id: 53, grupo: "Grupo I", mandante: "Noruega", siglaM: "NOR", flagCodeM: "no", visitante: "França", siglaV: "FRA", flagCodeV: "fr", data: "26/06/2026", hora: "16:00", cidade: "Dallas" },
+    { id: 54, grupo: "Grupo I", mandante: "Senegal", siglaM: "SEN", flagCodeM: "sn", visitante: "Iraque", siglaV: "IRQ", flagCodeV: "iq", data: "26/06/2026", hora: "16:00", cidade: "Dallas" },
+    { id: 55, grupo: "Grupo J", mandante: "Argentina", siglaM: "ARG", flagCodeM: "ar", visitante: "Argélia", siglaV: "ALG", flagCodeV: "dz", data: "16/06/2026", hora: "22:00", cidade: "Kansas City" },
+    { id: 56, grupo: "Grupo J", mandante: "Áustria", siglaM: "AUT", flagCodeM: "at", visitante: "Jordânia", siglaV: "JOR", flagCodeV: "jo", data: "17/06/2026", hora: "01:00", cidade: "Dallas" },
+    { id: 57, grupo: "Grupo J", mandante: "Argentina", siglaM: "ARG", flagCodeM: "ar", visitante: "Áustria", siglaV: "AUT", flagCodeV: "at", data: "22/06/2026", hora: "14:00", cidade: "Dallas" },
+    { id: 58, grupo: "Grupo J", mandante: "Argélia", siglaM: "ALG", flagCodeM: "dz", visitante: "Jordânia", siglaV: "JOR", flagCodeV: "jo", data: "23/06/2026", hora: "00:00", cidade: "Houston" },
+    { id: 59, grupo: "Grupo J", mandante: "Jordânia", siglaM: "JOR", flagCodeM: "jo", visitante: "Argentina", siglaV: "ARG", flagCodeV: "ar", data: "27/06/2026", hora: "23:00", cidade: "Dallas" },
+    { id: 60, grupo: "Grupo J", mandante: "Argélia", siglaM: "ALG", flagCodeM: "dz", visitante: "Áustria", siglaV: "AUT", flagCodeV: "at", data: "27/06/2026", hora: "23:00", cidade: "Houston" },
+    { id: 61, grupo: "Grupo K", mandante: "Portugal", siglaM: "POR", flagCodeM: "pt", visitante: "RD Congo", siglaV: "RDC", flagCodeV: "cd", data: "17/06/2026", hora: "14:00", cidade: "Santa Clara" },
+    { id: 62, grupo: "Grupo K", mandante: "Uzbequistão", siglaM: "UZB", flagCodeM: "uz", visitante: "Colômbia", siglaV: "COL", flagCodeV: "co", data: "17/06/2026", hora: "23:00", cidade: "Toronto" },
+    { id: 63, grupo: "Grupo K", mandante: "Portugal", siglaM: "POR", flagCodeM: "pt", visitante: "Uzbequistão", siglaV: "UZB", flagCodeV: "uz", data: "23/06/2026", hora: "14:00", cidade: "Toronto" },
+    { id: 64, grupo: "Grupo K", mandante: "RD Congo", siglaM: "RDC", flagCodeM: "cd", visitante: "Colômbia", siglaV: "COL", flagCodeV: "co", data: "23/06/2026", hora: "23:00", cidade: "Toronto" },
+    { id: 65, grupo: "Grupo K", mandante: "Colômbia", siglaM: "COL", flagCodeM: "co", visitante: "Portugal", siglaV: "POR", flagCodeV: "pt", data: "27/06/2026", hora: "20:30", cidade: "East Rutherford" },
+    { id: 66, grupo: "Grupo K", mandante: "RD Congo", siglaM: "RDC", flagCodeM: "cd", visitante: "Uzbequistão", siglaV: "UZB", flagCodeV: "uz", data: "27/06/2026", hora: "20:30", cidade: "East Rutherford" },
+    { id: 67, grupo: "Grupo L", mandante: "Inglaterra", siglaM: "ING", flagCodeM: "gb-eng", visitante: "Croácia", siglaV: "CRO", flagCodeV: "hr", data: "17/06/2026", hora: "17:00", cidade: "Santa Clara" },
+    { id: 68, grupo: "Grupo L", mandante: "Gana", siglaM: "GAN", flagCodeM: "gh", visitante: "Panamá", siglaV: "PAN", flagCodeV: "pa", data: "17/06/2026", hora: "20:00", cidade: "Toronto" },
+    { id: 69, grupo: "Grupo L", mandante: "Inglaterra", siglaM: "ING", flagCodeM: "gb-eng", visitante: "Gana", siglaV: "GAN", flagCodeV: "gh", data: "23/06/2026", hora: "17:00", cidade: "Toronto" },
+    { id: 70, grupo: "Grupo L", mandante: "Croácia", siglaM: "CRO", flagCodeM: "hr", visitante: "Panamá", siglaV: "PAN", flagCodeV: "pa", data: "23/06/2026", hora: "20:00", cidade: "Toronto" },
+    { id: 71, grupo: "Grupo L", mandante: "Panamá", siglaM: "PAN", flagCodeM: "pa", visitante: "Inglaterra", siglaV: "ING", flagCodeV: "gb-eng", data: "27/06/2026", hora: "18:00", cidade: "East Rutherford" },
+    { id: 72, grupo: "Grupo L", mandante: "Croácia", siglaM: "CRO", flagCodeM: "hr", visitante: "Gana", siglaV: "GAN", flagCodeV: "gh", data: "27/06/2026", hora: "18:00", cidade: "East Rutherford" }
+];
     const PARTICIPANTES = ["Luiz Viana", "Caio", "David", "Márcio", "Tainá"];
     let currentGroupFilter = "TODOS";
+     
     let dadosBolao = { resultadosOficiais: {}, palpites: {} };
     PARTICIPANTES.forEach(p => dadosBolao.palpites[p] = {});
+
     let listagemDesbloqueadaParaAmigo = false;
 
     function solicitarSenhaBloqueio() {
@@ -263,10 +474,24 @@
     }
 
     function calcularPontosDoJogo(oficial, palpite) {
-        if (!oficial || !palpite || oficial.m === "" || oficial.v === "" || palpite.m === "" || palpite.v === "") return null;
-        const oM = parseInt(oficial.m), oV = parseInt(oficial.v), pM = parseInt(palpite.m), pV = parseInt(palpite.v);
+        if (!oficial || !palpite || 
+            oficial.m === undefined || oficial.m === null || oficial.m === "" ||
+            oficial.v === undefined || oficial.v === null || oficial.v === "" ||
+            palpite.m === undefined || palpite.m === null || palpite.m === "" ||
+            palpite.v === undefined || palpite.v === null || palpite.v === "") {
+            return null;
+        }
+
+        const oM = parseInt(oficial.m);
+        const oV = parseInt(oficial.v);
+        const pM = parseInt(palpite.m);
+        const pV = parseInt(palpite.v);
+
         if (oM === pM && oV === pV) return 25;
-        const resOficial = Math.sign(oM - oV), resPalpite = Math.sign(pM - pV);
+
+        const resOficial = Math.sign(oM - oV);
+        const resPalpite = Math.sign(pM - pV);
+
         if (resOficial === resPalpite) {
             if ((oM - oV) === (pM - pV)) return 15;
             return 10;
@@ -279,59 +504,93 @@
         const container = document.getElementById('matches-container');
         const lockBtn = document.getElementById('btn-lock-status');
         container.innerHTML = '';
-        
-        // --- Adição do título da Fase ---
-        const titlePhase = document.createElement('h3');
-        titlePhase.style.textAlign = 'center';
-        titlePhase.style.color = '#006633';
-        titlePhase.innerText = "🏆 Fase de Grupos";
-        container.appendChild(titlePhase);
-        // --------------------------------
 
-        document.getElementById('match-card-title').innerText = currentUser === "Admin (Resultados Oficiais)" ? "⚙️ Registrar Placar Real da FIFA" : `🔮 Palpites de: ${currentUser}`;
+        document.getElementById('match-card-title').innerText = 
+            currentUser === "Admin (Resultados Oficiais)" ? "⚙️ Registrar Placar Real da FIFA" : `🔮 Palpites de: ${currentUser}`;
+
         let isDisabled = "";
         if (currentUser === "Admin (Resultados Oficiais)") {
             lockBtn.style.display = "none";
+            isDisabled = ""; 
         } else {
             lockBtn.style.display = "block";
             if (listagemDesbloqueadaParaAmigo) {
                 lockBtn.innerText = "🔓 Palpites Liberados (Senha Aplicada)";
                 lockBtn.className = "btn btn-lock unlocked";
+                isDisabled = "";
             } else {
                 lockBtn.innerText = "🔒 Palpites Bloqueados (Clique para liberar)";
                 lockBtn.className = "btn btn-lock";
                 isDisabled = "disabled";
             }
         }
+
         JOGOS_OFICIAIS_FIFA.forEach(jogo => {
             if (currentGroupFilter !== "TODOS" && jogo.grupo !== currentGroupFilter) return;
-            let golsM = '', golsV = '';
+
+            let golsM = '';
+            let golsV = '';
+
             if (currentUser === "Admin (Resultados Oficiais)") {
-                golsM = dadosBolao.resultadosOficiais[jogo.id]?.m || '';
-                golsV = dadosBolao.resultadosOficiais[jogo.id]?.v || '';
+                if (dadosBolao.resultadosOficiais[jogo.id] !== undefined) {
+                    golsM = dadosBolao.resultadosOficiais[jogo.id].m !== undefined ? dadosBolao.resultadosOficiais[jogo.id].m : '';
+                    golsV = dadosBolao.resultadosOficiais[jogo.id].v !== undefined ? dadosBolao.resultadosOficiais[jogo.id].v : '';
+                }
             } else {
-                golsM = dadosBolao.palpites[currentUser]?.[jogo.id]?.m || '';
-                golsV = dadosBolao.palpites[currentUser]?.[jogo.id]?.v || '';
+                if (dadosBolao.palpites[currentUser] && dadosBolao.palpites[currentUser][jogo.id] !== undefined) {
+                    golsM = dadosBolao.palpites[currentUser][jogo.id].m !== undefined ? dadosBolao.palpites[currentUser][jogo.id].m : '';
+                    golsV = dadosBolao.palpites[currentUser][jogo.id].v !== undefined ? dadosBolao.palpites[currentUser][jogo.id].v : '';
+                }
             }
-            let oficialHTML = '', pontosHTML = '';
-            if (currentUser !== "Admin (Resultados Oficiais)" && dadosBolao.resultadosOficiais[jogo.id]?.m !== "" && dadosBolao.resultadosOficiais[jogo.id]?.v !== "") {
-                const oM = dadosBolao.resultadosOficiais[jogo.id].m, oV = dadosBolao.resultadosOficiais[jogo.id].v;
-                oficialHTML = `<div class="resultado-oficial-box"><span class="label-oficial">OFICIAL:</span><span class="placar-oficial-texto">${jogo.siglaM} <strong>${oM}</strong> x <strong>${oV}</strong> ${jogo.siglaV}</span></div>`;
-                const pts = calcularPontosDoJogo(dadosBolao.resultadosOficiais[jogo.id], { m: golsM, v: golsV });
-                if (pts !== null) pontosHTML = `<span class="match-points-tag ${pts > 0 ? 'green' : 'zero'}">+${pts} pts</span>`;
+
+            let oficialHTML = '';
+            let pontosHTML = '';
+
+            if (currentUser !== "Admin (Resultados Oficiais)") {
+                if (dadosBolao.resultadosOficiais[jogo.id] && dadosBolao.resultadosOficiais[jogo.id].m !== "" && dadosBolao.resultadosOficiais[jogo.id].v !== "") {
+                    const oM = dadosBolao.resultadosOficiais[jogo.id].m;
+                    const oV = dadosBolao.resultadosOficiais[jogo.id].v;
+                    oficialHTML = `
+                        <div class="resultado-oficial-box">
+                            <span class="label-oficial">OFICIAL:</span>
+                            <span class="placar-oficial-texto">${jogo.siglaM} <strong>${oM}</strong> x <strong>${oV}</strong> ${jogo.siglaV}</span>
+                        </div>
+                    `;
+
+                    const pts = calcularPontosDoJogo(dadosBolao.resultadosOficiais[jogo.id], { m: golsM, v: golsV });
+                    if (pts !== null) {
+                        let classePontos = "zero";
+                        if (pts === 25) classePontos = "green";
+                        else if (pts > 0) classePontos = "green";
+                        pontosHTML = `<span class="match-points-tag ${classePontos}">+${pts} pts</span>`;
+                    }
+                }
             }
+
             const block = document.createElement('div');
             block.className = 'match-block';
             block.innerHTML = `
-                <div class="match-info"><strong>${jogo.grupo}</strong> • ${jogo.data} às ${jogo.hora} • ${jogo.cidade}</div>
+                <div class="match-info">
+                    <strong>${jogo.grupo}</strong> • ${jogo.data} às ${jogo.hora} • ${jogo.cidade}
+                </div>
                 ${oficialHTML}
                 <div class="match-row">
-                    <div class="team-container team-left"><span>${jogo.mandante}</span><span class="team-sigla">&nbsp;(${jogo.siglaM})</span><img class="flag-img flag-left" src="https://flagcdn.com/w40/${jogo.flagCodeM}.png"></div>
+                    <div class="team-container team-left">
+                        <span>${jogo.mandante}</span>
+                        <span class="team-sigla">&nbsp;(${jogo.siglaM})</span>
+                        <img class="flag-img flag-left" src="https://flagcdn.com/w40/${jogo.flagCodeM}.png" alt="${jogo.mandante}">
+                    </div>
                     <input type="number" min="0" ${isDisabled} value="${golsM}" oninput="updatePlacarValue(${jogo.id}, 'm', this.value)">
                     <span class="vs">x</span>
                     <input type="number" min="0" ${isDisabled} value="${golsV}" oninput="updatePlacarValue(${jogo.id}, 'v', this.value)">
-                    <div class="team-container team-right"><img class="flag-img flag-right" src="https://flagcdn.com/w40/${jogo.flagCodeV}.png"><span>${jogo.visitante}</span><span class="team-sigla">&nbsp;(${jogo.siglaV})</span>${pontosHTML}</div>
-                </div>`;
+                    <div class="team-container team-right">
+                        <img class="flag-img flag-right" src="https://flagcdn.com/w40/${jogo.flagCodeV}.png" alt="${jogo.visitante}">
+                        <span>${jogo.visitante}</span>
+                        <span class="team-sigla">&nbsp;(${jogo.siglaV})</span>
+                        ${pontosHTML}
+                    </div>
+                </div>
+            `;
             container.appendChild(block);
         });
     }
@@ -348,55 +607,104 @@
         }
     }
 
+    // Função de Salvar atualizada com diagnóstico detalhado de erro
     async function saveData() {
         try {
+            console.log("Tentando salvar dados:", dadosBolao);
             const response = await fetch('/api/salvar', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify(dadosBolao)
             });
+
             if (response.ok) {
-                alert("✅ Sucesso! Dados sincronizados.");
+                alert("✅ Sucesso! Dados sincronizados e salvos com sucesso no servidor.");
                 calculateRanking();
                 renderMatches();
-            } else { alert("❌ Erro ao salvar."); }
-        } catch (error) { alert("🚨 Falha de conexão!"); }
+            } else {
+                const textoErro = await response.text();
+                alert(`❌ O servidor recusou o salvamento (Status ${response.status}).\nResposta do servidor: ${textoErro || 'Nenhuma'}`);
+            }
+        } catch (error) {
+            console.error("Erro na requisição POST:", error);
+            alert(`🚨 Falha de Rede ou Conexão!\nO navegador não conseguiu falar com o servidor.\n\nDetalhe do erro: ${error.message}\n\nVerifique se o seu 'servidor.js' está rodando na mesma porta e se você acessou a página através do endereço do servidor (Ex: http://localhost:3000), e não abrindo o arquivo direto.`);
+        }
     }
 
     function calculateRanking() {
-        let listaRanking = PARTICIPANTES.map(user => {
+        let listaRanking = [];
+
+        PARTICIPANTES.forEach(user => {
             let totalPts = 0;
             JOGOS_OFICIAIS_FIFA.forEach(jogo => {
-                const pts = calcularPontosDoJogo(dadosBolao.resultadosOficiais[jogo.id], dadosBolao.palpites[user]?.[jogo.id]);
+                const oficial = dadosBolao.resultadosOficiais[jogo.id];
+                const palpite = dadosBolao.palpites[user] ? dadosBolao.palpites[user][jogo.id] : null;
+                const pts = calcularPontosDoJogo(oficial, palpite);
                 if (pts !== null) totalPts += pts;
             });
-            return { nome: user, pontos: totalPts };
-        }).sort((a, b) => b.pontos - a.pontos);
+            listaRanking.push({ nome: user, pontos: totalPts });
+        });
+
+        listaRanking.sort((a, b) => b.pontos - a.pontos);
+
         const rankingBody = document.getElementById('ranking-body');
-        rankingBody.innerHTML = listaRanking.map((p, i) => `<tr><td class="pos">${i + 1}</td><td>${p.nome}</td><td class="pts">${p.pontos} pts</td></tr>`).join('');
+        rankingBody.innerHTML = '';
+        listaRanking.forEach((posicao, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="pos">${index + 1}</td>
+                <td>${posicao.nome}</td>
+                <td class="pts">${posicao.pontos} pts</td>
+            `;
+            rankingBody.appendChild(row);
+        });
     }
 
     function exportData() {
         const currentUser = document.getElementById('select-user').value;
-        if (currentUser === "Admin (Resultados Oficiais)") return alert("Escolha o seu nome real.");
-        const base64String = btoa(unescape(encodeURIComponent(JSON.stringify({ usuario: currentUser, dados: dadosBolao.palpites[currentUser] }))));
-        navigator.clipboard.writeText(base64String).then(() => alert("Código copiado!"));
+        if (currentUser === "Admin (Resultados Oficiais)") {
+            return alert("Escolha o seu nome real para exportar os seus palpites.");
+        }
+        const userPalpites = dadosBolao.palpites[currentUser] || {};
+        const pacote = { usuario: currentUser, dados: userPalpites };
+        const base64String = btoa(unescape(encodeURIComponent(JSON.stringify(pacote))));
+        
+        navigator.clipboard.writeText(base64String).then(() => {
+            alert(`Código de [${currentUser}] copiado! Cole no WhatsApp do grupo.`);
+        }).catch(() => {
+            alert("Erro ao copiar automaticamente. Use a gravação padrão no botão azul.");
+        });
     }
 
     function importFriendData() {
         const area = document.getElementById('import-area');
+        const cru = area.value.trim();
+        if (!cru) return alert('Cole o código do seu amigo gerado no campo de texto primeiro.');
+
         try {
-            const analisado = JSON.parse(decodeURIComponent(escape(atob(area.value.trim()))));
+            const analisado = JSON.parse(decodeURIComponent(escape(atob(cru))));
             if (analisado && analisado.usuario && analisado.dados) {
+                if (!PARTICIPANTES.includes(analisado.usuario)) {
+                    return alert("O participante contido no código não é membro oficial cadastrado deste bolão.");
+                }
                 dadosBolao.palpites[analisado.usuario] = analisado.dados;
-                alert(`Palpites de [${analisado.usuario}] importados!`);
+                alert(`Palpites de [${analisado.usuario}] importados com sucesso! Lembre-se de clicar em salvar para mantê-los.`);
+                area.value = '';
                 calculateRanking();
                 renderMatches();
+            } else {
+                alert("Formato de criptografia inválido.");
             }
-        } catch(e) { alert("Código inválido."); }
+        } catch(e) {
+            alert("Código de dados corrompido.");
+        }
     }
 
-    window.onload = carregarDadosDoServidor;
+    window.onload = function() {
+        carregarDadosDoServidor();
+    };
 </script>
 </body>
 </html>
