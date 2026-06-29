@@ -721,21 +721,44 @@ const JOGOS_OFICIAIS_FIFA = [
         });
     }
 
-    function exportData() {
-        const currentUser = document.getElementById('select-user').value;
-        if (currentUser === "Admin (Resultados Oficiais)") {
-            return alert("Escolha o seu nome real para exportar os seus palpites.");
-        }
-        const userPalpites = dadosBolao.palpites[currentUser] || {};
-        const pacote = { usuario: currentUser, dados: userPalpites };
-        const base64String = btoa(unescape(encodeURIComponent(JSON.stringify(pacote))));
+    function calculateRanking() {
+    let listaRanking = [];
+
+    PARTICIPANTES.forEach(user => {
+        let totalPts = 0;
         
-        navigator.clipboard.writeText(base64String).then(() => {
-            alert(`Código de [${currentUser}] copiado! Cole no WhatsApp do grupo.`);
-        }).catch(() => {
-            alert("Erro ao copiar automaticamente. Use a gravação padrão no botão azul.");
+        // 1. Soma pontos dos jogos da fase de grupos
+        JOGOS_OFICIAIS_FIFA.forEach(jogo => {
+            const oficial = dadosBolao.resultadosOficiais[jogo.id];
+            const palpite = dadosBolao.palpites[user] ? dadosBolao.palpites[user][jogo.id] : null;
+            const pts = calcularPontosDoJogo(oficial, palpite);
+            if (pts !== null) totalPts += pts;
         });
-    }
+
+        // 2. ADIÇÃO: Soma pontos dos jogos da fase eliminatória
+        if (typeof JOGOS_ELIMINATORIOS !== 'undefined') {
+            JOGOS_ELIMINATORIOS.forEach(jogo => {
+                const oficial = dadosBolao.resultadosOficiais[jogo.id];
+                const palpite = dadosBolao.palpites[user] ? dadosBolao.palpites[user][jogo.id] : null;
+                const pts = calcularPontosDoJogo(oficial, palpite);
+                if (pts !== null) totalPts += pts;
+            });
+        }
+
+        listaRanking.push({ nome: user, pontos: totalPts });
+    });
+
+    listaRanking.sort((a, b) => b.pontos - a.pontos);
+    
+    // ... restante da renderização do ranking (mantém igual)
+    const rankingBody = document.getElementById('ranking-body');
+    rankingBody.innerHTML = '';
+    listaRanking.forEach((posicao, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td class="pos">${index + 1}</td><td>${posicao.nome}</td><td class="pts">${posicao.pontos} pts</td>`;
+        rankingBody.appendChild(row);
+    });
+}
 
     function importFriendData() {
         const area = document.getElementById('import-area');
