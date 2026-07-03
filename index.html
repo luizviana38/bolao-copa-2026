@@ -554,7 +554,6 @@ const OITAVAS_DE_FINASIS = [
         }
     }
 
-    // Função interna unificada para desenhar cada jogo
     function desenharJogo(jogo) {
         let golsM = '', golsV = '';
         if (currentUser === "Admin (Resultados Oficiais)") {
@@ -590,10 +589,10 @@ const OITAVAS_DE_FINASIS = [
         container.appendChild(block);
     }
 
-    // Lógica de Filtro
+    // Lógica de Filtro usando OITAVAS_DE_FINA
     if (currentGroupFilter === "TODOS" || currentGroupFilter === "Fase Eliminatória" || currentGroupFilter === "Oitavas de Final") {
-        if (typeof JOGOS_ELIMINATORIOS !== 'undefined') {
-            JOGOS_ELIMINATORIOS.forEach(jogo => {
+        if (typeof OITAVAS_DE_FINA !== 'undefined') {
+            OITAVAS_DE_FINA.forEach(jogo => {
                 if (currentGroupFilter === "Oitavas de Final" && jogo.grupo !== "Oitavas de Final") return;
                 desenharJogo(jogo);
             });
@@ -620,22 +619,14 @@ function updatePlacarValue(jogoId, tipo, valor) {
 async function saveData() {
     try {
         const response = await fetch('/api/salvar', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(dadosBolao) });
-        if (response.ok) {
-            alert("✅ Sucesso!");
-            calculateRanking();
-            renderMatches();
-        } else {
-            alert("❌ Erro ao salvar.");
-        }
-    } catch (error) {
-        console.error(error);
-    }
+        if (response.ok) { alert("✅ Sucesso!"); calculateRanking(); renderMatches(); } else { alert("❌ Erro ao salvar."); }
+    } catch (error) { console.error(error); }
 }
 
 function calculateRanking() {
     let listaRanking = PARTICIPANTES.map(user => {
         let totalPts = 0;
-        const jogosTodos = [...JOGOS_OFICIAIS_FIFA, ...(typeof JOGOS_ELIMINATORIOS !== 'undefined' ? JOGOS_ELIMINATORIOS : [])];
+        const jogosTodos = [...JOGOS_OFICIAIS_FIFA, ...(typeof OITAVAS_DE_FINA !== 'undefined' ? OITAVAS_DE_FINA : [])];
         jogosTodos.forEach(jogo => {
             const pts = calcularPontosDoJogo(dadosBolao.resultadosOficiais[jogo.id], dadosBolao.palpites[user] ? dadosBolao.palpites[user][jogo.id] : null);
             if (pts !== null) totalPts += pts;
@@ -657,14 +648,10 @@ function importFriendData() {
         const data = JSON.parse(decodeURIComponent(escape(atob(area.value.trim()))));
         if (PARTICIPANTES.includes(data.usuario)) {
             dadosBolao.palpites[data.usuario] = data.dados;
-            alert("Importado com sucesso!");
-            calculateRanking();
-            renderMatches();
+            alert("Importado com sucesso!"); calculateRanking(); renderMatches();
         }
     } catch(e) { alert("Código inválido."); }
 }
 
-window.onload = () => carregarDadosDoServidor();
-</script>
-</body>
+window.onload = () => carregarDadosDoServidor();</body>
 </html>
