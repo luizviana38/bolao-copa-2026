@@ -528,29 +528,30 @@ const OITAVAS_DE_FINASIS = [
         return 0;
     }
 
-    function renderMatches() {
+function renderMatches() {
     const currentUser = document.getElementById('select-user').value;
     const container = document.getElementById('matches-container');
     const lockBtn = document.getElementById('btn-lock-status');
+    
+    if (!container) return;
     container.innerHTML = '';
 
-    document.getElementById('match-card-title').innerText = 
-        currentUser === "Admin (Resultados Oficiais)" ? "⚙️ Registrar Placar Real da FIFA" : `🔮 Palpites de: ${currentUser}`;
+    // Atualização de Título e Botão de Bloqueio
+    const titleEl = document.getElementById('match-card-title');
+    if (titleEl) {
+        titleEl.innerText = currentUser === "Admin (Resultados Oficiais)" ? "⚙️ Registrar Placar Real da FIFA" : `🔮 Palpites de: ${currentUser}`;
+    }
 
     let isDisabled = "";
-    if (currentUser === "Admin (Resultados Oficiais)") {
-        lockBtn.style.display = "none";
-        isDisabled = ""; 
-    } else {
-        lockBtn.style.display = "block";
-        if (typeof listagemDesbloqueadaParaAmigo !== 'undefined' && listagemDesbloqueadaParaAmigo) {
-            lockBtn.innerText = "🔓 Palpites Liberados (Senha Aplicada)";
-            lockBtn.className = "btn btn-lock unlocked";
-            isDisabled = "";
+    if (lockBtn) {
+        if (currentUser === "Admin (Resultados Oficiais)") {
+            lockBtn.style.display = "none";
         } else {
-            lockBtn.innerText = "🔒 Palpites Bloqueados (Clique para liberar)";
-            lockBtn.className = "btn btn-lock";
-            isDisabled = "disabled";
+            lockBtn.style.display = "block";
+            const desbloqueado = (typeof listagemDesbloqueadaParaAmigo !== 'undefined' && listagemDesbloqueadaParaAmigo);
+            lockBtn.innerText = desbloqueado ? "🔓 Palpites Liberados (Senha Aplicada)" : "🔒 Palpites Bloqueados (Clique para liberar)";
+            lockBtn.className = desbloqueado ? "btn btn-lock unlocked" : "btn btn-lock";
+            isDisabled = desbloqueado ? "" : "disabled";
         }
     }
 
@@ -589,72 +590,23 @@ const OITAVAS_DE_FINASIS = [
         container.appendChild(block);
     }
 
-    // Lógica de Filtro usando OITAVAS_DE_FINA
+    // --- Lógica de Renderização Segura ---
+    
+    // 1. Renderiza Eliminatórias / Oitavas de Final
+    const listaEliminatorias = (typeof OITAVAS_DE_FINA !== 'undefined') ? OITAVAS_DE_FINA : [];
     if (currentGroupFilter === "TODOS" || currentGroupFilter === "Fase Eliminatória" || currentGroupFilter === "Oitavas de Final") {
-        if (typeof OITAVAS_DE_FINA !== 'undefined') {
-            OITAVAS_DE_FINA.forEach(jogo => {
-                if (currentGroupFilter === "Oitavas de Final" && jogo.grupo !== "Oitavas de Final") return;
-                desenharJogo(jogo);
-            });
-        }
-    }
-
-    JOGOS_OFICIAIS_FIFA.forEach(jogo => {
-        if (currentGroupFilter === "TODOS" || jogo.grupo === currentGroupFilter) desenharJogo(jogo);
-    });
-}
-
-function updatePlacarValue(jogoId, tipo, valor) {
-    const user = document.getElementById('select-user').value;
-    if (user === "Admin (Resultados Oficiais)") {
-        if (!dadosBolao.resultadosOficiais[jogoId]) dadosBolao.resultadosOficiais[jogoId] = { m: '', v: '' };
-        dadosBolao.resultadosOficiais[jogoId][tipo] = valor;
-    } else {
-        if (!dadosBolao.palpites[user]) dadosBolao.palpites[user] = {};
-        if (!dadosBolao.palpites[user][jogoId]) dadosBolao.palpites[user][jogoId] = { m: '', v: '' };
-        dadosBolao.palpites[user][jogoId][tipo] = valor;
-    }
-}
-
-async function saveData() {
-    try {
-        const response = await fetch('/api/salvar', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(dadosBolao) });
-        if (response.ok) { alert("✅ Sucesso!"); calculateRanking(); renderMatches(); } else { alert("❌ Erro ao salvar."); }
-    } catch (error) { console.error(error); }
-}
-
-function calculateRanking() {
-    let listaRanking = PARTICIPANTES.map(user => {
-        let totalPts = 0;
-        const jogosTodos = [...JOGOS_OFICIAIS_FIFA, ...(typeof OITAVAS_DE_FINA !== 'undefined' ? OITAVAS_DE_FINA : [])];
-        jogosTodos.forEach(jogo => {
-            const pts = calcularPontosDoJogo(dadosBolao.resultadosOficiais[jogo.id], dadosBolao.palpites[user] ? dadosBolao.palpites[user][jogo.id] : null);
-            if (pts !== null) totalPts += pts;
+        listaEliminatorias.forEach(jogo => {
+            if (currentGroupFilter === "Oitavas de Final" && jogo.grupo !== "Oitavas de Final") return;
+            desenharJogo(jogo);
         });
-        return { nome: user, pontos: totalPts };
-    });
+    }
 
-    listaRanking.sort((a, b) => b.pontos - a.pontos);
-    const rankingBody = document.getElementById('ranking-body');
-    rankingBody.innerHTML = '';
-    listaRanking.forEach((pos, i) => {
-        rankingBody.innerHTML += `<tr><td class="pos">${i + 1}</td><td>${pos.nome}</td><td class="pts">${pos.pontos} pts</td></tr>`;
-    });
+    // 2. Renderiza Jogos de Grupos (JOGOS_OFICIAIS_FIFA)
+    if (typeof JOGOS_OFICIAIS_FIFA !== 'undefined') {
+        JOGOS_OFICIAIS_FIFA.forEach(jogo => {
+            if (currentGroupFilter === "TODOS" || jogo.grupo === currentGroupFilter) desenharJogo(jogo);
+        });
+    }
 }
-
-function importFriendData() {
-    const area = document.getElementById('import-area');
-    try {
-        const data = JSON.parse(decodeURIComponent(escape(atob(area.value.trim()))));
-        if (PARTICIPANTES.includes(data.usuario)) {
-            dadosBolao.palpites[data.usuario] = data.dados;
-            alert("Importado com sucesso!");
-            calculateRanking();
-            renderMatches();
-        }
-    } catch(e) { alert("Código inválido."); }
-}
-
-window.onload = () => carregarDadosDoServidor();
 
 </script> </body> </html>
