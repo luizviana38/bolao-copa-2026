@@ -648,10 +648,13 @@ function importFriendData() {
         const data = JSON.parse(decodeURIComponent(escape(atob(area.value.trim()))));
         if (PARTICIPANTES.includes(data.usuario)) {
             dadosBolao.palpites[data.usuario] = data.dados;
-            alert("Importado com sucesso!"); calculateRanking(); renderMatches();
+            alert("Importado com sucesso!");
+            calculateRanking();
+            renderMatches();
         }
     } catch(e) { alert("Código inválido."); }
 }
 
-window.onload = () => carregarDadosDoServidor();</body>
-</html>
+window.onload = () => carregarDadosDoServidor();
+
+</script> </body> </html>
