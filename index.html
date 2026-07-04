@@ -530,7 +530,7 @@ const JOGOS_OFICIAIS_FIFA = [
         return 0;
     }
 
-    function renderMatches() {
+function renderMatches() {
     const currentUser = document.getElementById('select-user').value;
     const container = document.getElementById('matches-container');
     const lockBtn = document.getElementById('btn-lock-status');
@@ -556,14 +556,14 @@ const JOGOS_OFICIAIS_FIFA = [
         }
     }
 
-    // --- Início do Adicional da Fase Eliminatória ---
-    if (currentGroupFilter === "TODOS" || currentGroupFilter === "Fase Eliminatória") {
+    // --- Início do Adicional da Fase de OITAVAS DE FINAL ---
+    if (currentGroupFilter === "TODOS" || currentGroupFilter === "Oitavas de Final") {
         const div = document.createElement('div');
         div.className = 'fase-divisor';
-        div.innerText = "FASE ELIMINATÓRIA";
+        div.innerText = "OITAVAS DE FINAL";
         container.appendChild(div);
 
-        JOGOS_ELIMINATORIOS.forEach(jogo => {
+        JOGOS_OITAVAS.forEach(jogo => {
             let golsM = '';
             let golsV = '';
 
@@ -579,6 +579,50 @@ const JOGOS_OFICIAIS_FIFA = [
                 }
             }
 
+            const block = document.createElement('div');
+            block.className = 'match-block';
+            block.innerHTML = `
+                <div class="match-info"><strong>${jogo.grupo}</strong> • ${jogo.data} às ${jogo.hora} • ${jogo.cidade}</div>
+                <div class="match-row">
+                    <div class="team-container team-left">
+                        <span>${jogo.mandante}</span>
+                        <span class="team-sigla">&nbsp;(${jogo.siglaM})</span>
+                        <img class="flag-img flag-left" src="https://flagcdn.com/w40/${jogo.flagCodeM}.png" alt="${jogo.mandante}">
+                    </div>
+                    <input type="number" min="0" ${isDisabled} value="${golsM}" oninput="updatePlacarValue(${jogo.id}, 'm', this.value)">
+                    <span class="vs">x</span>
+                    <input type="number" min="0" ${isDisabled} value="${golsV}" oninput="updatePlacarValue(${jogo.id}, 'v', this.value)">
+                    <div class="team-container team-right">
+                        <img class="flag-img flag-right" src="https://flagcdn.com/w40/${jogo.flagCodeV}.png" alt="${jogo.visitante}">
+                        <span>${jogo.visitante}</span>
+                        <span class="team-sigla">&nbsp;(${jogo.siglaV})</span>
+                    </div>
+                </div>`;
+            container.appendChild(block);
+        });
+    }
+
+    // --- Início do Adicional da Fase Eliminatória ---
+    if (currentGroupFilter === "TODOS" || currentGroupFilter === "Fase Eliminatória") {
+        const div = document.createElement('div');
+        div.className = 'fase-divisor';
+        div.innerText = "FASE ELIMINATÓRIA";
+        container.appendChild(div);
+
+        JOGOS_ELIMINATORIOS.forEach(jogo => {
+            let golsM = '';
+            let golsV = '';
+            if (currentUser === "Admin (Resultados Oficiais)") {
+                if (dadosBolao.resultadosOficiais[jogo.id]) {
+                    golsM = dadosBolao.resultadosOficiais[jogo.id].m || '';
+                    golsV = dadosBolao.resultadosOficiais[jogo.id].v || '';
+                }
+            } else {
+                if (dadosBolao.palpites[currentUser] && dadosBolao.palpites[currentUser][jogo.id]) {
+                    golsM = dadosBolao.palpites[currentUser][jogo.id].m || '';
+                    golsV = dadosBolao.palpites[currentUser][jogo.id].v || '';
+                }
+            }
             const block = document.createElement('div');
             block.className = 'match-block';
             block.innerHTML = `
@@ -665,7 +709,7 @@ const JOGOS_OFICIAIS_FIFA = [
             </div>`;
         container.appendChild(block);
     });
-} // <--- Fechamento final da function renderMatches
+}
     function updatePlacarValue(jogoId, tipo, valor) {
         const currentUser = document.getElementById('select-user').value;
         if (currentUser === "Admin (Resultados Oficiais)") {
