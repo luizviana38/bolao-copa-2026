@@ -541,13 +541,11 @@ function renderMatches() {
     let isDisabled = "";
     if (currentUser === "Admin (Resultados Oficiais)") {
         lockBtn.style.display = "none";
-        isDisabled = ""; 
     } else {
         lockBtn.style.display = "block";
         if (listagemDesbloqueadaParaAmigo) {
             lockBtn.innerText = "🔓 Palpites Liberados (Senha Aplicada)";
             lockBtn.className = "btn btn-lock unlocked";
-            isDisabled = "";
         } else {
             lockBtn.innerText = "🔒 Palpites Bloqueados (Clique para liberar)";
             lockBtn.className = "btn btn-lock";
@@ -555,112 +553,20 @@ function renderMatches() {
         }
     }
 
-    // --- Início do Adicional da Fase de OITAVAS DE FINAL ---
-    if (currentGroupFilter === "TODOS" || currentGroupFilter === "Oitavas de Final") {
-        const div = document.createElement('div');
-        div.className = 'fase-divisor';
-        div.innerText = "OITAVAS DE FINAL";
-        container.appendChild(div);
-
-        JOGOS_OITAVAS.forEach(jogo => {
-            let golsM = '';
-            let golsV = '';
-
-            if (currentUser === "Admin (Resultados Oficiais)") {
-                if (dadosBolao.resultadosOficiais[jogo.id]) {
-                    golsM = dadosBolao.resultadosOficiais[jogo.id].m || '';
-                    golsV = dadosBolao.resultadosOficiais[jogo.id].v || '';
-                }
-            } else {
-                if (dadosBolao.palpites[currentUser] && dadosBolao.palpites[currentUser][jogo.id]) {
-                    golsM = dadosBolao.palpites[currentUser][jogo.id].m || '';
-                    golsV = dadosBolao.palpites[currentUser][jogo.id].v || '';
-                }
-            }
-
-            const block = document.createElement('div');
-            block.className = 'match-block';
-            block.innerHTML = `
-                <div class="match-info"><strong>${jogo.grupo}</strong> • ${jogo.data} às ${jogo.hora} • ${jogo.cidade}</div>
-                <div class="match-row">
-                    <div class="team-container team-left">
-                        <span>${jogo.mandante}</span>
-                        <span class="team-sigla">&nbsp;(${jogo.siglaM})</span>
-                        <img class="flag-img flag-left" src="https://flagcdn.com/w40/${jogo.flagCodeM}.png" alt="${jogo.mandante}">
-                    </div>
-                    <input type="number" min="0" ${isDisabled} value="${golsM}" oninput="updatePlacarValue(${jogo.id}, 'm', this.value)">
-                    <span class="vs">x</span>
-                    <input type="number" min="0" ${isDisabled} value="${golsV}" oninput="updatePlacarValue(${jogo.id}, 'v', this.value)">
-                    <div class="team-container team-right">
-                        <img class="flag-img flag-right" src="https://flagcdn.com/w40/${jogo.flagCodeV}.png" alt="${jogo.visitante}">
-                        <span>${jogo.visitante}</span>
-                        <span class="team-sigla">&nbsp;(${jogo.siglaV})</span>
-                    </div>
-                </div>`;
-            container.appendChild(block);
-        });
-    }
-
-    // --- Início do Adicional da Fase Eliminatória ---
-    if (currentGroupFilter === "TODOS" || currentGroupFilter === "Fase Eliminatória") {
-        const div = document.createElement('div');
-        div.className = 'fase-divisor';
-        div.innerText = "FASE ELIMINATÓRIA";
-        container.appendChild(div);
-
-        JOGOS_ELIMINATORIOS.forEach(jogo => {
-            let golsM = '';
-            let golsV = '';
-            if (currentUser === "Admin (Resultados Oficiais)") {
-                if (dadosBolao.resultadosOficiais[jogo.id]) {
-                    golsM = dadosBolao.resultadosOficiais[jogo.id].m || '';
-                    golsV = dadosBolao.resultadosOficiais[jogo.id].v || '';
-                }
-            } else {
-                if (dadosBolao.palpites[currentUser] && dadosBolao.palpites[currentUser][jogo.id]) {
-                    golsM = dadosBolao.palpites[currentUser][jogo.id].m || '';
-                    golsV = dadosBolao.palpites[currentUser][jogo.id].v || '';
-                }
-            }
-            const block = document.createElement('div');
-            block.className = 'match-block';
-            block.innerHTML = `
-                <div class="match-info"><strong>${jogo.grupo}</strong> • ${jogo.data} às ${jogo.hora} • ${jogo.cidade}</div>
-                <div class="match-row">
-                    <div class="team-container team-left">
-                        <span>${jogo.mandante}</span>
-                        <span class="team-sigla">&nbsp;(${jogo.siglaM})</span>
-                        <img class="flag-img flag-left" src="https://flagcdn.com/w40/${jogo.flagCodeM}.png" alt="${jogo.mandante}">
-                    </div>
-                    <input type="number" min="0" ${isDisabled} value="${golsM}" oninput="updatePlacarValue(${jogo.id}, 'm', this.value)">
-                    <span class="vs">x</span>
-                    <input type="number" min="0" ${isDisabled} value="${golsV}" oninput="updatePlacarValue(${jogo.id}, 'v', this.value)">
-                    <div class="team-container team-right">
-                        <img class="flag-img flag-right" src="https://flagcdn.com/w40/${jogo.flagCodeV}.png" alt="${jogo.visitante}">
-                        <span>${jogo.visitante}</span>
-                        <span class="team-sigla">&nbsp;(${jogo.siglaV})</span>
-                    </div>
-                </div>`;
-            container.appendChild(block);
-        });
-    }
-
-    // --- Renderização dos Jogos de Grupo ---
-    JOGOS_OFICIAIS_FIFA.forEach(jogo => {
-        if (currentGroupFilter !== "TODOS" && jogo.grupo !== currentGroupFilter) return;
-
+    // Função auxiliar única para evitar repetição de código
+    function criarBlocoJogo(jogo) {
         let golsM = '';
         let golsV = '';
 
         if (currentUser === "Admin (Resultados Oficiais)") {
-            if (dadosBolao.resultadosOficiais[jogo.id] !== undefined) {
-                golsM = dadosBolao.resultadosOficiais[jogo.id].m !== undefined ? dadosBolao.resultadosOficiais[jogo.id].m : '';
-                golsV = dadosBolao.resultadosOficiais[jogo.id].v !== undefined ? dadosBolao.resultadosOficiais[jogo.id].v : '';
+            if (dadosBolao.resultadosOficiais[jogo.id]) {
+                golsM = dadosBolao.resultadosOficiais[jogo.id].m ?? '';
+                golsV = dadosBolao.resultadosOficiais[jogo.id].v ?? '';
             }
         } else {
-            if (dadosBolao.palpites[currentUser] && dadosBolao.palpites[currentUser][jogo.id] !== undefined) {
-                golsM = dadosBolao.palpites[currentUser][jogo.id].m !== undefined ? dadosBolao.palpites[currentUser][jogo.id].m : '';
-                golsV = dadosBolao.palpites[currentUser][jogo.id].v !== undefined ? dadosBolao.palpites[currentUser][jogo.id].v : '';
+            if (dadosBolao.palpites[currentUser] && dadosBolao.palpites[currentUser][jogo.id]) {
+                golsM = dadosBolao.palpites[currentUser][jogo.id].m ?? '';
+                golsV = dadosBolao.palpites[currentUser][jogo.id].v ?? '';
             }
         }
 
@@ -668,19 +574,17 @@ function renderMatches() {
         let pontosHTML = '';
 
         if (currentUser !== "Admin (Resultados Oficiais)") {
-            if (dadosBolao.resultadosOficiais[jogo.id] && dadosBolao.resultadosOficiais[jogo.id].m !== "" && dadosBolao.resultadosOficiais[jogo.id].v !== "") {
-                const oM = dadosBolao.resultadosOficiais[jogo.id].m;
-                const oV = dadosBolao.resultadosOficiais[jogo.id].v;
+            const oficial = dadosBolao.resultadosOficiais[jogo.id];
+            if (oficial && oficial.m !== "" && oficial.v !== "") {
                 oficialHTML = `
                     <div class="resultado-oficial-box">
                         <span class="label-oficial">OFICIAL:</span>
-                        <span class="placar-oficial-texto">${jogo.siglaM} <strong>${oM}</strong> x <strong>${oV}</strong> ${jogo.siglaV}</span>
+                        <span class="placar-oficial-texto">${jogo.siglaM} <strong>${oficial.m}</strong> x <strong>${oficial.v}</strong> ${jogo.siglaV}</span>
                     </div>
                 `;
-                const pts = calcularPontosDoJogo(dadosBolao.resultadosOficiais[jogo.id], { m: golsM, v: golsV });
+                const pts = calcularPontosDoJogo(oficial, { m: golsM, v: golsV });
                 if (pts !== null) {
-                    let classePontos = pts > 0 ? "green" : "zero";
-                    pontosHTML = `<span class="match-points-tag ${classePontos}">+${pts} pts</span>`;
+                    pontosHTML = `<span class="match-points-tag ${pts > 0 ? "green" : "zero"}">+${pts} pts</span>`;
                 }
             }
         }
@@ -706,106 +610,107 @@ function renderMatches() {
                     ${pontosHTML}
                 </div>
             </div>`;
-        container.appendChild(block);
+        return block;
+    }
+
+    // Renderizar Oitavas
+    if (currentGroupFilter === "TODOS" || currentGroupFilter === "Oitavas de Final") {
+        const div = document.createElement('div');
+        div.className = 'fase-divisor';
+        div.innerText = "OITAVAS DE FINAL";
+        container.appendChild(div);
+        JOGOS_OITAVAS.forEach(jogo => container.appendChild(criarBlocoJogo(jogo)));
+    }
+
+    // Renderizar Eliminatórias
+    if (currentGroupFilter === "TODOS" || currentGroupFilter === "Fase Eliminatória") {
+        const div = document.createElement('div');
+        div.className = 'fase-divisor';
+        div.innerText = "FASE ELIMINATÓRIA";
+        container.appendChild(div);
+        JOGOS_ELIMINATORIOS.forEach(jogo => container.appendChild(criarBlocoJogo(jogo)));
+    }
+
+    // Renderizar Grupos
+    JOGOS_OFICIAIS_FIFA.forEach(jogo => {
+        if (currentGroupFilter === "TODOS" || jogo.grupo === currentGroupFilter) {
+            container.appendChild(criarBlocoJogo(jogo));
+        }
     });
 }
-    function updatePlacarValue(jogoId, tipo, valor) {
-        const currentUser = document.getElementById('select-user').value;
-        if (currentUser === "Admin (Resultados Oficiais)") {
-            if (!dadosBolao.resultadosOficiais[jogoId]) dadosBolao.resultadosOficiais[jogoId] = { m: '', v: '' };
-            dadosBolao.resultadosOficiais[jogoId][tipo] = valor;
+
+function updatePlacarValue(jogoId, tipo, valor) {
+    const currentUser = document.getElementById('select-user').value;
+    if (currentUser === "Admin (Resultados Oficiais)") {
+        if (!dadosBolao.resultadosOficiais[jogoId]) dadosBolao.resultadosOficiais[jogoId] = { m: '', v: '' };
+        dadosBolao.resultadosOficiais[jogoId][tipo] = valor;
+    } else {
+        if (!dadosBolao.palpites[currentUser]) dadosBolao.palpites[currentUser] = {};
+        if (!dadosBolao.palpites[currentUser][jogoId]) dadosBolao.palpites[currentUser][jogoId] = { m: '', v: '' };
+        dadosBolao.palpites[currentUser][jogoId][tipo] = valor;
+    }
+}
+
+async function saveData() {
+    try {
+        const response = await fetch('/api/salvar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dadosBolao)
+        });
+        if (response.ok) {
+            alert("✅ Dados salvos com sucesso!");
+            calculateRanking();
+            renderMatches();
         } else {
-            if (!dadosBolao.palpites[currentUser]) dadosBolao.palpites[currentUser] = {};
-            if (!dadosBolao.palpites[currentUser][jogoId]) dadosBolao.palpites[currentUser][jogoId] = { m: '', v: '' };
-            dadosBolao.palpites[currentUser][jogoId][tipo] = valor;
+            alert("Erro ao salvar.");
         }
+    } catch (error) {
+        alert("Falha de conexão.");
     }
-
-    // Função de Salvar atualizada com diagnóstico detalhado de erro
-    async function saveData() {
-        try {
-            console.log("Tentando salvar dados:", dadosBolao);
-            const response = await fetch('/api/salvar', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(dadosBolao)
-            });
-
-            if (response.ok) {
-                alert("✅ Sucesso! Dados sincronizados e salvos com sucesso no servidor.");
-                calculateRanking();
-                renderMatches();
-            } else {
-                const textoErro = await response.text();
-                alert(`❌ O servidor recusou o salvamento (Status ${response.status}).\nResposta do servidor: ${textoErro || 'Nenhuma'}`);
-            }
-        } catch (error) {
-            console.error("Erro na requisição POST:", error);
-            alert(`🚨 Falha de Rede ou Conexão!\nO navegador não conseguiu falar com o servidor.\n\nDetalhe do erro: ${error.message}\n\nVerifique se o seu 'servidor.js' está rodando na mesma porta e se você acessou a página através do endereço do servidor (Ex: http://localhost:3000), e não abrindo o arquivo direto.`);
-        }
-    }
+}
 
 function calculateRanking() {
-        let listaRanking = [];
+    let listaRanking = [];
+    const todosJogos = [...JOGOS_OFICIAIS_FIFA, ...JOGOS_ELIMINATORIOS, ...JOGOS_OITAVAS];
 
-        // Definimos a lista completa de todos os jogos
-        const todosJogos = [
-            ...JOGOS_OFICIAIS_FIFA, 
-            ...(typeof JOGOS_ELIMINATORIOS !== 'undefined' ? JOGOS_ELIMINATORIOS : []), 
-            ...(typeof JOGOS_OITAVAS !== 'undefined' ? JOGOS_OITAVAS : [])
-        ];
-
-        PARTICIPANTES.forEach(user => {
-            let totalPts = 0;
-            todosJogos.forEach(jogo => {
-                const oficial = dadosBolao.resultadosOficiais[jogo.id];
-                const palpite = dadosBolao.palpites[user] ? dadosBolao.palpites[user][jogo.id] : null;
-                const pts = calcularPontosDoJogo(oficial, palpite);
-                if (pts !== null) totalPts += pts;
-            });
-            listaRanking.push({ nome: user, pontos: totalPts });
+    PARTICIPANTES.forEach(user => {
+        let totalPts = 0;
+        todosJogos.forEach(jogo => {
+            const oficial = dadosBolao.resultadosOficiais[jogo.id];
+            const palpite = dadosBolao.palpites[user] ? dadosBolao.palpites[user][jogo.id] : null;
+            const pts = calcularPontosDoJogo(oficial, palpite);
+            if (pts !== null) totalPts += pts;
         });
+        listaRanking.push({ nome: user, pontos: totalPts });
+    });
 
-        listaRanking.sort((a, b) => b.pontos - a.pontos);
-        
-        const rankingBody = document.getElementById('ranking-body');
-        rankingBody.innerHTML = '';
-        listaRanking.forEach((posicao, index) => {
-            const row = document.createElement('tr');
-            row.innerHTML = `<td class="pos">${index + 1}</td><td>${posicao.nome}</td><td class="pts">${posicao.pontos} pts</td>`;
-            rankingBody.appendChild(row);
-        });
-    }
+    listaRanking.sort((a, b) => b.pontos - a.pontos);
+    const rankingBody = document.getElementById('ranking-body');
+    rankingBody.innerHTML = '';
+    listaRanking.forEach((posicao, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td class="pos">${index + 1}</td><td>${posicao.nome}</td><td class="pts">${posicao.pontos} pts</td>`;
+        rankingBody.appendChild(row);
+    });
+}
 
-    function importFriendData() {
-        const area = document.getElementById('import-area');
-        const cru = area.value.trim();
-        if (!cru) return alert('Cole o código do seu amigo gerado no campo de texto primeiro.');
+function importFriendData() {
+    const area = document.getElementById('import-area');
+    const cru = area.value.trim();
+    if (!cru) return alert('Cole o código.');
+    try {
+        const analisado = JSON.parse(decodeURIComponent(escape(atob(cru))));
+        dadosBolao.palpites[analisado.usuario] = analisado.dados;
+        alert("Importado com sucesso!");
+        calculateRanking();
+        renderMatches();
+    } catch(e) { alert("Código inválido."); }
+}
 
-        try {
-            const analisado = JSON.parse(decodeURIComponent(escape(atob(cru))));
-            if (analisado && analisado.usuario && analisado.dados) {
-                if (!PARTICIPANTES.includes(analisado.usuario)) {
-                    return alert("O participante contido no código não é membro oficial cadastrado deste bolão.");
-                }
-                dadosBolao.palpites[analisado.usuario] = analisado.dados;
-                alert(`Palpites de [${analisado.usuario}] importados com sucesso!`);
-                area.value = '';
-                calculateRanking();
-                renderMatches();
-            } else {
-                alert("Formato de criptografia inválido.");
-            }
-        } catch(e) {
-            alert("Código de dados corrompido.");
-        }
-    }
-
-    window.onload = function() {
-        carregarDadosDoServidor();
-    };
+window.onload = function() {
+    if (typeof carregarDadosDoServidor === 'function') carregarDadosDoServidor();
+};
 </script>
 </body>
 </html>
