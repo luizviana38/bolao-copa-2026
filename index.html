@@ -301,6 +301,7 @@
                     <button class="filter-btn" onclick="filterGroup('Grupo L', this)">Gr. L</button>
                     <button class="filter-btn" onclick="filterGroup('Fase Eliminatória', this)">Fase 16 avos de final</button>
                     <button class="filter-btn" onclick="filterGroup('Oitavas de Final', this)">Oitavas</button>
+                    <button class="filter-btn" onclick="filterGroup('Oitavas de Final', this)">Quartas</button>
                    
                 </div>
 
@@ -450,6 +451,15 @@ const JOGOS_OFICIAIS_FIFA = [
     { id: 95, grupo: "Oitavas de Final", mandante: "Argentina", siglaM: "ARG", flagCodeM: "ar", visitante: "Egito", siglaV: "EGI", flagCodeV: "eg", data: "07/07/2026", hora: "13:00", cidade: "Atlanta" },
     { id: 96, grupo: "Oitavas de Final", mandante: "Suíça", siglaM: "SUI", flagCodeM: "ch", visitante: "Colômbia", siglaV: "COL", flagCodeV: "co", data: "07/07/2026", hora: "17:00", cidade: "Vancouver" }
 ];
+
+// --- QUARTAS DE FINAL (INTEGRAÇÃO) ---
+    const JOGOS_QUARTAS = [
+        { id: 201, grupo: "Quartas de Final", mandante: "França", siglaM: "FRA", flagCodeM: "fr", visitante: "Marrocos", siglaV: "MAR", flagCodeV: "ma", data: "09/07/2026", hora: "17:00", cidade: "Boston" },
+        { id: 202, grupo: "Quartas de Final", mandante: "Espanha", siglaM: "ESP", flagCodeM: "es", visitante: "Bélgica", siglaV: "BEL", flagCodeV: "be", data: "10/07/2026", hora: "16:00", cidade: "Los Angeles" },
+        { id: 203, grupo: "Quartas de Final", mandante: "Noruega", siglaM: "NOR", flagCodeM: "no", visitante: "Inglaterra", siglaV: "ING", flagCodeV: "gb-eng", data: "11/07/2026", hora: "18:00", cidade: "Miami" },
+        { id: 204, grupo: "Quartas de Final", mandante: "Argentina", siglaM: "ARG", flagCodeM: "ar", visitante: "Suíça", siglaV: "SUI", flagCodeV: "ch", data: "11/07/2026", hora: "22:00", cidade: "Kansas City" }
+    ];
+    
     const PARTICIPANTES = ["Luiz Viana", "Caio", "David", "Márcio", "Tainá"];
     let currentGroupFilter = "TODOS";
      
@@ -613,6 +623,14 @@ function renderMatches() {
         return block;
     }
 
+    if (currentGroupFilter === "TODOS" || currentGroupFilter === "Quartas de Final") {
+            const div = document.createElement('div');
+            div.className = 'fase-divisor';
+            div.innerText = "QUARTAS DE FINAL";
+            container.appendChild(div);
+            JOGOS_QUARTAS.forEach(jogo => container.appendChild(criarBlocoJogo(jogo)));
+        }
+
     // Renderizar Oitavas
     if (currentGroupFilter === "TODOS" || currentGroupFilter === "Oitavas de Final") {
         const div = document.createElement('div');
@@ -672,7 +690,7 @@ async function saveData() {
 
 function calculateRanking() {
     let listaRanking = [];
-    const todosJogos = [...JOGOS_OFICIAIS_FIFA, ...JOGOS_ELIMINATORIOS, ...JOGOS_OITAVAS];
+   const todosJogos = [...JOGOS_OFICIAIS_FIFA, ...JOGOS_ELIMINATORIOS, ...JOGOS_OITAVAS, ...JOGOS_QUARTAS];
 
     PARTICIPANTES.forEach(user => {
         let totalPts = 0;
