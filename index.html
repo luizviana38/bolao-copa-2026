@@ -301,7 +301,7 @@
                     <button class="filter-btn" onclick="filterGroup('Grupo L', this)">Gr. L</button>
                     <button class="filter-btn" onclick="filterGroup('Fase Eliminatória', this)">Fase 16 avos de final</button>
                     <button class="filter-btn" onclick="filterGroup('Oitavas de Final', this)">Oitavas</button>
-                    <button class="filter-btn" onclick="filterGroup('Oitavas de Final', this)">Quartas</button>
+                    <button class="filter-btn" onclick="filterGroup('Quartas de Final', this)">Quartas</button>
                    
                 </div>
 
@@ -602,23 +602,31 @@ function renderMatches() {
         return block;
     }
 
-    // Renderizar fases
+   // Lógica de Renderização Corrigida (Exclusiva por filtro)
     if (currentGroupFilter === "TODOS" || currentGroupFilter === "Quartas de Final") {
         const div = document.createElement('div'); div.className = 'fase-divisor'; div.innerText = "QUARTAS DE FINAL";
         container.appendChild(div);
         JOGOS_QUARTAS.forEach(jogo => container.appendChild(criarBlocoJogo(jogo)));
     }
+    
     if (currentGroupFilter === "TODOS" || currentGroupFilter === "Oitavas de Final") {
         const div = document.createElement('div'); div.className = 'fase-divisor'; div.innerText = "OITAVAS DE FINAL";
         container.appendChild(div);
         JOGOS_OITAVAS.forEach(jogo => container.appendChild(criarBlocoJogo(jogo)));
     }
+    
     if (currentGroupFilter === "TODOS" || currentGroupFilter === "Fase Eliminatória") {
         const div = document.createElement('div'); div.className = 'fase-divisor'; div.innerText = "FASE ELIMINATÓRIA";
         container.appendChild(div);
         JOGOS_ELIMINATORIOS.forEach(jogo => container.appendChild(criarBlocoJogo(jogo)));
     }
-    JOGOS_OFICIAIS_FIFA.forEach(jogo => {
-        if (currentGroupFilter === "TODOS" || jogo.grupo === currentGroupFilter) container.appendChild(criarBlocoJogo(jogo));
-    });
+
+    // Grupos A até L
+    if (currentGroupFilter === "TODOS" || currentGroupFilter.startsWith("Grupo")) {
+        JOGOS_OFICIAIS_FIFA.forEach(jogo => {
+            if (currentGroupFilter === "TODOS" || jogo.grupo === currentGroupFilter) {
+                container.appendChild(criarBlocoJogo(jogo));
+            }
+        });
+    }
 }
