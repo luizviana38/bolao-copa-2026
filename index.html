@@ -505,13 +505,17 @@ const JOGOS_OFICIAIS_FIFA = [
             calculateRanking();
         }
     }
-
-    function filterGroup(grupo, btn) {
-        currentGroupFilter = grupo;
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+function filterGroup(grupo, btn) {
+    currentGroupFilter = grupo;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    
+    // Proteção: só tenta adicionar 'active' se o botão existir
+    if (btn) {
         btn.classList.add('active');
-        renderMatches();
     }
+    
+    renderMatches();
+}
 
     function calcularPontosDoJogo(oficial, palpite) {
         if (!oficial || !palpite || 
