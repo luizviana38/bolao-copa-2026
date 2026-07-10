@@ -633,27 +633,34 @@ function renderMatches() {
                 }
             }
 
-            // Lógica para mostrar o resultado oficial e calcular pontos (se não for Admin)
-            let oficialHTML = '';
-            let pontosHTML = '';
+           // --- COPIE ESTE BLOCO PARA DENTRO DOS FOREACH DAS OITAVAS, ELIMINATÓRIAS E QUARTAS ---
+let oficialHTML = '';
+let pontosHTML = '';
 
-            if (currentUser !== "Admin (Resultados Oficiais)") {
-                if (dadosBolao.resultadosOficiais[jogo.id] && dadosBolao.resultadosOficiais[jogo.id].m !== "" && dadosBolao.resultadosOficiais[jogo.id].v !== "") {
-                    const oM = dadosBolao.resultadosOficiais[jogo.id].m;
-                    const oV = dadosBolao.resultadosOficiais[jogo.id].v;
-                    oficialHTML = `
-                        <div class="resultado-oficial-box">
-                            <span class="label-oficial">OFICIAL:</span>
-                            <span class="placar-oficial-texto">${jogo.siglaM} <strong>${oM}</strong> x <strong>${oV}</strong> ${jogo.siglaV}</span>
-                        </div>
-                    `;
-                    const pts = calcularPontosDoJogo(dadosBolao.resultadosOficiais[jogo.id], { m: golsM, v: golsV });
-                    if (pts !== null) {
-                        let classePontos = pts > 0 ? "green" : "zero";
-                        pontosHTML = `<span class="match-points-tag ${classePontos}">+${pts} pts</span>`;
-                    }
-                }
-            }
+if (currentUser !== "Admin (Resultados Oficiais)") {
+    if (dadosBolao.resultadosOficiais[jogo.id] && dadosBolao.resultadosOficiais[jogo.id].m !== "" && dadosBolao.resultadosOficiais[jogo.id].v !== "") {
+        const oM = dadosBolao.resultadosOficiais[jogo.id].m;
+        const oV = dadosBolao.resultadosOficiais[jogo.id].v;
+        
+        oficialHTML = `
+            <div class="resultado-oficial-box">
+                <span class="label-oficial">OFICIAL:</span>
+                <span class="placar-oficial-texto">${jogo.siglaM} <strong>${oM}</strong> x <strong>${oV}</strong> ${jogo.siglaV}</span>
+            </div>
+        `;
+        
+        const pts = calcularPontosDoJogo(dadosBolao.resultadosOficiais[jogo.id], { m: golsM, v: golsV });
+        if (pts !== null) {
+            let classePontos = pts > 0 ? "green" : "zero";
+            pontosHTML = `<span class="match-points-tag ${classePontos}">+${pts} pts</span>`;
+        }
+    }
+}
+
+// --- E no seu HTML DENTRO do block.innerHTML, certifique-se de chamar as variáveis assim: ---
+// ${oficialHTML}
+// E lá no final (no container da direita):
+// ${pontosHTML}
 
             const block = document.createElement('div');
             block.className = 'match-block';
