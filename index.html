@@ -544,71 +544,74 @@ function renderMatches() {
     container.innerHTML = '';
 
     document.getElementById('match-card-title').innerText = 
-        currentUser === "Admin (Resultados Oficiais)" ? "⚙️ Registrar Placar Real da FIFA" : `🔮 Palpites de: ${currentUser}`;
+        currentUser === "Admin (Resultados Oficiais)" ? "⚙️ Registrar Placar Real" : `🔮 Palpites de: ${currentUser}`;
 
-    let isDisabled = "";
+    // Lógica do bloqueio
+    let isDisabled = (currentUser !== "Admin (Resultados Oficiais)" && !listagemDesbloqueadaParaAmigo) ? "disabled" : "";
     if (currentUser === "Admin (Resultados Oficiais)") {
         lockBtn.style.display = "none";
-        isDisabled = ""; 
     } else {
         lockBtn.style.display = "block";
-        if (listagemDesbloqueadaParaAmigo) {
-            lockBtn.innerText = "🔓 Palpites Liberados (Senha Aplicada)";
-            lockBtn.className = "btn btn-lock unlocked";
-            isDisabled = "";
-        } else {
-            lockBtn.innerText = "🔒 Palpites Bloqueados (Clique para liberar)";
-            lockBtn.className = "btn btn-lock";
-            isDisabled = "disabled";
-        }
+        lockBtn.innerText = listagemDesbloqueadaParaAmigo ? "🔓 Palpites Liberados" : "🔒 Palpites Bloqueados";
+        lockBtn.className = listagemDesbloqueadaParaAmigo ? "btn btn-lock unlocked" : "btn btn-lock";
     }
 
-    // --- Início do Adicional de QUARTAS DE FINAL ---
-    if (currentGroupFilter === "TODOS" || currentGroupFilter === "Quartas de Final") {
+    // Lista de todas as fases configuradas
+    const fases = [
+        { nome: "FASE DE GRUPOS", lista: JOGOS_OFICIAIS_FIFA, filtro: "Grupos" },
+        { nome: "OITAVAS DE FINAL", lista: typeof JOGOS_OITAVAS !== 'undefined' ? JOGOS_OITAVAS : [], filtro: "Oitavas de Final" },
+        { nome: "QUARTAS DE FINAL", lista: typeof JOGOS_QUARTAS !== 'undefined' ? JOGOS_QUARTAS : [], filtro: "Quartas de Final" },
+        { nome: "FASE ELIMINATÓRIA", lista: typeof JOGOS_ELIMINATORIOS !== 'undefined' ? JOGOS_ELIMINATORIOS : [], filtro: "Fase Eliminatória" }
+    ];
+
+    fases.forEach(fase => {
+        if (currentGroupFilter !== "TODOS" && currentGroupFilter !== fase.filtro && fase.filtro !== "Grupos") return;
+        if (fase.lista.length === 0) return;
+
         const div = document.createElement('div');
         div.className = 'fase-divisor';
-        div.innerText = "QUARTAS DE FINAL";
+        div.innerText = fase.nome;
         container.appendChild(div);
 
-        JOGOS_QUARTAS.forEach(jogo => {
-            let golsM = '';
-            let golsV = '';
+        fase.lista.forEach(jogo => {
+            if (fase.filtro === "Grupos" && currentGroupFilter !== "TODOS" && jogo.grupo !== currentGroupFilter) return;
 
+            let golsM = '', golsV = '';
             if (currentUser === "Admin (Resultados Oficiais)") {
-                if (dadosBolao.resultadosOficiais[jogo.id]) {
-                    golsM = dadosBolao.resultadosOficiais[jogo.id].m || '';
-                    golsV = dadosBolao.resultadosOficiais[jogo.id].v || '';
-                }
+                golsM = dadosBolao.resultadosOficiais[jogo.id]?.m || '';
+                golsV = dadosBolao.resultadosOficiais[jogo.id]?.v || '';
             } else {
-                if (dadosBolao.palpites[currentUser] && dadosBolao.palpites[currentUser][jogo.id]) {
-                    golsM = dadosBolao.palpites[currentUser][jogo.id].m || '';
-                    golsV = dadosBolao.palpites[currentUser][jogo.id].v || '';
+                golsM = dadosBolao.palpites[currentUser]?.[jogo.id]?.m || '';
+                golsV = dadosBolao.palpites[currentUser]?.[jogo.id]?.v || '';
+            }
+
+            // Lógica de Pontuação e Oficial
+            let oficialHTML = '', pontosHTML = '';
+            if (currentUser !== "Admin (Resultados Oficiais)" && dadosBolao.resultadosOficiais[jogo.id]) {
+                const o = dadosBolao.resultadosOficiais[jogo.id];
+                if (o.m !== "" && o.v !== "") {
+                    oficialHTML = `<div class="resultado-oficial-box"><span class="label-oficial">OFICIAL:</span> <span>${jogo.siglaM} <strong>${o.m}</strong> x <strong>${o.v}</strong> ${jogo.siglaV}</span></div>`;
+                    const pts = calcularPontosDoJogo(o, { m: golsM, v: golsV });
+                    if (pts !== null) pontosHTML = `<span class="match-points-tag ${pts > 0 ? 'green' : 'zero'}">+${pts} pts</span>`;
                 }
             }
 
             const block = document.createElement('div');
             block.className = 'match-block';
             block.innerHTML = `
-                <div class="match-info"><strong>${jogo.grupo}</strong> • ${jogo.data} às ${jogo.hora} • ${jogo.cidade}</div>
+                <div class="match-info"><strong>${jogo.grupo || ''}</strong> • ${jogo.data} • ${jogo.cidade}</div>
+                ${oficialHTML}
                 <div class="match-row">
-                    <div class="team-container team-left">
-                        <span>${jogo.mandante}</span>
-                        <span class="team-sigla">&nbsp;(${jogo.siglaM})</span>
-                        <img class="flag-img flag-left" src="https://flagcdn.com/w40/${jogo.flagCodeM}.png" alt="${jogo.mandante}">
-                    </div>
-                    <input type="number" min="0" ${isDisabled} value="${golsM}" oninput="updatePlacarValue(${jogo.id}, 'm', this.value)">
+                    <div class="team-container team-left"><span>${jogo.mandante}</span><span class="team-sigla"> (${jogo.siglaM})</span><img src="https://flagcdn.com/w40/${jogo.flagCodeM}.png"></div>
+                    <input type="number" ${isDisabled} value="${golsM}" oninput="updatePlacarValue(${jogo.id}, 'm', this.value)">
                     <span class="vs">x</span>
-                    <input type="number" min="0" ${isDisabled} value="${golsV}" oninput="updatePlacarValue(${jogo.id}, 'v', this.value)">
-                    <div class="team-container team-right">
-                        <img class="flag-img flag-right" src="https://flagcdn.com/w40/${jogo.flagCodeV}.png" alt="${jogo.visitante}">
-                        <span>${jogo.visitante}</span>
-                        <span class="team-sigla">&nbsp;(${jogo.siglaV})</span>
-                    </div>
+                    <input type="number" ${isDisabled} value="${golsV}" oninput="updatePlacarValue(${jogo.id}, 'v', this.value)">
+                    <div class="team-container team-right"><img src="https://flagcdn.com/w40/${jogo.flagCodeV}.png"><span>${jogo.visitante}</span><span class="team-sigla"> (${jogo.siglaV})</span>${pontosHTML}</div>
                 </div>`;
             container.appendChild(block);
         });
-    }
-
+    });
+}
     // --- Início do Adicional da Fase de OITAVAS DE FINAL ---
     if (currentGroupFilter === "TODOS" || currentGroupFilter === "Oitavas de Final") {
         const div = document.createElement('div');
