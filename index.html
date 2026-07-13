@@ -778,12 +778,12 @@ async function saveData() {
 function calculateRanking() {
     let listaRanking = [];
     const todosJogos = [
-        ...JOGOS_OFICIAIS_FIFA, 
-        ...(typeof JOGOS_ELIMINATORIOS !== 'undefined' ? JOGOS_ELIMINATORIOS : []), 
-        ...(typeof JOGOS_OITAVAS !== 'undefined' ? JOGOS_OITAVAS : []),
-        ...(typeof JOGOS_QUARTAS !== 'undefined' ? JOGOS_QUARTAS : []),
-        ...JOGOS_SEMIFINAl
-    ];
+    ...JOGOS_OFICIAIS_FIFA, 
+    ...(typeof JOGOS_ELIMINATORIOS !== 'undefined' ? JOGOS_ELIMINATORIOS : []), 
+    ...(typeof JOGOS_OITAVAS !== 'undefined' ? JOGOS_OITAVAS : []),
+    ...(typeof JOGOS_QUARTAS !== 'undefined' ? JOGOS_QUARTAS : []),
+    ...JOGOS_SEMIFINAL // Corrigido aqui
+];
     PARTICIPANTES.forEach(user => {
         let totalPts = 0;
         todosJogos.forEach(jogo => {
