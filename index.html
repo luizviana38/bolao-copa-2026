@@ -302,7 +302,7 @@
                     <button class="filter-btn" onclick="filterGroup('Fase Eliminatória', this)">Fase 16 avos de final</button>
                     <button class="filter-btn" onclick="filterGroup('Oitavas de Final', this)">Oitavas</button>
                     <button class="filter-btn" onclick="filterGroup('Quartas de Final', this)">Quartas</button>
-                    <button class="filter-btn" onclick="filterGroup('Semifinaisl', this)">Semifinais</button>
+                    <button class="filter-btn" onclick="filterGroup('Semifinal', this)">Semifinal</button>
                    
                 </div>
 
@@ -460,7 +460,7 @@ const JOGOS_OFICIAIS_FIFA = [
     { id: 123, grupo: "Quartas de Final", mandante: "Argentina", siglaM: "ARG", flagCodeM: "ar", visitante: "Suíça", siglaV: "SUI", flagCodeV: "ch", data: "11/07/2026", hora: "22:00", cidade: "Kansas City" }
 ];
 
-    const JOGOS_SEMIFINAIS = [
+    const JOGOS_SEMIFINAL = [
     { id: 101, grupo: "Semifinal", data: "14/07", hora: "16h", cidade: "Brasil", mandante: "França", siglaM: "FRA", flagCodeM: "fr", visitante: "Espanha", siglaV: "ESP", flagCodeV: "es" },
     { id: 102, grupo: "Semifinal", data: "15/07", hora: "16h", cidade: "Brasil", mandante: "Inglaterra", siglaM: "ENG", flagCodeM: "gb-eng", visitante: "Argentina", siglaV: "ARG", flagCodeV: "ar" }
 ];
@@ -570,21 +570,21 @@ function renderMatches() {
     }
   // Substitua o seu if atual por este mais robusto
 if (currentGroupFilter === "TODOS" || 
-    currentGroupFilter === "Semifinais" || 
+    currentGroupFilter === "Semifinal" || 
     currentGroupFilter === "Semifinal") { // Adicionamos 'Semifinal' aqui
     
     const div = document.createElement('div');
     div.className = 'fase-divisor';
-    div.innerText = "SEMIFINAIS";
+    div.innerText = "SEMIFINAL";
     container.appendChild(div);
 
     // Verifique se a variável JOGOS_SEMIFINAIS está definida no escopo global
-    if (typeof JOGOS_SEMIFINAIS !== 'undefined') {
-        JOGOS_SEMIFINAIS.forEach(jogo => {
+    if (typeof JOGOS_SEMIFINAL !== 'undefined') {
+        JOGOS_SEMIFINAL.forEach(jogo => {
             // ... (o restante do seu código de renderização permanece igual)
         });
     } else {
-        console.error("Erro: JOGOS_SEMIFINAIS não foi definido.");
+        console.error("Erro: JOGOS_SEMIFINAl não foi definido.");
     }
 }
     // --- Início do Adicional de QUARTAS DE FINAL ---
@@ -782,7 +782,7 @@ function calculateRanking() {
         ...(typeof JOGOS_ELIMINATORIOS !== 'undefined' ? JOGOS_ELIMINATORIOS : []), 
         ...(typeof JOGOS_OITAVAS !== 'undefined' ? JOGOS_OITAVAS : []),
         ...(typeof JOGOS_QUARTAS !== 'undefined' ? JOGOS_QUARTAS : []),
-        ...JOGOS_SEMIFINAIS
+        ...JOGOS_SEMIFINAl
     ];
     PARTICIPANTES.forEach(user => {
         let totalPts = 0;
