@@ -842,48 +842,56 @@ async function saveData() {
         alert(`🚨 Falha de Rede ou Conexão!\nO navegador não conseguiu falar com o servidor.\n\nDetalhe do erro: ${error.message}`);
     }
 }
-
-unction calculateRanking() {
+function calculateRanking() {
     let listaRanking = [];
 
-    // Certifique-se de que a lista inclua JOGO_FINAL
+    // Lista consolidada de todos os jogos do sistema
     const todosJogos = [
         ...(typeof JOGOS_OFICIAIS_FIFA !== 'undefined' ? JOGOS_OFICIAIS_FIFA : []),
         ...(typeof JOGOS_ELIMINATORIOS !== 'undefined' ? JOGOS_ELIMINATORIOS : []),
         ...(typeof JOGOS_OITAVAS !== 'undefined' ? JOGOS_OITAVAS : []),
         ...(typeof JOGOS_QUARTAS !== 'undefined' ? JOGOS_QUARTAS : []),
         ...(typeof JOGOS_SEMIFINAL !== 'undefined' ? JOGOS_SEMIFINAL : []),
-        ...(typeof JOGO_FINAL !== 'undefined' ? JOGO_FINAL : []) // Esta linha garante o cálculo da Final
+        ...(typeof JOGO_FINAL !== 'undefined' ? JOGO_FINAL : [])
     ];
 
     PARTICIPANTES.forEach(user => {
         let totalPts = 0;
+        
         todosJogos.forEach(jogo => {
+            // Verifica se existem resultados e palpites antes de calcular
             const oficial = dadosBolao.resultadosOficiais[jogo.id];
-            const palpite = dadosBolao.palpites[user] ? dadosBolao.palpites[user][jogo.id] : null;
+            const palpite = (dadosBolao.palpites[user] && dadosBolao.palpites[user][jogo.id]) ? dadosBolao.palpites[user][jogo.id] : null;
             
             const pts = calcularPontosDoJogo(oficial, palpite);
-            if (pts !== null) totalPts += pts;
+            if (pts !== null) {
+                totalPts += pts;
+            }
         });
+        
         listaRanking.push({ nome: user, pontos: totalPts });
     });
 
-    // Ordena pelo maior número de pontos
+    // Ordena do maior para o menor
     listaRanking.sort((a, b) => b.pontos - a.pontos);
     
+    // Atualiza o DOM
     const rankingBody = document.getElementById('ranking-body');
     if (rankingBody) {
         rankingBody.innerHTML = '';
         listaRanking.forEach((posicao, index) => {
             const row = document.createElement('tr');
-            // Adiciona classe de destaque para o primeiro colocado se desejar
+            // Aplica destaque especial se for o 1º colocado
             const classeDestaque = index === 0 ? 'class="top-1"' : '';
-            row.innerHTML = `<td class="pos">${index + 1}</td><td>${posicao.nome}</td><td class="pts">${posicao.pontos} pts</td>`;
+            row.innerHTML = `
+                <td class="pos">${index + 1}º</td>
+                <td>${posicao.nome}</td>
+                <td class="pts">${posicao.pontos} pts</td>
+            `;
             rankingBody.appendChild(row);
         });
     }
-}
-function importFriendData() {
+}function importFriendData() {
     const area = document.getElementById('import-area');
     const cru = area.value.trim();
     if (!cru) return alert('Cole o código do seu amigo gerado no campo de texto primeiro.');
