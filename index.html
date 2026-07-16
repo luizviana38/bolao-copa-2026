@@ -303,6 +303,7 @@
                     <button class="filter-btn" onclick="filterGroup('Oitavas de Final', this)">Oitavas</button>
                     <button class="filter-btn" onclick="filterGroup('Quartas de Final', this)">Quartas</button>
                     <button class="filter-btn" onclick="filterGroup('Semifinal', this)">Semifinal</button>
+                    <button class="filter-btn" onclick="filterGroup('Final', this)">Final</button>
                    
                 </div>
 
@@ -464,6 +465,23 @@ const JOGOS_OFICIAIS_FIFA = [
     { id: 101, grupo: "Semifinal", data: "14/07", hora: "16h", cidade: "Brasil", mandante: "França", siglaM: "FRA", flagCodeM: "fr", visitante: "Espanha", siglaV: "ESP", flagCodeV: "es" },
     { id: 102, grupo: "Semifinal", data: "15/07", hora: "16h", cidade: "Brasil", mandante: "Inglaterra", siglaM: "ENG", flagCodeM: "gb-eng", visitante: "Argentina", siglaV: "ARG", flagCodeV: "ar" }
 ];
+
+    const JOGO_FINAL = [
+    {
+        id: 999, // Use um ID único que não esteja em uso
+        grupo: "Final",
+        data: "20/07/2026",
+        hora: "16:00",
+        cidade: "Nova York",
+        mandante: "Espanha",
+        siglaM: "ESP",
+        flagCodeM: "es",
+        visitante: "Argentina",
+        siglaV: "ARG",
+        flagCodeV: "ar",
+        fase: "Final"
+    }
+];
     const PARTICIPANTES = ["Luiz Viana", "Caio", "David", "Márcio", "Tainá"];
     let currentGroupFilter = "TODOS";
      
@@ -568,7 +586,18 @@ function renderMatches() {
             isDisabled = "disabled";
         }
     }
-  // Substitua o seu if atual por este mais robusto
+// --- Renderização da FINAL ---
+if (currentGroupFilter === "TODOS" || currentGroupFilter === "Final") {
+    const div = document.createElement('div');
+    div.className = 'fase-divisor';
+    div.style.backgroundColor = "#ffd700"; // Dourado para destacar a final
+    div.innerText = "GRANDE FINAL";
+    container.appendChild(div);
+
+    JOGO_FINAL.forEach(jogo => {
+        container.appendChild(criarBlocoJogo(jogo));
+    });
+}
 // --- Início do Adicional da SEMIFINAL ---
 if (currentGroupFilter === "TODOS" || currentGroupFilter === "Semifinal") {
     
@@ -814,35 +843,46 @@ async function saveData() {
     }
 }
 
-function calculateRanking() {
+unction calculateRanking() {
     let listaRanking = [];
+
+    // Certifique-se de que a lista inclua JOGO_FINAL
     const todosJogos = [
-    ...JOGOS_OFICIAIS_FIFA, 
-    ...(typeof JOGOS_ELIMINATORIOS !== 'undefined' ? JOGOS_ELIMINATORIOS : []), 
-    ...(typeof JOGOS_OITAVAS !== 'undefined' ? JOGOS_OITAVAS : []),
-    ...(typeof JOGOS_QUARTAS !== 'undefined' ? JOGOS_QUARTAS : []),
-    ...JOGOS_SEMIFINAL // Corrigido aqui
-];
+        ...(typeof JOGOS_OFICIAIS_FIFA !== 'undefined' ? JOGOS_OFICIAIS_FIFA : []),
+        ...(typeof JOGOS_ELIMINATORIOS !== 'undefined' ? JOGOS_ELIMINATORIOS : []),
+        ...(typeof JOGOS_OITAVAS !== 'undefined' ? JOGOS_OITAVAS : []),
+        ...(typeof JOGOS_QUARTAS !== 'undefined' ? JOGOS_QUARTAS : []),
+        ...(typeof JOGOS_SEMIFINAL !== 'undefined' ? JOGOS_SEMIFINAL : []),
+        ...(typeof JOGO_FINAL !== 'undefined' ? JOGO_FINAL : []) // Esta linha garante o cálculo da Final
+    ];
+
     PARTICIPANTES.forEach(user => {
         let totalPts = 0;
         todosJogos.forEach(jogo => {
             const oficial = dadosBolao.resultadosOficiais[jogo.id];
             const palpite = dadosBolao.palpites[user] ? dadosBolao.palpites[user][jogo.id] : null;
+            
             const pts = calcularPontosDoJogo(oficial, palpite);
             if (pts !== null) totalPts += pts;
         });
         listaRanking.push({ nome: user, pontos: totalPts });
     });
-    listaRanking.sort((a, b) => b.pontos - a.pontos);
-    const rankingBody = document.getElementById('ranking-body');
-    rankingBody.innerHTML = '';
-    listaRanking.forEach((posicao, index) => {
-        const row = document.createElement('tr');
-        row.innerHTML = `<td class="pos">${index + 1}</td><td>${posicao.nome}</td><td class="pts">${posicao.pontos} pts</td>`;
-        rankingBody.appendChild(row);
-    });
-}
 
+    // Ordena pelo maior número de pontos
+    listaRanking.sort((a, b) => b.pontos - a.pontos);
+    
+    const rankingBody = document.getElementById('ranking-body');
+    if (rankingBody) {
+        rankingBody.innerHTML = '';
+        listaRanking.forEach((posicao, index) => {
+            const row = document.createElement('tr');
+            // Adiciona classe de destaque para o primeiro colocado se desejar
+            const classeDestaque = index === 0 ? 'class="top-1"' : '';
+            row.innerHTML = `<td class="pos">${index + 1}</td><td>${posicao.nome}</td><td class="pts">${posicao.pontos} pts</td>`;
+            rankingBody.appendChild(row);
+        });
+    }
+}
 function importFriendData() {
     const area = document.getElementById('import-area');
     const cru = area.value.trim();
