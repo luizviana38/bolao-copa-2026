@@ -562,7 +562,22 @@ const JOGOS_OFICIAIS_FIFA = [
         }
         return 0;
     }
-
+function updatePlacarValue(id, tipo, valor) {
+    const user = document.getElementById('select-user').value;
+    
+    // Verifica se é Admin (oficial) ou participante comum
+    if (user === "Admin (Resultados Oficiais)") {
+        if (!dadosBolao.resultadosOficiais[id]) dadosBolao.resultadosOficiais[id] = { m: '', v: '' };
+        dadosBolao.resultadosOficiais[id][tipo] = valor;
+    } else {
+        // Garante que o objeto do participante existe
+        if (!dadosBolao.palpites[user]) dadosBolao.palpites[user] = {};
+        if (!dadosBolao.palpites[user][id]) dadosBolao.palpites[user][id] = { m: '', v: '' };
+        
+        dadosBolao.palpites[user][id][tipo] = valor;
+    }
+    console.log(`Palpite atualizado: Jogo ${id}, ${tipo}: ${valor}`);
+}
 function renderMatches() {
     const currentUser = document.getElementById('select-user').value;
     const container = document.getElementById('matches-container');
